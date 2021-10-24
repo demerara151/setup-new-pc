@@ -10,8 +10,8 @@ scoop add bucket extra game nerd-fonts
 ```
 
 # 必須プログラムのインストール
-※編集中
 ```shell
+# 以下、編集中
 scoop install sudo touch aria2 waterfox-current everything ffmpeg lightbulb foobar2000 python vscodium-portable mpv sharex github bitwarden imageglass gallery-dl crystaldiskinfo crystaldiskmark freetube mailspring hwinfo neovim
 ```
 

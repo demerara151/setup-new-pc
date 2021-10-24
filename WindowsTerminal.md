@@ -1,4 +1,5 @@
 # 本体のインストール
+* デフォルトでインストールされている場合は不要
 ```Powershell
 scoop install windows-terminal
 ```
@@ -7,11 +8,8 @@ scoop install windows-terminal
 ```Powershell
 scoop install posh-git
 
-# Pofileに設定を反映させるコマンド
+# Pofileに設定を反映させる
 Add-PoshGitToProfile
-
-# パスを確認
-$PROFILE
 ```
 
 # oh-my-posh
@@ -23,3 +21,4 @@ scoop install https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/downl
 ```profile.ps1
 oh-my-posh --init --shell pwsh --config "$(scoopprefix oh-my-posh)/themes/ys.omp.json" |Invoke-Expression
 ```
+* `ys.omp.json`の`ys`の部分は好きなテーマの名前
