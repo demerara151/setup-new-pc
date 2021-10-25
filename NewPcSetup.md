@@ -44,3 +44,4 @@
     ```
 14. 再起動
 15. [Clibor](https://forest.watch.impress.co.jp/library/software/clibor/)を手動でインストール
+16. タスクスケジューラで、「MicrosoftEdgeUpdateTaskMachineCore」と「NvTmRep_CrashReport」関連を全て無効化する
