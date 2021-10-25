@@ -19,6 +19,6 @@ scoop install https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/downl
 設定を反映させるために、$PROFILEに次の行を追加
 
 ```profile.ps1
-oh-my-posh --init --shell pwsh --config "$(scoopprefix oh-my-posh)/themes/ys.omp.json" |Invoke-Expression
+oh-my-posh --init --shell pwsh --config "$(scoopprefix oh-my-posh)/themes/ys.omp.json" | Invoke-Expression
 ```
 * `ys.omp.json`の`ys`の部分は好きなテーマの名前
