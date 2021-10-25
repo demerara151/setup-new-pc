@@ -31,10 +31,16 @@
     ```Powershell
     scoop install 7zip git
     scoop update *
+
     scoop bucket add extra game nerd-fonts
 
-    # 以下、編集中
-    scoop install sudo touch aria2 waterfox-current everything ffmpeg lightbulb windows-terminal foobar2000 python vscodium notepadplusplus mpv sharex github bitwarden imageglass gallery-dl crystaldiskinfo crystaldiskmark freetube mailspring hwinfo
+    scoop install aria2 bat bitwarden bottom broot ccleaner deepl deno dust everything exifcleaner fd ffmpeg flac foobar2000 freetube fzf gallery-dl gimp git github gitui go hwinfo imageglass julia less lightbulb losslesscut lsd mailspring mpv neovim nu playnite python ripgrep sharex sqlitebrowser starship streamlink streamlink-twitch-gui sudo tldr touch trilium typora ungoogled-chromium vscodium-portable waterfox-current zoxide
+
+    sudo scoop install vcredist2015 vcredist2019 victor-mono icaros-np Meslo-NF FiraCode
     ```
-13. 再起動
-14. [Clibor](https://forest.watch.impress.co.jp/library/software/clibor/)を手動でインストール
+13. ついでに、pythonでも必要なものをインストール
+    ```powershell
+    python -m pip install flake8 black yt-dlp legendary-gl
+    ```
+14. 再起動
+15. [Clibor](https://forest.watch.impress.co.jp/library/software/clibor/)を手動でインストール
