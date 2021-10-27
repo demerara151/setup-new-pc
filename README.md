@@ -6,3 +6,6 @@
 
 # 一括インストール
 [Auto Installer](/autoinstaller.ps1)
+
+# Sophia Script 2021/10/27作成
+[sophia.ps1](/sophia.ps)
