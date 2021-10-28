@@ -5,7 +5,11 @@
 4. ブラウザの初期設定[Firefox](/Firefox.md)
 
 # 一括インストール
-[Auto Installer](/autoinstaller.ps1)
+* [Auto Installer](/autoinstaller.ps1)をダウンロード
+* ダウロードした場所でPowershellを開いて、
+```Powershell
+.\autoinstaller.ps1
+```
 
 # Sophia Script 2021/10/27作成
-[sophia.ps1](/sophia.ps)
+[sophia.ps1](/sophia.ps1)
