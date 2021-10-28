@@ -12,7 +12,7 @@ scoop update *
 scoop bucket add extra game nerd-fonts
 
 # まとめてインストール
-scoop install aria2 bat bitwarden bottom broot ccleaner deepl deno dust everything exifcleaner fd ffmpeg flac foobar2000 freetube fzf gallery-dl gimp git github gitui go hwinfo imageglass julia less lightbulb losslesscut lsd mailspring mpv neovim nu playnite python ripgrep sharex sqlitebrowser starship streamlink streamlink-twitch-gui sudo tldr touch trilium typora ungoogled-chromium vscodium-portable waterfox-current zoxide
+scoop install aria2 bat bitwarden bottom broot ccleaner deepl deno dust everything exifcleaner fd ffmpeg flac foobar2000 freetube fzf gallery-dl gimp github gitui go hwinfo imageglass julia less lightbulb losslesscut lsd mailspring mpv neovim nu playnite python ripgrep sharex sqlitebrowser starship streamlink streamlink-twitch-gui sudo tldr touch trilium typora ungoogled-chromium vscodium-portable waterfox-current zoxide
 
 # 管理者権限が必要なもの
 sudo scoop install vcredist2015 vcredist2019 victor-mono icaros-np Meslo-NF FiraCode
