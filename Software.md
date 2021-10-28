@@ -6,7 +6,10 @@ scoop update *
 
 # バケットを追加
 ```powershell
-scoop add bucket extra games nerd-font nonportable
+scoop bucket add extras
+scoop bucket add nerd-fonts
+scoop bucket add games
+scoop bucket add nonportable
 ```
 
 # 必須プログラムのインストール
