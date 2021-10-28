@@ -9,7 +9,7 @@ scoop install 7zip git
 scoop update *
 
 # バケットの追加
-scoop bucket add extra game nerd-fonts
+scoop bucket add extra games nerd-fonts nonportable
 
 # まとめてインストール
 scoop install aria2 bat bitwarden bottom broot ccleaner deepl deno dust everything exifcleaner fd ffmpeg flac foobar2000 freetube fzf gallery-dl gimp github gitui go hwinfo imageglass julia less lightbulb losslesscut lsd mailspring mpv neovim nu playnite python ripgrep sharex sqlitebrowser starship streamlink streamlink-twitch-gui sudo tldr touch trilium typora ungoogled-chromium vscodium-portable waterfox-current zoxide
