@@ -9,11 +9,13 @@
 4. 再起動
 
 5. 予め作成しておいた、[sophia script](/sophia.ps1)をダウンロード、またはUSB等で持ってくる
+
 6. 管理者権限でPowershellを開き、次のコマンドを入力
     ```Powershell
     # 現在のセッションのみ有効な実行ポリシーの変更
     Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
     ```
+
 7. debloat tool を走らせる
     ```Powershell
     .\Sophia.ps1
@@ -34,6 +36,7 @@
     # もし上記のコマンドがエラーになるなら次を実行
     Set-ExecutionPolicy RemoteSigned -scope CurrentUser
     ```
+
 12. 複数のプログラムをまとめて Scoop でインストール
     ```Powershell
     scoop install 7zip git

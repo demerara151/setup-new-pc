@@ -9,7 +9,7 @@
 7. 拡張機能マネージャーを起動して拡張機能をアップデートする
 
 ## ffprofileで導入される拡張機能
-* uBlockOrigin -medium-mode
+* uBlockOrigin
 * CanvasBlocker
 * ClearURLs
 * Cookie AutoDelete
@@ -33,8 +33,8 @@
 
 ## memory
 
-| key                           | value | note                                                 |
-| ----------------------------- | ----- | ---------------------------------------------------- |
-| browser.cache.disk.enable     | false | ディスクキャシュをしない                             |
-| browser.cache.memory.enable   | true  | メモリでキャシュする                                 |
-| browser.cache.memory.capacity | -1    | メモリサイズ合わせてキャッシュ量を自動調整してくれる |
+| key                           | value | note                                                   |
+| ----------------------------- | ----- | ------------------------------------------------------ |
+| browser.cache.disk.enable     | false | ディスクキャシュをしない                               |
+| browser.cache.memory.enable   | true  | メモリでキャシュする                                   |
+| browser.cache.memory.capacity | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
