@@ -37,4 +37,5 @@ Add-PoshGitToProfile
 scoop install https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/oh-my-posh.json
 
 # oh-my-poshの設定をprofileに書き込む
+# `ys.omp.json`の`ys`の部分は好きなテーマの名前
 'oh-my-posh --init --shell pwsh --config "$(scoopprefix oh-my-posh)/themes/ys.omp.json" | Invoke-Expression' >> $profile
