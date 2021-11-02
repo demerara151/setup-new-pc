@@ -47,7 +47,7 @@
 13. タスクスケジューラで、「MicrosoftEdgeUpdateTaskMachineCore」と「NvTmRep_CrashReport」関連を全て無効化する
 
 14. いくつかのソフトを手動でインストール
-* Steam と discord は scoop でもインストールできるが以前うまく機能しなかったため手動にし。が、再度検証してみてもいい  
+* Steam と discord は scoop でもインストールできるが以前うまく機能しなかったため手動にしている。が、再度検証してみてもいい  
 
 |  名前   | URL                                                         |
 | :-----: | :---------------------------------------------------------- |
@@ -101,3 +101,6 @@
 
 # Sophia Script 2021/10/27 作成
 [sophia.ps1](/sophia.ps1)
+
+# TODO
+* Create automate tool for manual installations
