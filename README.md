@@ -99,8 +99,7 @@
 | browser.cache.memory.enable   | true  | メモリでキャシュする                                   |
 | browser.cache.memory.capacity | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
 
-# Sophia Script 2021/10/27 作成
-[sophia.ps1](/sophia.ps1)
-
-# TODO
-* Create automate tool for manual installations
+# Update Notes
+These tools are under devlopment. Use them with your own risk.
+* Create [sophia.ps1](/sophia.ps1) on 27/10/2021
+* Create [manualInstaller.ps1](/manualInstaller.ps1) on 02/11/2021
