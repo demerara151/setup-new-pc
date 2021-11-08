@@ -41,7 +41,6 @@
 .\autoinstaller.ps1
 ```
 
-
 12. 再起動
 
 13. タスクスケジューラで、「MicrosoftEdgeUpdateTaskMachineCore」と「NvTmRep_CrashReport」関連を全て無効化する
@@ -103,3 +102,6 @@
 These tools are under devlopment. Use them with your own risk.
 * Create [sophia.ps1](/sophia.ps1) on 27/10/2021
 * Create [manualInstaller.ps1](/manualInstaller.ps1) on 02/11/2021
+
+# Fonts
+* `CascadiaCode-NF`は、"CaskaydiaCove NF"という名前で使う

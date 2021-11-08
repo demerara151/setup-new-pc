@@ -1,12 +1,13 @@
-$portable = '{0}\PortableApps' -f $HOME
+$portable = "$env:HOMEPATH\PortableApps"
 
 If (!(Test-Path $portable)) {
     New-Item -ItemType Directory $portable | Set-Location
-} else {
+}
+else {
     Set-Location $portable
 }
 
-'ES', 'wpd' | %{New-Item -Name $_ -ItemType Directory}
+'ES', 'wpd' | ForEach-Object { New-Item -Name $_ -ItemType Directory }
 
 Invoke-WebRequest -Uri "https://dforest.watch.impress.co.jp/library/c/clibor/10713/clibor.zip" -OutFile $portable\clibor.zip
 
@@ -27,6 +28,6 @@ Set-Location ..\wpd\
 
 Set-Location ..
 
-Get-ChildItem -Include *.zip -Recurse | del
+Get-ChildItem -Include *.zip -Recurse | Remove-Item
 
 Write-Output `n"Note: You need to restart Powershell to apply chaneges"
