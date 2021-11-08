@@ -1,4 +1,4 @@
-$portable = "$env:HOMEPATH\PortableApps"
+$portable = "$HOME\PortableApps"
 
 If (!(Test-Path $portable)) {
     New-Item -ItemType Directory $portable | Set-Location
