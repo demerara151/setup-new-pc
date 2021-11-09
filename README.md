@@ -99,7 +99,7 @@
 | browser.cache.memory.capacity | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
 
 # Update Notes
-These tools are under devlopment. Use them with your own risk.
+These tools are under devlopment. Use it at your own risk.
 * Create [sophia.ps1](/sophia.ps1) on 27/10/2021
 * Create [manualInstaller.ps1](/manualInstaller.ps1) on 02/11/2021
 
