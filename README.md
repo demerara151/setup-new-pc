@@ -46,7 +46,8 @@
 13. タスクスケジューラで、「MicrosoftEdgeUpdateTaskMachineCore」と「NvTmRep_CrashReport」関連を全て無効化する
 
 14. いくつかのソフトを手動でインストール
-* Steam と discord は scoop でもインストールできるが以前うまく機能しなかったため手動にしている。が、再度検証してみてもいい  
+* Steam と discord は scoop でもインストールできるが以前うまく機能しなかったため手動にしている。が、再度検証してみてもいい
+* 再度試してみたが、どちらもいくつか問題があったのでやめた。その代わり、wingetで試したところうまくいったので、そちらでインストールすることにした（ただし、ポータブル利用はできず管理者権限も必要） 
 
 |  名前   | URL                                                         |
 | :-----: | :---------------------------------------------------------- |
@@ -99,7 +100,7 @@
 | browser.cache.memory.capacity | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
 
 # Update Notes
-These tools are under devlopment. Use it at your own risk.
+These tools are under development. Use it at your own risk.
 * Create [sophia.ps1](/sophia.ps1) on 27/10/2021
 * Create [manualInstaller.ps1](/manualInstaller.ps1) on 02/11/2021
 
