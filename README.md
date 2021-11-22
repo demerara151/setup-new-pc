@@ -58,6 +58,7 @@
 | es.exe  | https://www.voidtools.com/downloads/                        |
 
 # Firefoxの初期設定
+* 2021/11/22: LibreWolfがWindowsでも使えて、wingetでインストールできるようになったので、暫くLibreWolfを試す予定。
 ## ffprofileの適用
 まず初めに、[Firefox Profilemaker](https://ffprofile.com/)でプロファイルを作成する
 1. URLバーで、`about:support`と入力
