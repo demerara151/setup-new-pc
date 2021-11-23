@@ -84,7 +84,7 @@
 
 ## about:configで変更する内容
 
-### general
+### General settings
 
 | key                                                | value | note                                 |
 | -------------------------------------------------- | :---: | ------------------------------------ |
@@ -92,13 +92,15 @@
 | browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを新しいタブで開く       |
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか |
 
-### memory
+### Cache settings
 
-| key                           | value | note                                                   |
-| ----------------------------- | ----- | ------------------------------------------------------ |
-| browser.cache.disk.enable     | false | ディスクキャシュをしない                               |
-| browser.cache.memory.enable   | true  | メモリでキャシュする                                   |
-| browser.cache.memory.capacity | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
+| key                                   | value | note                                                   |
+| ------------------------------------- | ----- | ------------------------------------------------------ |
+| browser.cache.disk.enable             | false | ディスクキャシュをしない                               |
+| browser.cache.memory.enable           | true  | メモリでキャシュする                                   |
+| browser.cache.memory.capacity         | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
+| browser.cache.disk.capacity           | 0     | デフォルトは256000                                     |
+| browser.cache.disk.smart_size.enabled | false | キャッシュサイズを自動で計算してくれる機能             |
 
 # Update Notes
 These tools are under development. Use it at your own risk.
