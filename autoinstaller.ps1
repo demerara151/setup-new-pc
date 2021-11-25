@@ -1,29 +1,38 @@
-# ポリシーの変更
+# Install scoop
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-
-# scoopのインストール
 Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
-# 初期化
-scoop install 7zip mingit
-scoop update *
+# Setup scoop
+scoop install 7zip mingit aria2
+scoop update
 
-# バケットの追加
+# Adding buckets
 scoop bucket add extras
 scoop bucket add nerd-fonts
 scoop bucket add games
 scoop bucket add nonportable
 
-# まとめてインストール
-scoop install aria2 autohotkey bat bitwarden bottom broot ccleaner curl deno dust everything exifcleaner fd ffmpeg flac foobar2000 freetube fzf gallery-dl gimp github gitui hwinfo imageglass julia legendary less lightbulb losslesscut lsd mailspring monolith mpv neovim nu playnite powertoys posh-git python pwsh ripgrep sd sharex sqlitebrowser starship streamlink streamlink-twitch-gui sudo sumatrapdf tldr touch trilium typora ungoogled-chromium vscodium-portable waterfox-current yt-dlp zenhan zoxide
+# Must-Have tools
+scoop isntall autohotokey bat bitwarden bottom broot dust fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim posh-git ripgrep sd sharex starship sudo sumatrapdf yt-dlp zenhan zoxide
 
-# 管理者権限が必要なもの
-sudo scoop install icaros-np VictorMono-NF FantasqueSansMono-NF-Mono CascadiaCode-NF
+# Programming（Optional from here. You can put `#` on top of the line to disable install）
+scoop install deno github julia rustup-mvsc sqlitebrowser
 
-# wingetによるインストール
-sudo winget install Discord.Discord
-sudo winget install Valve.Steam
-sudo winget install LibreWolf.LibreWolf
+# Gaming
+scoop install legendary playnite
 
-# posh-gitの設定
-Add-PoshGitToProfile
+# Media
+scoop install foobar2000-portable freetube gallery-dl streamlink streamlink-twitch-gui
+
+# Nerd Fonts
+sudo scoop install VictorMono-NF FantasqueSansMono-NF-Mono CascadiaCode-NF
+
+# Install with winget
+winget install gsudo
+winget install LibreWolf.LibreWolf
+winget install Microsoft.Powershell
+winget install Python.Python.3
+winget install Discord.Discord
+winget install Valve.Steam
+winget install DuongDieuPhap.ImageGlass
+winget isntall Foundry376.Mailspring

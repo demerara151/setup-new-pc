@@ -1,9 +1,11 @@
 # Setup for new PC
-自分用PC設定集
+自分用PC設定集  
+* 2021/11/25: Windows11環境で色々試した結果、色々と手直しした。winget がデフォルトでインストールされている前提だけど、なくてもエラーになるだけでなので、後から入れ直して再度必要なソフトのインストールを実行すればいい。
 
 # OSインストール直後
 
 * 初期設定時にはネットに繋がない（Microsoftアカウントを要求されるため）
+* Windows11の場合は、サインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない
 
 1. 初期設定が終わったら、ネットに繋いでwindows updateを実行
 
@@ -14,27 +16,32 @@
 4. 再起動
 
 5. 予め作成しておいた、[sophia script](/sophia.ps1)をダウンロード、またはUSB等で持ってくる
+* スクリプトを`Powershell 7.0~` 用に作成していた場合、デフォルトのPowershellのバージョンが5.1だったなら、wingetで7.2をインストール。
+```Powershell
+winget install Microsoft.Powershell
+New-Item -Name $PROFILE -ItemType File
+```
 
-6. 管理者権限でPowershellを開き、次のコマンドを入力
+1. 管理者権限でPowershellを開き、次のコマンドを入力
     ```Powershell
     # 現在のセッションのみ有効な実行ポリシーの変更
     Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
     ```
 
-7. debloat tool を走らせる
+2. debloat tool を走らせ、余計な機能やアプリを一括アンインストール
     ```Powershell
     .\Sophia.ps1
     ```
     ※詳しくは、[Sophia-Script-for-Windows](https://github.com/farag2/Sophia-Script-for-Windows)を参照
 
-8. 再起動
+3. 再起動
 
-9. [wpd](https://wpd.app/)をダウンロードし、テレメトリーや不要なアプリを削除  
-    必ず復元ポイントを作成する
+4. [wpd](https://wpd.app/)をダウンロードし、上記のスクリプトで削除できないテレメトリーや不要なアプリを削除  
+    実行前に必ず復元ポイントを作成する。（Windows11の場合、デフォルトで復元ポイントの作成が無効化されているので失敗する。「システムの保護」から手動で「復元ポイントの作成」を有効化する必要あり）
 
-10. 再起動
+5.  再起動
 
-11. Scoopで複数のプログラムをまとめてインストール  
+6.  Scoop及び、wingetで複数のプログラムをまとめてインストール  
 [Auto Installer](/autoinstaller.ps1)をダウンロード
 し、Powershellで実行
 ```Powershell
@@ -43,22 +50,18 @@
 
 12. 再起動
 
-13. タスクスケジューラで、「MicrosoftEdgeUpdateTaskMachineCore」と「NvTmRep_CrashReport」関連を全て無効化する
+13. タスクスケジューラで、「Edge」と「Nvidia」関連を全て無効化する
 
-14. いくつかのソフトを手動でインストール
-* Steam と discord は scoop でもインストールできるが以前うまく機能しなかったため手動にしている。が、再度検証してみてもいい
-* 再度試してみたが、どちらもいくつか問題があったのでやめた。その代わり、wingetで試したところうまくいったので、そちらでインストールすることにした（ただし、ポータブル利用はできず管理者権限も必要） 
+14. サービス管理ツールで、とりあえず「Windows Search Index」と「Print spooler」を無効化
 
-|  名前   | URL                                                         |
-| :-----: | :---------------------------------------------------------- |
-| Clibor  | https://forest.watch.impress.co.jp/library/software/clibor/ |
-|  Steam  | https://store.steampowered.com/                             |
-| discord | https://discord.com/                                        |
-|   wpd   | https://wpd.app/                                            |
-| es.exe  | https://www.voidtools.com/downloads/                        |
+15. エクスプローラーでローカルディスクのプロパティを開き、全てのインデックスを解除する。
+
+16. [Clibor](https://forest.watch.impress.co.jp/library/software/clibor/)を手動でインストール
 
 # Firefoxの初期設定
 * 2021/11/22: LibreWolfがWindowsでも使えて、wingetでインストールできるようになったので、暫くLibreWolfを試す予定。
+* 11/25: LibreWolfが優秀すぎるので完全移行。検索エンジンは[You](https://you.com)を使用。拡張機能は下記のものをそのまま運用。
+
 ## ffprofileの適用
 まず初めに、[Firefox Profilemaker](https://ffprofile.com/)でプロファイルを作成する
 1. URLバーで、`about:support`と入力
@@ -93,6 +96,7 @@
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか |
 
 ### Cache settings
+LibreWolfの場合は、下から２つだけ自分で設定する必要あり
 
 | key                                   | value | note                                                   |
 | ------------------------------------- | ----- | ------------------------------------------------------ |
@@ -101,11 +105,3 @@
 | browser.cache.memory.capacity         | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
 | browser.cache.disk.capacity           | 0     | デフォルトは256000                                     |
 | browser.cache.disk.smart_size.enabled | false | キャッシュサイズを自動で計算してくれる機能             |
-
-# Update Notes
-These tools are under development. Use it at your own risk.
-* Create [sophia.ps1](/sophia.ps1) on 27/10/2021
-* Create [manualInstaller.ps1](/manualInstaller.ps1) on 02/11/2021
-
-# Fonts
-* `CascadiaCode-NF`は、"CaskaydiaCove NF"という名前で使う
