@@ -35,4 +35,4 @@ winget install Python.Python.3
 winget install Discord.Discord
 winget install Valve.Steam
 winget install DuongDieuPhap.ImageGlass
-winget isntall Foundry376.Mailspring
+winget install Foundry376.Mailspring
