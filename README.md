@@ -1,6 +1,6 @@
 # Setup for new PC
 自分用PC設定集  
-* 2021/11/25: Windows11環境で色々試した結果、色々と手直しした。winget がデフォルトでインストールされている前提だけど、なくてもエラーになるだけでなので、後から入れ直して再度必要なソフトのインストールを実行すればいい。
+* 2021/11/25: Windows11向けに加筆＆修正。wingetがインストールされてる前提だけど、なくても大丈夫。
 
 # OSインストール直後
 
@@ -19,7 +19,9 @@
 * スクリプトを`Powershell 7.0~` 用に作成していた場合、デフォルトのPowershellのバージョンが5.1だったなら、wingetで7.2をインストール。
 ```Powershell
 winget install Microsoft.Powershell
-New-Item -Name $PROFILE -ItemType File
+if (!(Test-Path -Path $PROFILE)) {
+  New-Item -ItemType File -Path $PROFILE -Force
+}
 ```
 
 1. 管理者権限でPowershellを開き、次のコマンドを入力
@@ -50,7 +52,7 @@ New-Item -Name $PROFILE -ItemType File
 
 12. 再起動
 
-13. タスクスケジューラで、「Edge」と「Nvidia」関連を全て無効化する
+13. タスクスケジューラで、「EdgeUpdate」と「NvidiaTelemetry」関連を全て無効化する
 
 14. サービス管理ツールで、とりあえず「Windows Search Index」と「Print spooler」を無効化
 
