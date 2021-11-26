@@ -36,3 +36,6 @@ winget install Discord.Discord
 winget install Valve.Steam
 winget install DuongDieuPhap.ImageGlass
 winget install Foundry376.Mailspring
+
+# If fd command conflicts with Rust package. Use cargo to install fd.
+# cargo install fd-find
