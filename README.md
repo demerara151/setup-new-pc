@@ -47,12 +47,14 @@ if (!(Test-Path -Path $PROFILE)) {
 [Auto Installer](/autoinstaller.ps1)をダウンロード
 し、Powershellで実行
 ```Powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\autoinstaller.ps1
 ```
 
 12. 再起動
 
 13. タスクスケジューラで、「EdgeUpdate」と「NvidiaTelemetry」関連を全て無効化する
+* EdgeUpdateは何度でも復活するので注意。一通りセットアップが終わった後の方がいいかもしれない
 
 14. サービス管理ツールで、とりあえず「Windows Search Index」と「Print spooler」を無効化
 
