@@ -24,7 +24,7 @@ scoop install legendary playnite
 scoop install foobar2000-portable freetube gallery-dl streamlink streamlink-twitch-gui
 
 # Nerd Fonts
-sudo scoop install VictorMono-NF FantasqueSansMono-NF-Mono CascadiaCode-NF
+sudo scoop install VictorMono-NF FantasqueSansMono-NF-Mono
 
 # Install with winget
 winget install gsudo

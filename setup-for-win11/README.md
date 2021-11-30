@@ -6,6 +6,9 @@
 1. 初期設定は英語で行う
 
 2. サインインオプションでオフラインアカウントを選択
+* どうやらPro版だと、オフラインアカウントという選択肢が出るみたい
+* Home版の場合は、今まで通りネットワークの設定をスキップすることで回避可能
+* 万が一、選択できない状態になった場合は、ルーターの電源を落とすか、Shift+F10でコマンドプロンプトを表示して`shutdown /r`と入力して再起動する
 
 3. 起動したらWindows Updateを実行して再起動
 
@@ -44,8 +47,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 9. テレメトリー及び不要なアプリの殲滅
 ```powershell
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip
-7z x wpd.zip
+iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip | Set-Location Downloads; 7z x wpd.zip
 
 .\WPD.exe
 # Windows DefenderとWindows Update以外全て無効化して構わない
@@ -71,3 +73,6 @@ OOSU10.exe
 ## Notes
 * Windows Terminal & Powershell 7.2の環境で、Sophia.ps1を実行したところ複数のコマンドが実行できずに終了したり、表示がおかしくなってプログラムが止まったりとうまくいかなかった。デフォルトのPowershell 5.1で実行するのがベター
 * OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
+
+## Dark theme for librewolf
+* Profileフォルダーに、[chrome](./chrome)フォルダーをそのまま移動

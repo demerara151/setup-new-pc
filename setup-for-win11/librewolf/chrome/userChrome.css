@@ -1,0 +1,27 @@
+/* ADDON POPUPS */
+
+/* This removes a white border around some addon popups */
+#customizationui-widget-panel {
+	--arrowpanel-background: transparent !important;
+}
+
+/* This resets the color of addon popups before applying any other color (for better text readibility).
+Enable this if you are having issues with some addon popup texts and you are not using addons.css file */ /*
+#customizationui-widget-panel .panel-arrow {fill: #fff !important}
+.webextension-popup-browser {background: #fff !important}
+
+/* Fix for the panel arrows for extensions (Only enable if using the addons file) */ /*
+#customizationui-widget-panel[viewId="PanelUI-webext-_b9db16a4-6edc-47ec-a1f4-b86292ed211d_-browser-action-view"] .panel-arrow,
+#customizationui-widget-panel[viewId="PanelUI-webext-jid1-mnnxcxisbpnsxq_jetpack-browser-action-view"] .panel-arrow,
+#customizationui-widget-panel[viewId="PanelUI-webext-s3download_statusbar-browser-action-view"] .panel-arrow {
+  fill: #333 !important}
+
+#customizationui-widget-panel[viewId="PanelUI-webext-ublock0_raymondhill_net-browser-action-view"] .panel-arrow {
+  fill: #111 !important}
+
+#customizationui-widget-panel[viewId="PanelUI-webext-artur_dubovoy_gmail_com-browser-action-view"] .panel-arrow {
+  fill: #222 !important}
+
+#customizationui-widget-panel[viewId="PanelUI-webext-tab-session-manager_sienori-browser-action-view"] .panel-arrow {
+  fill: #36b2b2 !important}
+*/
