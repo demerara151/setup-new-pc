@@ -47,7 +47,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\minInstaller.ps1
 
 # Or Install all apps from main PC
@@ -87,6 +86,14 @@ OOSU10.exe
 * OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
 * Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
 
+## wingetを手動でインストールする場合
+* 次の場所からファイルをダウンロード
+`https://github.com/microsoft/winget-cli/releases/download/v1.1.12701/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle`
+* powershellを使ってインストール
+```powershell
+Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+```
+
 # ブラウザ設定
 * LibreWolfを使用
 * 正直そのままでも問題ない
@@ -116,8 +123,8 @@ OOSU10.exe
 
 ## about:configで変更したい箇所
 
-| key                                                | value | note                                 |
-| -------------------------------------------------- | :---: | ------------------------------------ |
-| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか |
-| browser.cache.disk.capacity           | 0     | デフォルトは256000                                     |
-| browser.cache.disk.smart_size.enabled | false | キャッシュサイズを自動で計算してくれる機能             |
+| key                                                | value | note                                       |
+| -------------------------------------------------- | :---: | ------------------------------------------ |
+| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
+| browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
+| browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
