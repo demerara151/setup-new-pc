@@ -1,10 +1,3 @@
-# Install scoop
-Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-
-# Setup scoop
-scoop install 7zip mingit aria2
-scoop update
-
 # Adding buckets
 scoop bucket add extras
 scoop bucket add nerd-fonts

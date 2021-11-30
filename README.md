@@ -1,8 +1,12 @@
-# Setup for new PC
-自分用PC設定集  
-* 2021/11/25: Windows11向けに加筆＆修正。wingetがインストールされてる前提だけど、なくても大丈夫。
+# Setup for Windows11
+* 実行環境
+  * Windows 11
+  * Powershell 5.1
 
-## Microsoftアカウントの作成を回避
+1. 初期設定は英語で行う（日本語だとSophiaスクリプトの実行時にローカライズが見つからずエラーになるため）
+* デフォルトのままWindowsを使う場合は関係ないので、素直に日本語で始める
+
+2. Microsoftアカウントの作成を回避
 * Windows 10 の場合： 初期設定時のネットワーク設定画面で、ネットワークの設定をスキップする
 * Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す。これでMicrosoftアカウントのセットアップをスキップできるらしい。
     * 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
@@ -15,106 +19,105 @@
     * 起動後、設定画面からネットワークのトラブルシューティングを実行すればいい
 * Windows 11 Pro の場合： アカウント設定画面にサインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない
 
-## Workflow
-1. 初期設定が終わったら、ネットに繋いでwindows updateを実行
+3. 起動したらWindows Updateを実行して再起動
 
-2. 再起動
+4. scoopで7zipとmingitをインストール
+```powershell
+# 実行ポリシーの設定
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-3. グラフィックドライバーをアップデートまたは確認
+# scoopのインストール
+iwr -useb get.scoop.sh | iex
 
-4. 再起動
-
-5. 予め作成しておいた、[sophia script](/sophia.ps1)をダウンロード、またはUSB等で持ってくる
-* スクリプトを`Powershell 7.0~` 用に作成していた場合、デフォルトのPowershellのバージョンが5.1だったなら、wingetで7.2をインストール。
-```Powershell
-winget install Microsoft.Powershell
-if (!(Test-Path -Path $PROFILE)) {
-  New-Item -ItemType File -Path $PROFILE -Force
-}
+scoop install 7zip mingit
+scoop update
 ```
 
-1. 管理者権限でPowershellを開き、次のコマンドを入力
-    ```Powershell
-    # 現在のセッションのみ有効な実行ポリシーの変更
-    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-    ```
+5. このリポジトリをクローン
 
-2. debloat tool を走らせ、余計な機能やアプリを一括アンインストール
-    ```Powershell
-    .\Sophia.ps1
-    ```
-    ※詳しくは、[Sophia-Script-for-Windows](https://github.com/farag2/Sophia-Script-for-Windows)を参照
+```powershell
+git clone https://github.com/demerara151/setup-new-pc.git
+```
 
-3. 再起動
-
-4. [wpd](https://wpd.app/)をダウンロードし、上記のスクリプトで削除できないテレメトリーや不要なアプリを削除  
-    実行前に必ず復元ポイントを作成する。（Windows11の場合、デフォルトで復元ポイントの作成が無効化されているので失敗する。「システムの保護」から手動で「復元ポイントの作成」を有効化する必要あり）
-
-5.  再起動
-
-6.  Scoop及び、wingetで複数のプログラムをまとめてインストール  
-[Auto Installer](/autoinstaller.ps1)をダウンロード
-し、Powershellで実行
-```Powershell
+6. Sophia Scriptを走らせる
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-.\autoinstaller.ps1
+.\Sophia.ps1
 ```
 
-12. 再起動
+7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+.\minInstaller.ps1
 
-13. タスクスケジューラで、「EdgeUpdate」と「NvidiaTelemetry」関連を全て無効化する
-* EdgeUpdateは何度でも復活するので注意。一通りセットアップが終わった後の方がいいかもしれない
+# Or Install all apps from main PC
+.\AutoInstallerFull.ps1
+```
 
-14. サービス管理ツールで、とりあえず「Windows Search Index」と「Print spooler」を無効化
+8. 復元ポイントの作成
+* `SystemPorpertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
-15. エクスプローラーでローカルディスクのプロパティを開き、全てのインデックスを解除する。
+9. テレメトリー及び不要なアプリの殲滅
+```powershell
+iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip | Set-Location $HOME\Downloads; 7z x wpd.zip
 
-16. [Clibor](https://forest.watch.impress.co.jp/library/software/clibor/)を手動でインストール
+.\WPD.exe
+# Windows DefenderとWindows Update以外全て無効化して構わない
 
-# Firefoxの初期設定
-* 2021/11/22: LibreWolfがWindowsでも使えて、wingetでインストールできるようになったので、暫くLibreWolfを試す予定。
-* 11/25: LibreWolfが優秀すぎるので完全移行。検索エンジンは[You](https://you.com)を使用。拡張機能は下記のものをそのまま運用。
+windowsspyblocker.exe
+# 1だけ選択していけばOK
 
-## ffprofileの適用
-まず初めに、[Firefox Profilemaker](https://ffprofile.com/)でプロファイルを作成する
-1. URLバーで、`about:support`と入力
-2. 「プロファイルフォルダーを開く」をクリック
-3. Firefoxを終了する
-4. 開いたデフォルトプロファイルフォルダーの中身を全て削除する
-5. そのフォルダーに先ほど作成した`profile.zip`の中身を展開する
-6. 再度Firefoxを起動する
-7. 拡張機能マネージャーを起動して拡張機能をアップデートする
+OOSU10.exe
+# limitedまでを全てブロック
+```
 
-## ffprofileで導入される拡張機能
-* uBlockOrigin
+10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+
+11. タスクスケジューラで`Edge Update`関連を全て無効化する
+
+12. 最終確認及び後片付け
+* `bulk-crap-uninstaller`で、プリインストールされているソフトが残ってないか確認
+* `ccleaner`で、一時ファイル＆レジストリの掃除
+
+## それぞれの役割
+* Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
+
+## Notes
+* Windows Terminal & Powershell 7.2の環境で、Sophia.ps1を実行したところ複数のコマンドが実行できずに終了したり、表示がおかしくなってプログラムが止まったりとうまくいかなかった。デフォルトのPowershell 5.1で実行するのがベター
+* OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
+* Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
+
+# ブラウザ設定
+* LibreWolfを使用
+* 正直そのままでも問題ない
+* Windowsの設定画面、アプリ -> 既定のアプリで、LibreWolfを既定のブラウザに設定する（ブラウザ側で設定しても適用してくれない）
+
+## 拡張機能の導入
+* DarkReader
+* Privacy Redirect
+* LocalCDN
+* Bitwarden
 * CanvasBlocker
 * ClearURLs
 * Cookie AutoDelete
 
-## 手動で別途導入する拡張機能
-* LocalCDN
-* DarkReader
-* Privacy Redirect
-* Bitwarden
-* uBlacklist
+## uBlockOriginの上級者設定
+* 設定画面の「私は上級者です」にチェック
+* デフォルトのフィルターを全て適用
+* My rulesに、次の2行を追加
+```txt
+* * 3p-frame block
+* * 3p-script block
+```
 
-## about:configで変更する内容
+## 拡張機能にダークテーマを適用する
+* about:configで`toolkit.legacyUserProfileCustomizations.stylesheets`の値を`true`に変更
+* Profileフォルダーに、[chrome](./chrome)フォルダーをそのまま移動
 
-### General settings
+## about:configで変更したい箇所
 
 | key                                                | value | note                                 |
 | -------------------------------------------------- | :---: | ------------------------------------ |
-| keyword.enabled                                    | true  | アドレスバーで直接検索できる         |
-| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを新しいタブで開く       |
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか |
-
-### Cache settings
-LibreWolfの場合は、下から２つだけ自分で設定する必要あり
-
-| key                                   | value | note                                                   |
-| ------------------------------------- | ----- | ------------------------------------------------------ |
-| browser.cache.disk.enable             | false | ディスクキャシュをしない                               |
-| browser.cache.memory.enable           | true  | メモリでキャシュする                                   |
-| browser.cache.memory.capacity         | -1    | メモリサイズに合わせてキャッシュ量を自動調整してくれる |
 | browser.cache.disk.capacity           | 0     | デフォルトは256000                                     |
 | browser.cache.disk.smart_size.enabled | false | キャッシュサイズを自動で計算してくれる機能             |
