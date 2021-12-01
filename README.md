@@ -118,7 +118,8 @@ Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 
 ## 拡張機能にダークテーマを適用する
 * about:configで`toolkit.legacyUserProfileCustomizations.stylesheets`の値を`true`に変更
-* Profileフォルダーに、[chrome](./chrome)フォルダーをそのまま移動
+* Profileフォルダーに、[chrome](librewolf/chrome)フォルダーをそのまま移動
+* 適宜、`addons.css`内の拡張機能のUUIDを置き換え
 
 ## about:configで変更したい箇所
 
