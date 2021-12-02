@@ -11,8 +11,9 @@
 * Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す。これでMicrosoftアカウントのセットアップをスキップできるらしい。
     * 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
     ```CMD
-    X:/Source> netsh wlan disconnect
-    X:/Source> exit
+    # Wi-Fi接続の場合
+    X:\Sources> netsh wlan disconnect
+    X:\Sources> exit
     ```
     と、入力して左上の戻る矢印をクリック。すると、ローカルアカウントの設定画面に飛ぶのでいつも通り設定するだけ。
     * 起動後、設定画面からネットワークのトラブルシューティングを実行すればいい
@@ -128,3 +129,9 @@ Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
 | browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
 | browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
+
+## Autohotkeyの設定
+[colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダに配置するだけ
+* 英語配列キーボードで、セミコロンとコロンを入れ替える
+* CapLockとESCを入れ替える
+
