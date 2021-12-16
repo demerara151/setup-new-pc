@@ -5,7 +5,7 @@ scoop bucket add games
 scoop bucket add nonportable
 
 # Must-Have tools
-scoop install autohotkey bat bitwarden bottom broot dust fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim posh-git ripgrep sd sharex starship sudo sumatrapdf yt-dlp zenhan zoxide
+scoop install autohotkey bat bitwarden bottom broot dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim posh-git ripgrep sd sharex starship sudo sumatrapdf yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
 scoop install deno github julia rustup-msvc sqlitebrowser
