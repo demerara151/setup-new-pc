@@ -93,11 +93,14 @@ OOSU10.exe
 ```powershell
 Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 ```
+* scoopでもインストールできるようになった（ただし、インストールされるのはプレビュー版なので注意が必要）
+```
+scoop install winget
+```
 
 # ブラウザ設定
-* LibreWolfを使用
+* LibreWolfを使用（これもscoopでインストール可能になった）
 * 正直そのままでも問題ない
-* Windowsの設定画面、アプリ -> 既定のアプリで、LibreWolfを既定のブラウザに設定する（ブラウザ側で設定しても適用してくれない）
 
 ## 拡張機能の導入
 * DarkReader
