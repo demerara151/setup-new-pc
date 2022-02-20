@@ -8,13 +8,13 @@ scoop bucket add nonportable
 scoop install autohotkey bat bitwarden bottom broot dust everything everything-cli fd ffmpeg fzf gitui less librewolf lightbulb lsd monolith mpv neovim pwsh posh-git ripgrep sd sharex starship sudo sumatrapdf yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
-scoop install deno github julia rustup-msvc sqlitebrowser
+scoop install github rustup-msvc sqlitebrowser
 
 # Gaming
 scoop install legendary playnite
 
 # Media
-scoop install foobar2000 foobar2000-encoders freetube gallery-dl streamlink streamlink-twitch-gui
+scoop install foobar2000 foobar2000-encoders freetube gallery-dl
 
 # Nerd Fonts
 sudo scoop install VictorMono-NF FantasqueSansMono-NF-Mono

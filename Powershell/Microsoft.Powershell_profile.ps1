@@ -14,8 +14,7 @@ function .. () { Set-Location .. }
 function mail () { Start-Process "$env:LOCALAPPDATA\Mailspring\mailspring.exe" }
 function img () { Start-Process "$env:ProgramFiles\ImageGlass\ImageGlass.exe" $args }
 function lw () { Start-Process "$env:ProgramFiles\LibreWolf\librewolf.exe" $args }
-function fo () { Start-Process "$(scoop prefix foobar2000-portable)\foobar2000.exe" }
-function tw () { Start-Process "$(scoop prefix streamlink-twitch-gui)\streamlink-twitch-gui.exe" }
+function fo () { Start-Process "$(scoop prefix foobar2000)\foobar2000.exe" }
 function dis (
     [string]$option = "--processStart Discord.exe"
 ) {
@@ -24,11 +23,6 @@ function dis (
 
 # Update All Programs
 function up () { winget upgrade; sudo scoop update * }
-
-# Play YoutubeMusic
-function music ([string]$name = "ytm") {
-    mpv --no-video $args $HOME\.config\playlist\$name.m3u8
-}
 
 # Open history file
 $history = @(
@@ -70,7 +64,7 @@ function gld () {
     gallery-dl --config $HOME/.config/gallery-dl/config.json -i $HOME/list.txt $args
 }
 function aria () {
-    aria2c --conf-path=$HOME/.config/aria2.conf -d "D:/Downloads" -x16 -j16 -s16 -k1M -i "$HOME/list.txt"
+    aria2c --conf-path=$HOME/.config/aria2.conf -d "D:/Downloads" -x10 -j16 -s10 -k1M -i "$HOME/list.txt"
 }
 
 # Open list.txt for edit URL for various downloaders
@@ -304,4 +298,3 @@ Set-PSReadLineKeyHandler -Key "alt+a" -BriefDescription "yankLastArgAsVariable" 
         [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $newLine)
     }
 }
-
