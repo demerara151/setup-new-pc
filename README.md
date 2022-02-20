@@ -54,7 +54,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
 8. 復元ポイントの作成
-* `SystemPorpertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
+* `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
 9. テレメトリー及び不要なアプリの殲滅
 ```powershell
@@ -137,4 +137,3 @@ scoop install winget
 [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダに配置するだけ
 * 英語配列キーボードで、セミコロンとコロンを入れ替える
 * CapLockとESCを入れ替える
-
