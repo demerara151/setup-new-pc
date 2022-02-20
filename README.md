@@ -17,7 +17,7 @@
     ```
     と、入力して左上の戻る矢印をクリック。すると、ローカルアカウントの設定画面に飛ぶのでいつも通り設定するだけ。
     * 起動後、設定画面からネットワークのトラブルシューティングを実行すればいい
-* Windows 11 Pro の場合： アカウント設定画面にサインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない
+* Windows 11 Pro の場合： アカウント設定画面にサインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない（※最新のInsider buildから、Pro版でもMicrosoft アカウントの作成が必須になりました。上記の方法で回避できるかは未確認）
 
 3. 起動したらWindows Updateを実行して再起動
 
@@ -71,15 +71,17 @@ OOSU10.exe
 ```
 
 10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 11. タスクスケジューラで`Edge Update`関連を全て無効化する
 
 12. 最終確認及び後片付け
 * `bulk-crap-uninstaller`で、プリインストールされているソフトが残ってないか確認
-* `ccleaner`で、一時ファイル＆レジストリの掃除
+* `ccleaner`で、一時ファイル＆レジストリの掃除（最近はデフォルトのお掃除機能が優秀なので不要かもしれない）
 
 ## それぞれの役割
 * Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
+* windowsspyblockerを適用すると、Edgeの手動アップデートもできなくなるので、何か問題があれば適用を解除した方がいい
 
 ## Notes
 * Windows Terminal & Powershell 7.2の環境で、Sophia.ps1を実行したところ複数のコマンドが実行できずに終了したり、表示がおかしくなってプログラムが止まったりとうまくいかなかった。デフォルトのPowershell 5.1で実行するのがベター
@@ -87,8 +89,9 @@ OOSU10.exe
 * Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
 
 ## wingetを手動でインストールする場合
-* 次の場所からファイルをダウンロード
-`https://github.com/microsoft/winget-cli/releases/download/v1.1.12701/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle`
+2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる
+* 次の場所からバイナリファイルを直接ダウンロード
+`https://github.com/microsoft/winget-cli`
 * powershellを使ってインストール
 ```powershell
 Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
