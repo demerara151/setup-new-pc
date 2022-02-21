@@ -23,10 +23,8 @@
 
 4. scoopで7zipとmingitをインストール
 ```powershell
-# 実行ポリシーの設定
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-# scoopのインストール
 iwr -useb get.scoop.sh | iex
 
 scoop install 7zip mingit
@@ -47,28 +45,34 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
 ```powershell
-.\minInstaller.ps1
-
-# Or Install all apps from main PC
-.\AutoInstallerFull.ps1
+.\$HOME\setup-new-pc\minInstaller.ps1
 ```
 
 8. 復元ポイントの作成
 * `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
 9. テレメトリー及び不要なアプリの殲滅
+wpdのインストール
 ```powershell
 iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip | Set-Location $HOME\Downloads; 7z x wpd.zip
-
-.\WPD.exe
-# Windows DefenderとWindows Update以外全て無効化して構わない
-
-windowsspyblocker.exe
-# 1だけ選択していけばOK
-
-OOSU10.exe
-# limitedまでを全てブロック
 ```
+
+wpdの実行
+Windows DefenderとWindows Update以外全て無効化して構わない
+```powershell
+.\$HOME\Downloads\WPD.exe
+```
+
+1だけ選択していけばOK
+```
+windowsspyblocker.exe
+```
+
+limitedまでを全てブロック
+```
+shutup10.exe
+```
+* shutup10はスタートメニューから起動
 
 10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
 TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
@@ -102,7 +106,7 @@ scoop install winget
 ```
 
 # ブラウザ設定
-* LibreWolfを使用（これもscoopでインストール可能になった）
+* LibreWolfを使用（これもscoopでインストール可能になったが、scoopでインストールするとデフォルトのブラウザに設定できないため、wingetでインストールするした方がいい）
 * 正直そのままでも問題ない
 
 ## 拡張機能の導入
@@ -124,7 +128,7 @@ scoop install winget
 ```
 
 ## 拡張機能にダークテーマを適用する
-* about:configで`toolkit.legacyUserProfileCustomizations.stylesheets`の値を`true`に変更
+* about:configで`toolkit.legacyUserProfileCustomizations.stylesheets`の値を`true`に変更（LibreWolfの設定画面からワンクリックで設定できるようになった）
 * Profileフォルダーに、[chrome](librewolf/chrome)フォルダーをそのまま移動
 * 適宜、`addons.css`内の拡張機能のUUIDを置き換え
 
@@ -137,6 +141,6 @@ scoop install winget
 | browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
 
 ## Autohotkeyの設定
-[colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダに配置するだけ
+[colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置するだけ
 * 英語配列キーボードで、セミコロンとコロンを入れ替える
 * CapLockとESCを入れ替える

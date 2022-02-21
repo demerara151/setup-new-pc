@@ -38,6 +38,9 @@
 				},
 				{
 					"PackageIdentifier" : "Microsoft.dotnetRuntime.5-x64"
+				},
+				{
+					"PackageIdentifier" : "Microsoft.Powershell"
 				}
 			],
 			"SourceDetails" : 
