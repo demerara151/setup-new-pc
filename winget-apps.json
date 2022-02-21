@@ -1,11 +1,14 @@
 {
 	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
-	"CreationDate" : "2022-02-21T07:36:59.775-00:00",
+	"CreationDate" : "2022-02-21T14:50:36.044-00:00",
 	"Sources" : 
 	[
 		{
 			"Packages" : 
 			[
+				{
+					"PackageIdentifier" : "HeroicGamesLauncher.HeroicGamesLauncher"
+				},
 				{
 					"PackageIdentifier" : "Discord.Discord"
 				},
@@ -19,16 +22,10 @@
 					"PackageIdentifier" : "Foundry376.Mailspring"
 				},
 				{
+					"PackageIdentifier" : "Valve.Steam"
+				},
+				{
 					"PackageIdentifier" : "Microsoft.VisualStudio.2022.BuildTools"
-				},
-				{
-					"PackageIdentifier" : "Microsoft.dotnetRuntime.6-x64"
-				},
-				{
-					"PackageIdentifier" : "Microsoft.VC++2015-2022Redist-x64"
-				},
-				{
-					"PackageIdentifier" : "Microsoft.VC++2015-2022Redist-x86"
 				},
 				{
 					"PackageIdentifier" : "DuongDieuPhap.ImageGlass"

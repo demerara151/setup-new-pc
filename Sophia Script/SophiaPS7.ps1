@@ -1,12 +1,12 @@
-﻿<#
+<#
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11"
 
-	Version: v6.0.7
-	Date: 23.11.2021
+	Version: v6.0.12
+	Date: 02.02.2022
 
-	Copyright (c) 2014—2021 farag
-	Copyright (c) 2019—2021 farag & Inestic
+	Copyright (c) 2014—2022 farag
+	Copyright (c) 2019—2022 farag & Inestic
 
 	Thanks to all https://forum.ru-board.com members involved
 
@@ -23,12 +23,11 @@
 
 	.EXAMPLE Download and expand the latest Sophia Script version archive (without running) according which Windows and PowerShell versions it is run on
 	irm script.sophi.app | iex
-	Invoke-RestMethod -Uri script.sophi.app | Invoke-Expression
 
 	.NOTES
 	Supported Windows 11 version
 	Version: 21H2
-	Build: 22000.318
+	Build: 22000.438
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
@@ -59,7 +58,7 @@
 #>
 
 #Requires -RunAsAdministrator
-#Requires -Version 5.1
+#Requires -Version 7.2
 
 [CmdletBinding()]
 param
@@ -71,7 +70,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.0.7 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2021"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.0.12 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -87,18 +86,20 @@ Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -Base
 	.\Sophia.ps1 -Functions "DiagTrackService -Disable", "DiagnosticDataLevel -Minimal", UninstallUWPApps
 
 	.NOTES
-	Separate functions with a comma
+	Use commas to separate funtions
 	Разделяйте функции запятыми
 #>
-if ($Functions) {
-	Invoke-Command -ScriptBlock { Checkings }
+if ($Functions)
+{
+	Invoke-Command -ScriptBlock {Checkings}
 
-	foreach ($Function in $Functions) {
+	foreach ($Function in $Functions)
+	{
 		Invoke-Expression -Command $Function
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock { RefreshEnvironment; Errors }
+	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
 
 	exit
 }
@@ -177,7 +178,7 @@ SigninInfo -Disable
 # SigninInfo -Enable
 
 # Do not let websites provide locally relevant content by accessing language list
-# Не позволить веб-сайтам предоставлять местную информацию за счет доступа к списку языков
+# Не позволять веб-сайтам предоставлять местную информацию за счет доступа к списку языков
 LanguageListAccess -Disable
 
 # Let websites provide locally relevant content by accessing language list (default value)
@@ -308,11 +309,11 @@ OpenFileExplorerTo -ThisPC
 
 # Disable the File Explorer compact mode (default value)
 # Отключить компактный вид проводника (значение по умолчанию)
-# FileExplorerCompactMode -Disable
+FileExplorerCompactMode -Disable
 
 # Enable the File Explorer compact mode
 # Включить компактный вид проводника
-FileExplorerCompactMode -Enable
+# FileExplorerCompactMode -Enable
 
 # Do not show sync provider notification within File Explorer
 # Не показывать уведомления поставщика синхронизации в проводнике
@@ -468,11 +469,11 @@ TaskManagerWindow -Expanded
 
 # Notify me when a restart is required to finish updating
 # Уведомлять меня о необходимости перезагрузки для завершения обновления
-# RestartNotification -Show
+RestartNotification -Show
 
 # Do not notify me when a restart is required to finish updating (default value)
 # Не yведомлять меня о необходимости перезагрузки для завершения обновления (значение по умолчанию)
-RestartNotification -Hide
+# RestartNotification -Hide
 
 # Do not add the "- Shortcut" suffix to the file name of created shortcuts
 # Нe дoбaвлять "- яpлык" к имени coздaвaeмых яpлыков
@@ -541,7 +542,7 @@ StorageSense -Disable
 
 # Turn off automatic cleaning up temporary system and app files
 # Не очищать временные файлы системы и приложений
-# StorageSenseTempFiles -Disable
+StorageSenseTempFiles -Disable
 #endregion StorageSense
 
 # Disable hibernation. Do not recommend turning it off on laptops
@@ -554,7 +555,7 @@ Hibernation -Disable
 
 # Change the %TEMP% environment variable path to %SystemDrive%\Temp
 # Изменить путь переменной среды для %TEMP% на %SystemDrive%\Temp
-TempFolder -SystemDrive
+# TempFolder -SystemDrive
 
 # Change %TEMP% environment variable path to %LOCALAPPDATA%\Temp (default value)
 # Изменить путь переменной среды для %TEMP% на LOCALAPPDATA%\Temp (значение по умолчанию)
@@ -648,7 +649,7 @@ WindowsCapabilities -Uninstall
 
 # Do not receive updates for other Microsoft products (default value)
 # Не получать обновления для других продуктов Майкрософт (значение по умолчанию)
-# UpdateMicrosoftProducts -Disable
+UpdateMicrosoftProducts -Disable
 
 <#
 	Set power plan on "High performance"
@@ -734,18 +735,18 @@ SetUserShellFolderLocation -Root
 
 	Изменить расположение пользовательских папок на значения по умолчанию
 	Пользовательские файлы и папки не будут перемещены в новое расположение. Переместите их вручную
-	По умолчанию они располагаются в папке %%USERPROFILE%
+	По умолчанию они располагаются в папке %USERPROFILE%
 #>
 # SetUserShellFolderLocation -Default
 
 <#
 	Save screenshots by pressing Win+PrtScr on the Desktop
-	The function will be applied only if the preset is configured to remove the OneDrive application
+	The function will be applied only if the preset is configured to remove the OneDrive application, or the app was already uninstalled
 	Otherwise the backup functionality for the "Desktop" and "Pictures" folders in OneDrive breaks
 
 	Сохранять скриншоты по нажатию Win+PrtScr на рабочий столе
-	Функция будет применена только в случае, если в пресете настроено удаление приложения OneDrive,
-	иначе ломается функционал резервного копирования для папок "Рабочий стол" и "Изображения" в OneDrive
+	Функция будет применена только в случае, если в пресете настроено удаление приложения OneDrive или приложение уже удалено,
+	иначе в OneDrive ломается функционал резервного копирования для папок "Рабочий стол" и "Изображения"
 #>
 WinPrtScrFolder -Desktop
 
@@ -845,11 +846,11 @@ SaveRestartableApps -Enable
 
 # Enable "Network Discovery" and "File and Printers Sharing" for workgroup networks
 # Включить сетевое обнаружение и общий доступ к файлам и принтерам для рабочих групп
-NetworkDiscovery -Enable
+# NetworkDiscovery -Enable
 
 # Disable "Network Discovery" and "File and Printers Sharing" for workgroup networks (default value)
 # Выключить сетевое обнаружение и общий доступ к файлам и принтерам для рабочих групп (значение по умолчанию)
-# NetworkDiscovery -Disable
+NetworkDiscovery -Disable
 
 # Automatically adjust active hours for me based on daily usage
 # Автоматически изменять период активности для этого устройства на основе действий
@@ -885,15 +886,6 @@ DefaultTerminalApp -WindowsTerminal
 # DefaultTerminalApp -ConsoleHost
 
 <#
-	Register app, calculate hash, and associate with an extension with the "How do you want to open this" pop-up hidden
-	Зарегистрировать приложение, вычислить хэш и ассоциировать его с расширением без всплывающего окна "Каким образом вы хотите открыть этот файл?"
-
-	Set-Association -ProgramPath "C:\SumatraPDF.exe" -Extension .pdf -Icon "shell32.dll,100"
-	Set-Association -ProgramPath "%ProgramFiles%\Notepad++\notepad++.exe" -Extension .txt -Icon "%ProgramFiles%\Notepad++\notepad++.exe,0"
-#>
-# Set-Association -ProgramPath "%ProgramFiles%\Notepad++\notepad++.exe" -Extension .txt -Icon "%ProgramFiles%\Notepad++\notepad++.exe,0"
-
-<#
 	Install the latest supported Microsoft Visual C++ Redistributable 2015—2022 x64
 	Установить последнюю поддерживаемую версию Microsoft Visual C++ Redistributable 2015-2022 x64
 
@@ -905,10 +897,10 @@ InstallVCRedistx64
 #region WSL
 <#
 	Enable Windows Subsystem for Linux (WSL), install the latest WSL Linux kernel version, and a Linux distribution using a pop-up form
-	To receive kernel updates, enable the Windows Update setting: "Receive updates for other Microsoft products"
+	The "Receive updates for other Microsoft products" setting will enabled automatically to receive kernel updates
 
 	Установить подсистему Windows для Linux (WSL), последний пакет обновления ядра Linux и дистрибутив Linux, используя всплывающую форму
-	Чтобы получать обновления ядра, включите параметр "При обновлении Windows поулчать обновления для других продуктов Майкрософт" в Центре обновлении Windows
+	Параметр "При обновлении Windows получать обновления для других продуктов Майкрософт" будет включен автоматически в Центре обновлении Windows, чтобы получать обновления ядра
 #>
 # WSL
 #endregion WSL
@@ -916,7 +908,7 @@ InstallVCRedistx64
 #region Start menu
 # Unpin all Start apps
 # Открепить все приложения от начального экрана
-# UnpinAllStartApps
+UnpinAllStartApps
 
 # Run the Windows PowerShell shortcut from the Start menu as Administrator
 # Запускать ярлык Windows PowerShell в меню "Пуск" от имени Администратора
@@ -979,7 +971,7 @@ TeamsAutostart -Disable
 
 # Check for UWP apps updates
 # Проверить обновления UWP-приложений
-CheckUWPAppsUpdates
+# CheckUWPAppsUpdates
 #endregion UWP apps
 
 #region Gaming
@@ -1118,7 +1110,7 @@ CommandLineProcessAudit -Enable
 # CommandLineProcessAudit -Disable
 
 <#
-	Create the "Process Creation" Event Viewer сustom view to log the executed processes and their arguments
+	Create the "Process Creation" сustom view in the Event Viewer to log executed processes and their arguments
 	In order this feature to work events auditing (AuditProcess -Enable) and command line (CommandLineProcessAudit -Enable) in process creation events will be enabled
 
 	Создать настраиваемое представление "Создание процесса" в Просмотре событий для журналирования запускаемых процессов и их аргументов
@@ -1126,7 +1118,7 @@ CommandLineProcessAudit -Enable
 #>
 EventViewerCustomView -Enable
 
-# Remove "Process Creation" Event Viewer сustom view to log the executed processes and their arguments (default value)
+# Remove the "Process Creation" custom view in the Event Viewer to log executed processes and their arguments (default value)
 # Удалить настаиваемое представление "Создание процесса" в Просмотре событий для журналирования запускаемых процессов и их аргументов (значение по умолчанию)
 # EventViewerCustomView -Disable
 
@@ -1190,7 +1182,7 @@ WindowsScriptHost -Disable
 	Включить DNS-over-HTTPS для IPv4
 	Действительные IPv4-адреса: 1.0.0.1, 1.1.1.1, 149.112.112.112, 8.8.4.4, 8.8.8.8, 9.9.9.9
 #>
-DNSoverHTTPS -Enable -PrimaryDNS 1.0.0.1 -SecondaryDNS 1.1.1.1
+DNSoverHTTPS -Enable -PrimaryDNS 1.1.1.1 -SecondaryDNS 1.0.0.1
 
 # Disable DNS-over-HTTPS for IPv4 (default value)
 # Выключить DNS-over-HTTPS для IPv4 (значение по умолчанию)
@@ -1204,7 +1196,7 @@ DNSoverHTTPS -Enable -PrimaryDNS 1.0.0.1 -SecondaryDNS 1.1.1.1
 
 # Hide the "Extract all" item from the Windows Installer (.msi) context menu (default value)
 # Скрыть пункт "Извлечь все" из контекстного меню Windows Installer (.msi) (значение по умолчанию)
-# MSIExtractContext -Remove
+# MSIExtractContext -Hide
 
 # Show the "Install" item in the Cabinet (.cab) filenames extensions context menu
 # Отобразить пункт "Установить" в контекстное меню .cab архивов
@@ -1296,7 +1288,7 @@ CompressedFolderNewContext -Hide
 
 # Enable the "Open", "Print", and "Edit" context menu items for more than 15 items selected
 # Включить элементы контекстного меню "Открыть", "Изменить" и "Печать" при выделении более 15 элементов
-MultipleInvokeContext -Enable
+# MultipleInvokeContext -Enable
 
 # Disable the "Open", "Print", and "Edit" context menu items for more than 15 items selected (default value)
 # Отключить элементы контекстного меню "Открыть", "Изменить" и "Печать" при выделении более 15 элементов (значение по умолчанию)
@@ -1312,7 +1304,7 @@ UseStoreOpenWith -Hide
 
 # Hide the "Open in Windows Terminal" item in the folders context menu
 # Скрыть пункт "Открыть в Терминале Windows" в контекстном меню папок
-OpenWindowsTerminalContext -Hide
+# OpenWindowsTerminalContext -Hide
 
 # Show the "Open in Windows Terminal" item in the folders context menu (default value)
 # Отобразить пункт "Открыть в Терминале Windows" в контекстном меню папок (значение по умолчанию)
@@ -1320,7 +1312,7 @@ OpenWindowsTerminalContext -Hide
 
 # Show the "Open in Windows Terminal (Admin)" item in the Desktop and folders context menu
 # Отобразить пункт "Открыть в Терминале Windows (Администратор)" в контекстном меню Рабочего стола и папок
-OpenWindowsTerminalAdminContext -Show
+# OpenWindowsTerminalAdminContext -Show
 
 # Hide the "Open in Windows Terminal (Admin)" item from the Desktop and folders context menu (default value)
 # Скрыть пункт "Открыть в Терминале Windows (Администратор)" в контекстном меню Рабочего стола и папок (значение по умолчанию)

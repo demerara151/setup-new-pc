@@ -21,12 +21,8 @@ sudo scoop install VictorMono-NF FantasqueSansMono-NF-Mono
 
 # Install with winget
 winget install gsudo
-winget install Python.Python.3
 winget install Microsoft.VisualStudio.2022.BuildTools
-winget install Microsoft.VC++2015-2022Redist-x86
-winget install Microsoft.VC++2015-2022Redist-x64
 winget install Microsoft.dotnetRuntime.5-x64
-winget install Microsoft.dotnetRuntime.6-x64
 winget install Discord.Discord
 winget install Valve.Steam
 winget install HeroicGamesLauncher.HeroicGamesLauncher

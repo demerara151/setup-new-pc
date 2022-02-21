@@ -38,9 +38,10 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ```
 
 6. Sophia Scriptを走らせる
+最新のソースコードをリポジトリからダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-.\Sophia.ps1
+.\SophiaPS5.ps1
 ```
 
 7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
@@ -79,18 +80,15 @@ TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 11. タスクスケジューラで`Edge Update`関連を全て無効化する
 
-12. 最終確認及び後片付け
-* `bulk-crap-uninstaller`で、プリインストールされているソフトが残ってないか確認
-* `ccleaner`で、一時ファイル＆レジストリの掃除（最近はデフォルトのお掃除機能が優秀なので不要かもしれない）
 
 ## それぞれの役割
 * Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
 * windowsspyblockerを適用すると、Edgeの手動アップデートもできなくなるので、何か問題があれば適用を解除した方がいい
 
 ## Notes
-* Windows Terminal & Powershell 7.2の環境で、Sophia.ps1を実行したところ複数のコマンドが実行できずに終了したり、表示がおかしくなってプログラムが止まったりとうまくいかなかった。デフォルトのPowershell 5.1で実行するのがベター
 * OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
 * Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
+* Windowsの既定のアプリに設定したいプログラムは`winget`でインストールする。Windows 11になってから`scoop`でインストールしたプログラムを設定しずらくなった。ブラウザに関しては全く受け付けてもらえない
 
 ## wingetを手動でインストールする場合
 2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる
@@ -114,7 +112,6 @@ scoop install winget
 * Privacy Redirect
 * LocalCDN
 * Bitwarden
-* CanvasBlocker
 * ClearURLs
 * Cookie AutoDelete
 
@@ -139,3 +136,16 @@ scoop install winget
 [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置するだけ
 * 英語配列キーボードで、セミコロンとコロンを入れ替える
 * CapLockとESCを入れ替える
+
+
+# Windows11 HOMEにおける"Hyper-V"の有効化
+コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
+```Powershell
+.\$HOME\setup-new-pc\hv.bat
+```
+* もし、Windows Insider Program への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll`でMicrosoftアカウントを作成せずにインサイダーへ参加する
+
+# Experimental
+`winget import -i winget-apps.json`による一括インストール
+* `winget export -o winget-apps.json -s winget`でエクスポート済み
+* エクスポートした winget のバージョンとインポートしようとしている winget のバージョンが違うと実行できないため、`winget-apps.json`の最後にあるバージョンの数字を現在のバージョンで書き換える必要がある
