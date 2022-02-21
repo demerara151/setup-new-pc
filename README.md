@@ -40,7 +40,7 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ```
 
 6. Sophia Scriptを走らせる
-最新のソースコードをリポジトリからダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
+最新のソースコードを[リポジトリ](https://github.com/farag2/Sophia-Script-for-Windows)からダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\SophiaPS5.ps1
@@ -57,7 +57,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 9. テレメトリー及び不要なアプリの殲滅
 wpdのインストール
 ```powershell
-iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip; Set-Location $HOME\Downloads; 7z x wpd.zip
+md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip
 
 ```
 
