@@ -55,28 +55,13 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 * `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
 9. テレメトリー及び不要なアプリの殲滅
-wpdのインストール
 ```powershell
-md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip
+md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip; .\WPD.exe
 
 ```
-
-wpdの実行
-Windows DefenderとWindows Update以外全て無効化して構わない
-```powershell
-.\$HOME\Downloads\WPD.exe
-```
-
-1だけ選択していけばOK
-```
-windowsspyblocker.exe
-```
-
-limitedまでを全てブロック
-```
-shutup10.exe
-```
-* shutup10はスタートメニューから起動
+* スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
+* `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
+* `windowsspyblocker`は、1を選択していくだけでOK
 
 10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する  
 TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
