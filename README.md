@@ -29,12 +29,14 @@ iwr -useb get.scoop.sh | iex
 
 scoop install 7zip mingit
 scoop update
+
 ```
 
 5. このリポジトリをクローン
 
 ```powershell
 git clone https://github.com/demerara151/setup-new-pc.git
+
 ```
 
 6. Sophia Scriptを走らせる
@@ -55,7 +57,8 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 9. テレメトリー及び不要なアプリの殲滅
 wpdのインストール
 ```powershell
-iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip | Set-Location $HOME\Downloads; 7z x wpd.zip
+iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\Downloads\wpd.zip; Set-Location $HOME\Downloads; 7z x wpd.zip
+
 ```
 
 wpdの実行
@@ -75,7 +78,7 @@ shutup10.exe
 ```
 * shutup10はスタートメニューから起動
 
-10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する  
 TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 11. タスクスケジューラで`Edge Update`関連を全て無効化する
@@ -92,13 +95,13 @@ TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 ## wingetを手動でインストールする場合
 2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる
-* 次の場所からバイナリファイルを直接ダウンロード
-`https://github.com/microsoft/winget-cli`
-* powershellを使ってインストール
+1. `https://github.com/microsoft/winget-cli`からバイナリファイルを直接ダウンロード
+
+2. powershellを使ってインストール
 ```powershell
 Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 ```
-* scoopでもインストールできるようになった（ただし、インストールされるのはプレビュー版なので注意が必要）
+3. scoopでもインストールできるようになった（ただし、インストールされるのはプレビュー版なので注意が必要）
 ```
 scoop install winget
 ```
@@ -142,6 +145,7 @@ scoop install winget
 コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
 ```Powershell
 .\$HOME\setup-new-pc\hv.bat
+
 ```
 * もし、Windows Insider Program への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll`でMicrosoftアカウントを作成せずにインサイダーへ参加する
 
