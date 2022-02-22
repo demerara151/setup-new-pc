@@ -24,7 +24,7 @@
 4. 復元ポイントの構成
 * `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
-5. scoopで7zipとmingitをインストール
+5. scoopのインストール及び、このリポジトリのクローン
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
@@ -33,28 +33,23 @@ iwr -useb get.scoop.sh | iex
 scoop install 7zip mingit
 scoop update
 
-```
-
-6. このリポジトリをクローン
-
-```powershell
-git clone https://github.com/demerara151/setup-new-pc.git
+Set-Location $HOME\Documents; git clone https://github.com/demerara151/setup-new-pc.git
 
 ```
 
-7. Sophia Scriptを走らせる
+6. Sophia Scriptを走らせる
 最新のソースコードを[リポジトリ](https://github.com/farag2/Sophia-Script-for-Windows)からダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\SophiaPS5.ps1
 ```
 
-8. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
+7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
 ```powershell
 .\$HOME\setup-new-pc\minInstaller.ps1
 ```
 
-9. テレメトリー及び不要なアプリの殲滅
+8. テレメトリー及び不要なアプリの殲滅
 ```powershell
 md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip; .\WPD.exe
 
@@ -63,7 +58,7 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
 * `windowsspyblocker`は、1を選択していくだけでOK
 
-10. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する  
+9. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する  
 TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 11. タスクスケジューラで`Edge Update`関連を全て無効化する
