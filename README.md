@@ -8,6 +8,7 @@
 
 
 2. Microsoftアカウントの作成を回避
+
 * Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す
     * 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
     ```CMD
@@ -32,6 +33,7 @@
 
 
 5. scoopのインストール及び、このリポジトリのクローン
+
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
@@ -49,6 +51,7 @@ Set-Location $HOME\Documents; git clone https://github.com/demerara151/setup-new
 
 
 最新のソースコードを[リポジトリ](https://github.com/farag2/Sophia-Script-for-Windows)からダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
+
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\SophiaPS5.ps1
@@ -56,8 +59,9 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 
 7. アプリの一括インストール、及びWPDの起動
+
 ```powershell
-.\$HOME\setup-new-pc\minInstaller.ps1
+.\$HOME\Documents\setup-new-pc\minInstaller.ps1
 
 md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip; .\WPD.exe
 
@@ -65,12 +69,15 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 
 
 8. テレメトリーの駆逐
-* スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
+
+
+スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
 * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
 * `windowsspyblocker`は、1を選択していくだけでOK
 
 
 9. `Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+
 ```powershell
 sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
 sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
@@ -81,7 +88,7 @@ sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Stat
 ```
 
 
-10.   タスクスケジューラで`Edge Update`関連を全て無効化する
+10. タスクスケジューラで`Edge Update`関連を全て無効化する
 
 
 ## それぞれの役割
@@ -153,7 +160,7 @@ scoop install winget
 # Windows11 HOMEにおける"Hyper-V"の有効化
 コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
 ```Powershell
-.\$HOME\setup-new-pc\hv.bat
+.\$HOME\Documents\setup-new-pc\hyper-v\hv.bat
 
 ```
 * もし、Windows Insider Program への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll`でMicrosoftアカウントを作成せずにインサイダーへ参加する
