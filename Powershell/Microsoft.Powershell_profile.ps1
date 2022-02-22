@@ -1,11 +1,16 @@
-### Posershell 7.2 is required ###
+﻿### Powershell 7.2 is required ###
 Import-Module -Name posh-git
 
+# starship initialization
 Invoke-Expression (&starship init powershell)
 
 Set-Alias -Name code -Value codium
 Set-Alias -Name br -Value broot
 Set-Alias -Name vim -Value nvim
+
+# Global variables
+$inputFile = "$HOME/list.txt"
+$CONFIG = "$HOME/.config"
 
 # simple back command
 function .. () { Set-Location .. }
@@ -20,11 +25,24 @@ function dis (
 ) {
     Start-Process "$env:LOCALAPPDATA\Discord\Update.exe" $option
 }
+function manga () { Start-Process "$HOME\PortableApps\NeeView39.3\NeeView.exe" }
 
 # Update All Programs
-function up () { winget upgrade; sudo scoop update * }
+function up () { winget upgrade --all; sudo scoop update * }
 
-# Open history file
+# Just play any YoutubeMusic
+function mnv ([string]$option) {
+    mpv --no-video $args $option
+}
+
+# Shuffle play YoutubeMusic
+function msfl () {
+    $pl = $(fd -t f . $env:USERPROFILE\YoutubeMusic)
+    $file = "D:\.cache\YoutubeMusic\_playlist.m3u8"
+    Get-Random $pl -Count $pl.Length > $file; mpv --no-video --playlist=$file
+}
+
+# Edit history data
 $history = @(
     "$env:LOCALAPPDATA/nushell/nu/data/history.txt"
     "$env:APPDATA/Microsoft/Windows/Powershell/PSReadLine/ConsoleHost_history.txt"
@@ -58,17 +76,17 @@ function sym ([string]$path, [string]$target) {
 
 # Downloaders
 function yt ([string]$case = "video") {
-    yt-dlp --config-location $HOME/.config/yt-dlp/$case.conf
+    yt-dlp --config-location $CONFIG/yt-dlp/$case.conf
 }
 function gld () {
-    gallery-dl --config $HOME/.config/gallery-dl/config.json -i $HOME/list.txt $args
+    gallery-dl --input-file $inputFile --destination D:/Pictures/gallery-dl --no-mtime $args
 }
 function aria () {
-    aria2c --conf-path=$HOME/.config/aria2.conf -d "D:/Downloads" -x10 -j16 -s10 -k1M -i "$HOME/list.txt"
+    aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x10 -j16 -s10 -k1M -i $inputFile
 }
 
 # Open list.txt for edit URL for various downloaders
-function list () { nvim $HOME/list.txt }
+function list () { nvim $inputFile }
 
 # Open config file
 function Edit-MyConfig ([string]$filename = "ps") {
@@ -76,9 +94,9 @@ function Edit-MyConfig ([string]$filename = "ps") {
         vim = 'nvim\init.vim'
         nu  = 'nushell\config.toml'
         mpv = 'mpv.conf'
-        ps  = 'Microsoft.Powershell_profile.ps1'
+        ps  = 'Powershell\Microsoft.Powershell_profile.ps1'
     }
-    nvim $HOME\.config\$($case[$filename])
+    nvim $CONFIG\$($case[$filename])
 }
 
 # Get process name if that has title
@@ -99,12 +117,12 @@ Invoke-Expression (& {
 # winget completion
 Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
-        [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
-        $Local:word = $wordToComplete.Replace('"', '""')
-        $Local:ast = $commandAst.ToString().Replace('"', '""')
-        winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
-        }
+    [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
+    $Local:word = $wordToComplete.Replace('"', '""')
+    $Local:ast = $commandAst.ToString().Replace('"', '""')
+    winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+    }
 }
 
 # Using utf-8 encoding to write data with directors: ">" or ">>"
