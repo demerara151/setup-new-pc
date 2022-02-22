@@ -125,11 +125,14 @@ scoop install winget
 
 ## 拡張機能の導入
 * DarkReader
-* Privacy Redirect
 * LocalCDN
 * Bitwarden
 * ClearURLs
 * Cookie AutoDelete
+* Privacy Redirect
+  * nitter = fdn.fr
+  * invidious = kavin.rocks
+  * reddit = kavin.rocks
 
 
 ## uBlockOriginの上級者設定
