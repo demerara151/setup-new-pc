@@ -158,9 +158,11 @@ scoop install winget
 
 
 ## Autohotkeyの設定
-[colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置するだけ
-* 英語配列キーボードで、セミコロンとコロンを入れ替える
-* CapLockとESCを入れ替える
+英語配列キーボード向けのキーの挙動変更。入れ替えるキーは以下の2つ
+   * セミコロン（`;`）とコロン（`:`）
+   * `CapsLock`と`ESC`
+1. [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置
+2. プロパティを開き、既定のプログラムを"$HOME\\scoop\\apps\\autohotkey\\current\\autohotkeyU64.exe"に変更
 
 
 # Windows11 HOMEにおける"Hyper-V"の有効化
