@@ -63,6 +63,7 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 
 ```
 
+
 8. テレメトリーの駆逐
 * スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
 * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
@@ -105,6 +106,7 @@ scoop install winget
 
 ```
 
+
 # ブラウザ設定（LibreWolf）
 正直そのままでも問題ない
 
@@ -116,6 +118,7 @@ scoop install winget
 * Bitwarden
 * ClearURLs
 * Cookie AutoDelete
+
 
 ## uBlockOriginの上級者設定
 1. 設定画面の「私は上級者です」にチェック

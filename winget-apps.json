@@ -1,53 +1,53 @@
 {
-	"$schema" : "https://aka.ms/winget-packages.schema.2.0.json",
-	"CreationDate" : "2022-02-21T14:50:36.044-00:00",
-	"Sources" : 
-	[
+	"$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+	"CreationDate": "2022-02-22T10:05:41.253-00:00",
+	"Sources": [
 		{
-			"Packages" : 
-			[
+			"Packages": [
 				{
-					"PackageIdentifier" : "HeroicGamesLauncher.HeroicGamesLauncher"
+					"PackageIdentifier": "HeroicGamesLauncher.HeroicGamesLauncher"
 				},
 				{
-					"PackageIdentifier" : "Discord.Discord"
+					"PackageIdentifier": "Discord.Discord"
 				},
 				{
-					"PackageIdentifier" : "HearthSim.HearthstoneDeckTracker"
+					"PackageIdentifier": "HearthSim.HearthstoneDeckTracker"
 				},
 				{
-					"PackageIdentifier" : "LibreWolf.LibreWolf"
+					"PackageIdentifier": "LibreWolf.LibreWolf"
 				},
 				{
-					"PackageIdentifier" : "Foundry376.Mailspring"
+					"PackageIdentifier": "Foundry376.Mailspring"
 				},
 				{
-					"PackageIdentifier" : "Valve.Steam"
+					"PackageIdentifier": "Valve.Steam"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.VisualStudio.2022.BuildTools"
+					"PackageIdentifier": "Microsoft.VisualStudio.2022.BuildTools"
 				},
 				{
-					"PackageIdentifier" : "DuongDieuPhap.ImageGlass"
+					"PackageIdentifier": "Microsoft.dotnetRuntime.6-x64"
 				},
 				{
-					"PackageIdentifier" : "gerardog.gsudo"
+					"PackageIdentifier": "Microsoft.VC++2015-2022Redist-x64"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.dotnetRuntime.5-x64"
+					"PackageIdentifier": "Microsoft.VC++2015-2022Redist-x86"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.Powershell"
+					"PackageIdentifier": "DuongDieuPhap.ImageGlass"
+				},
+				{
+					"PackageIdentifier": "gerardog.gsudo"
 				}
 			],
-			"SourceDetails" : 
-			{
-				"Argument" : "https://winget.azureedge.net/cache",
-				"Identifier" : "Microsoft.Winget.Source_8wekyb3d8bbwe",
-				"Name" : "winget",
-				"Type" : "Microsoft.PreIndexed.Package"
+			"SourceDetails": {
+				"Argument": "https://winget.azureedge.net/cache",
+				"Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+				"Name": "winget",
+				"Type": "Microsoft.PreIndexed.Package"
 			}
 		}
 	],
-	"WinGetVersion" : "1.3.0-preview"
+	"WinGetVersion": "1.3.0-preview"
 }
