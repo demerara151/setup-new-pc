@@ -21,7 +21,10 @@
 
 3. 起動したらWindows Updateを実行して再起動
 
-4. scoopで7zipとmingitをインストール
+4. 復元ポイントの構成
+* `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
+
+5. scoopで7zipとmingitをインストール
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
@@ -32,27 +35,24 @@ scoop update
 
 ```
 
-5. このリポジトリをクローン
+6. このリポジトリをクローン
 
 ```powershell
 git clone https://github.com/demerara151/setup-new-pc.git
 
 ```
 
-6. Sophia Scriptを走らせる
+7. Sophia Scriptを走らせる
 最新のソースコードを[リポジトリ](https://github.com/farag2/Sophia-Script-for-Windows)からダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\SophiaPS5.ps1
 ```
 
-7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
+8. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
 ```powershell
 .\$HOME\setup-new-pc\minInstaller.ps1
 ```
-
-8. 復元ポイントの作成
-* `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
 9. テレメトリー及び不要なアプリの殲滅
 ```powershell
