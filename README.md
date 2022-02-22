@@ -172,7 +172,7 @@ scoop install winget
 1. [Klee One](https://github.com/fontworks-fonts/Klee)
 2. [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 3. [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
-  * TruTypeを選択
+  * TrueTypeを選択
 
 
 # Windows11 HOMEにおける"Hyper-V"の有効化
