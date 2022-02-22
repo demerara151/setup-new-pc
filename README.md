@@ -70,10 +70,15 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 * `windowsspyblocker`は、1を選択していくだけでOK
 
 
-9. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+9. `Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+```powershell
+sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
+sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
+sudo Set-Service -Name edgeupdate -StartupType Disabled -Status Stopped
+sudo Set-Service -Name edgeupdatem -StartupType Disabled -Status Stopped
+sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Status Stopped
 
-
-TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
+```
 
 
 10.   タスクスケジューラで`Edge Update`関連を全て無効化する
