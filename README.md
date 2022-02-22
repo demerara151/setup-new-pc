@@ -3,26 +3,33 @@
   * Windows 11
   * Powershell 5.1
 
-1. 初期設定は英語で行う（日本語だとSophiaスクリプトの実行時にローカライズが見つからずエラーになるため）
-* デフォルトのままWindowsを使う場合は関係ないので、素直に日本語で始める
+
+1. 日本語だとSophiaスクリプトの実行時にローカライズが見つからずエラーになるため、初期設定は英語で行う
+
 
 2. Microsoftアカウントの作成を回避
-* Windows 10 の場合： 初期設定時のネットワーク設定画面で、ネットワークの設定をスキップする
-* Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す。これでMicrosoftアカウントのセットアップをスキップできるらしい。
+* Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す
     * 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
     ```CMD
     # Wi-Fi接続の場合
     X:\Sources> netsh wlan disconnect
     X:\Sources> exit
     ```
-    と、入力して左上の戻る矢印をクリック。すると、ローカルアカウントの設定画面に飛ぶのでいつも通り設定するだけ。
-    * 起動後、設定画面からネットワークのトラブルシューティングを実行すればいい
+    と、入力して左上の戻る矢印をクリック。すると、ローカルアカウントの設定画面に飛ぶのでいつも通り設定するだけ
+
 * Windows 11 Pro の場合： アカウント設定画面にサインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない（※最新のInsider buildから、Pro版でもMicrosoft アカウントの作成が必須になりました。上記の方法で回避できるかは未確認）
 
-3. 起動したらWindows Updateを実行して再起動
+* Windows 11 Enterpriseでは、サインインオプションに「Join Domain instead」という選択肢が用意されている
+
+
+3. 起動したらWindows Updateを実行して再起動。更新内容がなくなるまで繰り返す
+
 
 4. 復元ポイントの構成
-* `SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
+
+
+`SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
+
 
 5. scoopのインストール及び、このリポジトリのクローン
 ```powershell
@@ -37,17 +44,22 @@ Set-Location $HOME\Documents; git clone https://github.com/demerara151/setup-new
 
 ```
 
+
 6. Sophia Scriptを走らせる
+
+
 最新のソースコードを[リポジトリ](https://github.com/farag2/Sophia-Script-for-Windows)からダウンロードし、デフォルトの`Sophia.ps1`を、事前に用意した`SophiaPS5.ps1`に置き換えて、実行
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 .\SophiaPS5.ps1
 ```
 
+
 7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
 ```powershell
 .\$HOME\setup-new-pc\minInstaller.ps1
 ```
+
 
 8. テレメトリー及び不要なアプリの殲滅
 ```powershell
@@ -58,10 +70,14 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
 * `windowsspyblocker`は、1を選択していくだけでOK
 
-9. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する  
+
+9. サービス管理ツールで、`Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+
+
 TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
-11. タスクスケジューラで`Edge Update`関連を全て無効化する
+
+10.   タスクスケジューラで`Edge Update`関連を全て無効化する
 
 
 ## それぞれの役割
