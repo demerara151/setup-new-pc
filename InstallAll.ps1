@@ -21,7 +21,7 @@ scoop install legendary playnite osulazer
 scoop install foobar2000 foobar2000-encoders freetube gallery-dl
 
 # Nerd Fonts
-sudo scoop install VictorMono-NF-Mono FantasqueSansMono-NF-Mono
+sudo scoop install VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono
 
 # Display thumbnail
 sudo scoop install icaros-np
