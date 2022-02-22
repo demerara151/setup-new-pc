@@ -31,7 +31,7 @@ if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
 # Install with winget
 $programs = @(
-    "gsudo",
+    "gerardog.gsudo",
     "Microsoft.PowerShell",
     "LibreWolf.LibreWolf"
     "Foundry376.Mailspring",
@@ -46,5 +46,5 @@ $programs = @(
 )
 
 foreach ($program in $programs) {
-    winget install $program -s winget
+    winget install --id $program -s winget
 }

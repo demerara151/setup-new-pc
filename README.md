@@ -168,6 +168,13 @@ scoop install winget
 2. プロパティを開き、既定のプログラムを"$HOME\\scoop\\apps\\autohotkey\\current\\autohotkeyU64.exe"に変更
 
 
+# 日本語フォントの導入（手動）
+1. [Klee One](https://github.com/fontworks-fonts/Klee)
+2. [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
+3. [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
+  * TruTypeを選択
+
+
 # Windows11 HOMEにおける"Hyper-V"の有効化
 コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
 ```Powershell
