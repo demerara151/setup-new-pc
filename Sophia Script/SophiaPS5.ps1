@@ -940,7 +940,7 @@ UninstallUWPApps
 
 # Download and install "HEVC Video Extensions from Device Manufacturer" to be able to open .heic and .heif formats
 # Скачать и установить "Расширения для видео HEVC от производителя устройства", чтобы иметь возможность открывать форматы .heic и .heif
-HEIF -Install
+# HEIF -Install
 
 <#
 	Open Microsoft Store "HEVC Video Extensions from Device Manufacturer" page to install this extension manually to be able to open .heic and .heif formats
@@ -969,7 +969,7 @@ TeamsAutostart -Disable
 
 # Check for UWP apps updates
 # Проверить обновления UWP-приложений
-# CheckUWPAppsUpdates
+CheckUWPAppsUpdates
 #endregion UWP apps
 
 #region Gaming
@@ -1286,7 +1286,7 @@ CompressedFolderNewContext -Hide
 
 # Enable the "Open", "Print", and "Edit" context menu items for more than 15 items selected
 # Включить элементы контекстного меню "Открыть", "Изменить" и "Печать" при выделении более 15 элементов
-MultipleInvokeContext -Enable
+# MultipleInvokeContext -Enable
 
 # Disable the "Open", "Print", and "Edit" context menu items for more than 15 items selected (default value)
 # Отключить элементы контекстного меню "Открыть", "Изменить" и "Печать" при выделении более 15 элементов (значение по умолчанию)
@@ -1302,7 +1302,7 @@ UseStoreOpenWith -Hide
 
 # Hide the "Open in Windows Terminal" item in the folders context menu
 # Скрыть пункт "Открыть в Терминале Windows" в контекстном меню папок
-OpenWindowsTerminalContext -Hide
+# OpenWindowsTerminalContext -Hide
 
 # Show the "Open in Windows Terminal" item in the folders context menu (default value)
 # Отобразить пункт "Открыть в Терминале Windows" в контекстном меню папок (значение по умолчанию)
@@ -1310,7 +1310,7 @@ OpenWindowsTerminalContext -Hide
 
 # Show the "Open in Windows Terminal (Admin)" item in the Desktop and folders context menu
 # Отобразить пункт "Открыть в Терминале Windows (Администратор)" в контекстном меню Рабочего стола и папок
-OpenWindowsTerminalAdminContext -Show
+# OpenWindowsTerminalAdminContext -Show
 
 # Hide the "Open in Windows Terminal (Admin)" item from the Desktop and folders context menu (default value)
 # Скрыть пункт "Открыть в Терминале Windows (Администратор)" в контекстном меню Рабочего стола и папок (значение по умолчанию)
