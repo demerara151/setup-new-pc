@@ -55,17 +55,15 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
 
-7. 再起動し、自動インストールスクリプトを走らせ、アプリを一括インストール。もしくは単に中身をコピーして貼り付ける
+7. アプリの一括インストール、及びWPDの起動
 ```powershell
 .\$HOME\setup-new-pc\minInstaller.ps1
-```
 
-
-8. テレメトリー及び不要なアプリの殲滅
-```powershell
 md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip; .\WPD.exe
 
 ```
+
+8. テレメトリーの駆逐
 * スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
 * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
 * `windowsspyblocker`は、1を選択していくだけでOK
@@ -82,29 +80,34 @@ TODO: `sc`コマンドでサービスの停止及び無効化を自動化する
 
 ## それぞれの役割
 * Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
-* windowsspyblockerを適用すると、Edgeの手動アップデートもできなくなるので、何か問題があれば適用を解除した方がいい
+
 
 ## Notes
 * OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
+
 * Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
+
 * Windowsの既定のアプリに設定したいプログラムは`winget`でインストールする。Windows 11になってから`scoop`でインストールしたプログラムを設定しずらくなった。ブラウザに関しては全く受け付けてもらえない
 
+
 ## wingetを手動でインストールする場合
-2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる
+2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる（Home版では入っていないこともある）
 1. `https://github.com/microsoft/winget-cli`からバイナリファイルを直接ダウンロード
 
 2. powershellを使ってインストール
 ```powershell
 Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+
 ```
 3. scoopでもインストールできるようになった（ただし、インストールされるのはプレビュー版なので注意が必要）
 ```
 scoop install winget
+
 ```
 
-# ブラウザ設定
-* LibreWolfを使用（これもscoopでインストール可能になったが、scoopでインストールするとデフォルトのブラウザに設定できないため、wingetでインストールするした方がいい）
-* 正直そのままでも問題ない
+# ブラウザ設定（LibreWolf）
+正直そのままでも問題ない
+
 
 ## 拡張機能の導入
 * DarkReader
@@ -115,13 +118,14 @@ scoop install winget
 * Cookie AutoDelete
 
 ## uBlockOriginの上級者設定
-* 設定画面の「私は上級者です」にチェック
-* デフォルトのフィルターを全て適用
-* My rulesに、次の2行を追加
+1. 設定画面の「私は上級者です」にチェック
+2. デフォルトのフィルターを全て適用
+3. My rulesに、次の2行を追加
 ```txt
 * * 3p-frame block
 * * 3p-script block
 ```
+
 
 ## about:configで変更したい箇所
 
@@ -130,6 +134,7 @@ scoop install winget
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
 | browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
 | browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
+
 
 ## Autohotkeyの設定
 [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置するだけ
@@ -144,6 +149,7 @@ scoop install winget
 
 ```
 * もし、Windows Insider Program への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll`でMicrosoftアカウントを作成せずにインサイダーへ参加する
+
 
 # Experimental
 `winget import -i winget-apps.json`による一括インストール
