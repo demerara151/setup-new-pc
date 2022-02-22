@@ -102,6 +102,15 @@ sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Stat
 
 * Windowsの既定のアプリに設定したいプログラムは`winget`でインストールする。Windows 11になってから`scoop`でインストールしたプログラムを設定しずらくなった。ブラウザに関しては全く受け付けてもらえない
 
+* wingetでEdgeを一度インストールし、続けてwingetでアンインストールするとEdgeとその関連サービスとタスクが全て消えることが判明
+```powershell
+winget install --id Microsoft.Edge -s winget
+winget uninstall --id -Microsoft.Edge -s winget
+winget install --id Microsoft.EdgeWebView2Runtime -s winget
+winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
+
+```
+
 
 ## wingetを手動でインストールする場合
 2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる（Home版では入っていないこともある）
