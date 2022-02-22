@@ -135,11 +135,17 @@ scoop install winget
 ## uBlockOriginの上級者設定
 1. 設定画面の「私は上級者です」にチェック
 2. デフォルトのフィルターを全て適用
-3. My rulesに、次の2行を追加
+3. `My rules`に、次の2行を追加
 ```txt
 * * 3p-frame block
 * * 3p-script block
 ```
+
+
+## LocalCDNの設定
+1. Advancedのタブ下部にある項目の`uBlock`をクリック
+2. 表示された内容をコピーして、uBOの設定画面にある`My rules`の右側の欄に貼り付け
+3. Saveで確定し、Commitを押す
 
 
 ## about:configで変更したい箇所
