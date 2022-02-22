@@ -22,6 +22,9 @@ sudo scoop install VictorMono-NF-Mono FantasqueSansMono-NF-Mono
 # Display thumbnail
 sudo scoop install icaros-np
 
+# Check whether winget command is installed
+if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
+
 # Install with winget
 winget install gsudo
 winget install Microsoft.PowerShell
