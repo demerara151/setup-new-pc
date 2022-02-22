@@ -89,17 +89,15 @@ Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -Base
 	Use commas to separate funtions
 	Разделяйте функции запятыми
 #>
-if ($Functions)
-{
-	Invoke-Command -ScriptBlock {Checkings}
+if ($Functions) {
+	Invoke-Command -ScriptBlock { Checkings }
 
-	foreach ($Function in $Functions)
-	{
+	foreach ($Function in $Functions) {
 		Invoke-Expression -Command $Function
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
+	Invoke-Command -ScriptBlock { RefreshEnvironment; Errors }
 
 	exit
 }
@@ -253,7 +251,7 @@ BingSearch -Disable
 #region UI & Personalization
 # Show the "This PC" icon on Desktop
 # Отобразить значок "Этот компьютер" на рабочем столе
-ThisPC -Show
+# ThisPC -Show
 
 # Hide the "This PC" icon on Desktop (default value)
 # Скрыть "Этот компьютер" на рабочем столе (значение по умолчанию)
