@@ -1,0 +1,122 @@
+{
+	"editor.fontSize": 20,
+	"editor.fontWeight": "normal",
+	"debug.console.fontSize": 16,
+	"terminal.integrated.fontSize": 16,
+	"terminal.integrated.fontFamily": "'CaskaydiaCove NF', 'IBM Plex Sans JP Light'",
+	"window.zoomLevel": 2,
+
+	"update.enableWindowsBackgroundUpdates": false,
+	"update.showReleaseNotes": false,
+	"telemetry.telemetryLevel": "off",
+	"extensions.autoCheckUpdates": false,
+	"extensions.autoUpdate": false,
+	"workbench.settings.enableNaturalLanguageSearch": false,
+	"workbench.enableExperiments": false,
+	"update.mode": "none",
+
+	"html.format.maxPreserveNewLines": 80,
+
+	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 600,
+	"files.defaultLanguage": "markdown",
+	"files.insertFinalNewline": true,
+	"files.trimFinalNewlines": true,
+
+	"editor.rulers": [88, 119],
+	"editor.renderControlCharacters": true,
+	"editor.wordWrap": "on",
+	"editor.snippetSuggestions": "top",
+	"editor.tabCompletion": "on",
+
+	"editor.minimap.enabled": true,
+	"editor.minimap.renderCharacters": false,
+	"editor.minimap.showSlider": "always",
+
+	"editor.multiCursorModifier": "ctrlCmd",
+	"editor.mouseWheelZoom": true,
+	"editor.linkedEditing": true,
+
+	"python.formatting.provider": "black",
+	"python.linting.enabled": true,
+	"python.linting.pylintEnabled": false,
+	"python.linting.flake8Enabled": true,
+	"python.linting.flake8Args": ["--max-line-length119"],
+
+	"explorer.confirmDelete": false,
+	"explorer.confirmDragAndDrop": false,
+
+	"html.format.indentInnerHtml": true,
+	"javascript.format.insertSpaceAfterConstructor": true,
+	"javascript.updateImportsOnFileMove.enabled": "always",
+
+	"markdown.extension.print.theme": "dark",
+	"markdown.preview.fontSize": 18,
+	"markdown.preview.lineHeight": 1.2,
+
+	"editor.autoIndent": "full",
+	"editor.cursorBlinking": "solid",
+	"editor.cursorSmoothCaretAnimation": true,
+	"editor.fontFamily": "'CaskaydiaCove NF', 'IBM Plex Sans JP', 'FiraCode NF', 'VictorMono NF'",
+	"editor.fontLigatures": true,
+	"editor.formatOnType": false,
+	"editor.formatOnSave": true,
+	"editor.lineHeight": 22,
+	"editor.letterSpacing": 0.3,
+	"editor.suggestSelection": "first",
+
+	"search.showLineNumbers": true,
+
+	"git.autofetch": true,
+	"git.confirmSync": false,
+
+	"notebook.cellToolbarLocation": {
+		"default": "right",
+		"jupyter-notebook": "left"
+	},
+
+	"workbench.iconTheme": "material-icon-theme",
+	"workbench.productIconTheme": "material-product-icons",
+	"workbench.colorTheme": "Night Owl",
+	"editor.renderLineHighlight": "gutter",
+
+	"prettier.semi": false,
+	"prettier.useTabs": true,
+	"prettier.tabWidth": 4,
+	"prettier.arrowParens": "avoid",
+
+	"markdown.preview.fontFamily": "'VictorMono NF', 'IBM Plex Sans JP', 'Klee One', 'CaskaydiaCove NF'",
+
+	"workbench.colorCustomizations": {
+		"[Night Owl]": {
+			"activityBar.background": "#000C1D",
+			"activityBar.border": "#102a44",
+			"editorGroup.border": "#102a44",
+			"sideBar.background": "#001122",
+			"sideBar.border": "#102a44",
+			"sideBar.foreground": "#8BADC1"
+		},
+		"[Night Owl (No Italics)]": {
+			"activityBar.background": "#000C1D",
+			"activityBar.border": "#102a44",
+			"editorGroup.border": "#102a44",
+			"sideBar.background": "#001122",
+			"sideBar.border": "#102a44",
+			"sideBar.foreground": "#8BADC1"
+		}
+	},
+
+	"editor.bracketPairColorization.enabled": true,
+	"editor.guides.bracketPairs": true,
+
+	"window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
+	"workbench.tree.indent": 8,
+	"workbench.tree.renderIndentGuides": "always",
+
+	"terminal.integrated.copyOnSelection": true,
+	"terminal.integrated.cursorBlinking": true,
+
+	"tabnine.experimentalAutoImports": true,
+	"editor.unicodeHighlight.ambiguousCharacters": false
+
+}
