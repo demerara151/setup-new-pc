@@ -1,4 +1,5 @@
 # Stop and Disable Services
+sudo Set-Service -Name Fax -StartupType Disabled -Status Stopped
 sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
 sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
 sudo Set-Service -Name edgeupdate -StartupType Disabled -Status Stopped
@@ -64,7 +65,7 @@ foreach ($program in $programs) {
 
 
 # Install WPD
-mkdir $HOME\WPD | Set-Location
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip
+mkdir $HOME\PortableApps\WPD | Set-Location
+Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\PortableApps\WPD\wpd.zip
 7z x wpd.zip
 .\WPD.exe
