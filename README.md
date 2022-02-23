@@ -55,14 +55,14 @@
 
 * テレメトリーの駆逐
   * `WPD`
-    * プライバシー： Windows Update と Defender 以外の項目は全てブロックして構わない
-    * ブロッカー： 左２つを適用
+    * プライバシー： `Windows Update` と `Windows Defender` 以外の項目を全てオフに
+    * ブロッカー：`Telemetry` と `Extras` を適用
     * アプリ： 不要なものを全て選択して、選択したものを削除
 
   * `O & O ShutUp10`
     * `Actions` から `Recommended and somewhat recommended settings` を選択
   * `windowsspyblocker`
-    * 全て１を選択
+    * 全て `1` を選択
 
 # Notes
 
@@ -105,7 +105,7 @@
 ## LocalCDNの設定
 
 1. `Advanced` のタブ下部にある項目の `uBlock` をクリック
-2. 表示された内容をコピーして、uBOの設定画面にある `My rules` の右側の欄に貼り付け
+2. 表示された内容をコピーして、`uBlockOrigin` の設定画面にある `My rules` の右側の欄に貼り付け
 3. `Save` で確定し、`Commit` を押す
 
 
@@ -129,6 +129,7 @@
 
 
 # 日本語フォントの導入（手動）
+
 * [Klee One](https://github.com/fontworks-fonts/Klee)
 * [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 * [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
@@ -136,9 +137,10 @@
 
 
 # "Hyper-V"の有効化
+
 * コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
   ```Powershell
   .\$HOME\Documents\setup-new-pc\hyper-v\hv.bat
 
   ```
-* もし、`Windows Insider Program` への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll` で `Microsoft アカウント` を作成せずにインサイダーへ参加する
+* もし、`Windows Insider Program` への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll` で `Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
