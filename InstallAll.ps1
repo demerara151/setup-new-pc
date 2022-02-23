@@ -10,22 +10,10 @@ foreach (
 
 
 # Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
-
-# Programming（Optional from here. You can put `#` on top of the line to disable install）
-scoop install github python rustup-msvc sqlitebrowser
-
-# Gaming
-scoop install legendary playnite osulazer
-
-# Media
-scoop install foobar2000 foobar2000-encoders freetube gallery-dl
+scoop install aria2 autohotkey bat bottom broot czkawka dust fd fzf gitui less lsd mpv neovim nu posh-git ripgrep sd so starship sudo shutup10 tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Nerd Fonts
-sudo scoop install VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono
-
-# Display thumbnail
-sudo scoop install icaros-np
+sudo scoop install FantasqueSansMono-NF-Mono
 
 
 # Check whether winget command is installed
@@ -37,18 +25,9 @@ $programs = @(
 
     "Microsoft.PowerShell",
     "LibreWolf.LibreWolf"
-    "Foundry376.Mailspring",
-    "DuongDieuPhap.ImageGlass",
 
     "Microsoft.dotnetRuntime.6-x64",
-    "Microsoft.VC++2015-2022Redist-x64",
-    "Microsoft.VC++2015-2022Redist-x86",
-    "Microsoft.VisualStudio.2022.BuildTools",
-
-    "Valve.Steam",
-    "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher"
-
+    "Microsoft.VC++2015-2022Redist-x64"
 )
 foreach ($program in $programs) {
     winget install --id $program -s winget

@@ -1,6 +1,6 @@
 # Setup workflow for Windows 11
 
-**`Windows 11` の設定手順覚書**
+**This branch is for test purpose. Don't use this script.**
 
 ## Supported environment
 
