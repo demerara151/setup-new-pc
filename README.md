@@ -34,7 +34,15 @@ SystemPropertiesProtection.exe
 復元ポイントの構成をクリックし作成できるようにする
 
 
-5. 不要なサービスの停止、必要なアプリのインストール、Edgeの削除、WPDの起動
+5. Sophia Script の実行
+
+```powershell
+
+
+```
+
+
+6. 不要なサービスの停止、必要なアプリのインストール、Edgeの削除、WPDの起動
 
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
@@ -52,7 +60,7 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ```
 
 
-8. テレメトリーの駆逐
+7. テレメトリーの駆逐
 
 
 * WPD settings
