@@ -47,20 +47,12 @@ $programs = @(
 
     "Valve.Steam",
     "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher",
+    "HeroicGamesLauncher.HeroicGamesLauncher"
 
-    "Microsoft.Edge",
-    "Microsoft.EdgeWebView2Runtime"
 )
-
 foreach ($program in $programs) {
     winget install --id $program -s winget
 }
-
-
-# Uninstall Microsoft Edge
-winget uninstall --id Microsoft.Edge -s winget
-winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
 
 
 # Stop and Disable Services
