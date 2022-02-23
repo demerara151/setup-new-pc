@@ -67,7 +67,9 @@ winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
 $SearviceName = @(
     "Fax",
     "Spooler",
-    "WSearch"
+    "WSearch",
+    "edgeupdate",
+    "edgeupdatem"
 )
 foreach ($name in $SearviceName) {
     sudo Set-Service -Name $name -StartupType Disabled -Status Stopped
