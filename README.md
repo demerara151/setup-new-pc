@@ -1,32 +1,26 @@
-# Setup for Windows11
-* 実行環境
+# Setup workflow for Windows 11
+## Environment
   * Windows 11 Home
   * Powershell 5.1
-  * Sophia Script v6.0.12
+  * Sophia Script for Windows 11 v6.0.12
 
 
-1. 日本語だとSophiaスクリプトの実行時にローカライズが見つからずエラーになるため、初期設定は英語で行う
+## Steps
+1. Microsoftアカウントの作成を回避
+
+インターネット設定画面で`Alt+F4`を押す
+* 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
+  ```CMD
+  X:\Sources> netsh wlan disconnect
+  X:\Sources> exit
+  ```
+  と、入力して左上の戻る矢印をクリック
 
 
-2. Microsoftアカウントの作成を回避
-* 有線の場合は、アカウント作成画面でケーブルを抜くだけ
-* Wi-Fi接続の場合
-  * Windows 11 Home の場合： ネットに繋ぐ設定画面で`Alt+F4`を押す
-    * 上記の方法でキャンセルできなかった場合、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す。
-      ```CMD
-      X:\Sources> netsh wlan disconnect
-      X:\Sources> exit
-      ```
-      と、入力して左上の戻る矢印をクリック。すると、ローカルアカウントの設定画面に飛ぶのでいつも通り設定するだけ
-
-  * Windows 11 Pro の場合： アカウント設定画面にサインインオプションとして「オフラインアカウントで使用」という選択肢があるのでネットに繋げたままでも問題ない
-
-  * Windows 11 Enterpriseでは、サインインオプションに「Join Domain instead」という選択肢が用意されている
-
-3. 起動したらWindows Updateを実行して再起動。更新内容がなくなるまで繰り返す
+2. 起動したらWindows Updateを実行して再起動。更新内容がなくなるまで繰り返す
 
 
-4. 復元ポイントの構成
+3. 復元ポイントの構成
 
 ```powershell
 SystemPropertiesProtection.exe
@@ -34,15 +28,9 @@ SystemPropertiesProtection.exe
 復元ポイントの構成をクリックし作成できるようにする
 
 
-5. Sophia Script の実行
+4. 自動セットアップ
 
-```powershell
-
-
-```
-
-
-6. 不要なサービスの停止、必要なアプリのインストール、Edgeの削除、WPDの起動
+scoopのインストール、このリポジトリのクローン、"Sophia Script"の実行、不要なサービスの停止、必要なアプリのインストール、Edgeの削除、WPDの起動
 
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
@@ -55,22 +43,25 @@ scoop update
 Set-Location $HOME\Documents
 git clone https://github.com/demerara151/setup-new-pc.git
 
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+.\$HOME\Documents\setup-new-pc\Sophia\Sophia.ps1
+
 .\$HOME\Documents\setup-new-pc\InstallAll.ps1
 
 ```
 
 
-7. テレメトリーの駆逐
+5. 仕上げ
 
-
-* WPD settings
-  * プライバシー：Windows Update と Defender 以外の項目は全てブロックして構わない
-  * ブロッカー：左2つを適用
-  * アプリ：不要なものを全て選択して、選択したものを削除
+テレメトリーの駆逐
+* WPD
+  * プライバシー： Windows Update と Defender 以外の項目は全てブロックして構わない
+  * ブロッカー： 左２つを適用
+  * アプリ： 不要なものを全て選択して、選択したものを削除
 
 * スタートメニューから"O & O shutup10"と"windowsspyblocker"を起動
-  * `shutup10`は、'Actions'から'Recommended and somewhat recommended settings'を選択
-  * `windowsspyblocker`は、1を選択していくだけでOK
+  * `shutup10`： 'Actions'から'Recommended and somewhat recommended settings'を選択
+  * `windowsspyblocker`： 全て１を選択
 
 
 ## Notes
