@@ -2,6 +2,9 @@
 
 **This branch is for test purpose. Too small installer to start using PC.**
 
+# TODO
+
+
 ## Supported environment
 
   * Windows 11 Home
@@ -70,78 +73,3 @@
 * `OneDrive` は、必ず `Sophia Script` で消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
 
 * `Windows` の既定のアプリに設定したいプログラムは `scoop` ではなく、必ず `winget` でインストールする
-
-***
-
-# ブラウザ設定（LibreWolf）
-
-正直そのままでも問題ない
-
-
-## 拡張機能の導入
-
-* DarkReader
-* LocalCDN
-* Bitwarden
-* ClearURLs
-* Cookie AutoDelete
-* Privacy Redirect
-  * nitter = fdn.fr
-  * invidious = kavin.rocks
-  * reddit = kavin.rocks
-
-
-## uBlockOriginの上級者設定
-
-1. 設定画面の「私は上級者です」にチェック
-2. デフォルトのフィルターを全て適用
-3. `My rules` に、次の2行を追加
-
-  ```
-  * * 3p-frame block
-  * * 3p-script block
-  ```
-
-
-## LocalCDNの設定
-
-1. `Advanced` のタブ下部にある項目の `uBlock` をクリック
-2. 表示された内容をコピーして、`uBlockOrigin` の設定画面にある `My rules` の右側の欄に貼り付け
-3. `Save` で確定し、`Commit` を押す
-
-
-## about:configで変更したい箇所
-
-| key                                                | value | note                                       |
-| -------------------------------------------------- | :---: | ------------------------------------------ |
-| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
-| browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
-| browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
-
-***
-
-# Autohotkeyの設定
-
-* 英語配列キーボード向けのキーの挙動変更。入れ替えるキーは以下の2つ
-  * セミコロン（`;`）とコロン（`:`）
-  * `CapsLock` と `ESC`
-* [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置
-* プロパティを開き、既定のプログラムを `$HOME\scoop\apps\autohotkey\current\autohotkeyU64.exe` に変更
-
-
-# 日本語フォントの導入（手動）
-
-* [Klee One](https://github.com/fontworks-fonts/Klee)
-* [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
-* [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
-  * TrueTypeを選択
-
-
-# "Hyper-V"の有効化
-
-* コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
-  ```Powershell
-  .\$HOME\Documents\setup-new-pc\hyper-v\hv.bat
-
-  ```
-* もし、`Windows Insider Program` への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll` で `Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
