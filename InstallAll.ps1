@@ -1,12 +1,3 @@
-# Stop and Disable Services
-sudo Set-Service -Name Fax -StartupType Disabled -Status Stopped
-sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
-sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
-sudo Set-Service -Name edgeupdate -StartupType Disabled -Status Stopped
-sudo Set-Service -Name edgeupdatem -StartupType Disabled -Status Stopped
-sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Status Stopped
-
-
 # Adding buckets
 foreach (
     $bucket in @(
@@ -70,6 +61,15 @@ foreach ($program in $programs) {
 # Uninstall Microsoft Edge
 winget uninstall --id Microsoft.Edge -s winget
 winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
+
+
+# Stop and Disable Services
+sudo Set-Service -Name Fax -StartupType Disabled -Status Stopped
+sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
+sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
+sudo Set-Service -Name edgeupdate -StartupType Disabled -Status Stopped
+sudo Set-Service -Name edgeupdatem -StartupType Disabled -Status Stopped
+sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Status Stopped
 
 
 # Set the .config directory
