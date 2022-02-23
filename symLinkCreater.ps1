@@ -23,14 +23,7 @@ sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/nushell/nu/config -Targe
 sudo New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA/nvim -Target $CONFIG/nvim
 
 # mpv
-$portable = "$HOME/scoop/persist/mpv/portable_config/mpv.conf"
-if (!(Test-path $portable)) {
-    sudo New-Item -ItemType SymbolicLink -Path $portable -Target $CONFIG/mpv.conf
-}
-else {
-    Remove-Item $portable -Force
-    sudo New-Item -ItemType SymbolicLink -Path $portable -Target $CONFIG/mpv.conf
-}
+sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/mpv/portable_config/mpv.conf -Target $CONFIG/mpv.conf
 
 # powershell
 $dotConfPath = "$CONFIG/PowerShell/Microsoft.Powershell_profile.ps1"
