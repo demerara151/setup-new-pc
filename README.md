@@ -1,6 +1,6 @@
 # Setup workflow for Windows 11
 
-**This branch is for test purpose. Don't use this script.**
+**This branch is for test purpose. Too small installer to start using PC.**
 
 ## Supported environment
 
@@ -45,7 +45,7 @@
 
   Set-Location $HOME\Documents
   git clone https://github.com/demerara151/setup-new-pc.git
-  git switch Full-Installer
+  git switch Minimal-Test
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   .\$HOME\Documents\setup-new-pc\Sophia\Sophia.ps1
