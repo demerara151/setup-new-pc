@@ -10,7 +10,7 @@ foreach (
 
 
 # Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim posh-git ripgrep sd sharex starship sudo shutup10 sumatrapdf tldr windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
 scoop install github python rustup-msvc sqlitebrowser

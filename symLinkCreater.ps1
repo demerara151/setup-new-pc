@@ -1,3 +1,6 @@
+# TODO: If you are using PowerShell 5.1, Raise warning to use PowerShell 7.2 and quit program.
+
+
 $CONFIG = "$HOME/.config"
 
 # bat
@@ -28,6 +31,7 @@ sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/mpv/portable_conf
 # powershell
 $dotConfPath = "$CONFIG/PowerShell/Microsoft.Powershell_profile.ps1"
 if (!(Test-Path $PROFILE)) {
+    New-Item -ItemType Directory -Path $HOME/Documents/PowerShell
     sudo New-Item -ItemType SymbolicLink -Path $PROFILE -Target $dotConfPath
 }
 else {
