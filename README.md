@@ -53,9 +53,9 @@
   git switch Minimal-Test
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-  .\$HOME\Documents\setup-new-pc\Sophia\Sophia.ps1
+  .\Sophia\Sophia.ps1
 
-  .\$HOME\Documents\setup-new-pc\InstallAll.ps1
+  .\InstallAll.ps1
 
   ```
 
