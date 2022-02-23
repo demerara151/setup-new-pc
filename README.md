@@ -33,7 +33,7 @@
   SystemPropertiesProtection.exe
   ```
 
-* `scoop` のインストール、このリポジトリのクローン、`Sophia Script` の実行、不要なサービスの停止、必要なアプリのインストール、`Microsoft Edge` の削除、`WPD` の起動
+* `scoop` のインストール、このリポジトリのクローン、`Sophia Script` の実行、不要なサービスの停止、必要なアプリのインストール、`WPD` の起動
 
   ```powershell
   Set-ExecutionPolicy RemoteSigned -scope CurrentUser
@@ -57,10 +57,10 @@
 * テレメトリーの駆逐
   * `WPD`
     * プライバシー： `Windows Update` と `Windows Defender` 以外の項目を全てオフに
-    * ブロッカー：`Telemetry` と `Extras` を適用
-    * アプリ： 不要なものを全て選択して、選択したものを削除
+    * ブロッカー： 3項目全てを適用。`Firewall` はそのまま
+    * アプリ： 不要なものを選択して削除
 
-  * `O & O ShutUp10`
+  * `O&O ShutUp10`
     * `Actions` から `Recommended and somewhat recommended settings` を選択
   * `windowsspyblocker`
     * 全て `1` を選択
