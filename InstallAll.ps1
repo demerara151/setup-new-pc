@@ -75,7 +75,7 @@ foreach ($name in $SearviceName) {
 
 
 # Set the .config directory
-Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
+Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config"
 
 # Install WPD
 mkdir $HOME\PortableApps\WPD | Set-Location
