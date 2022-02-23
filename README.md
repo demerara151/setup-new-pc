@@ -61,11 +61,13 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 7. アプリの一括インストール、及びWPDの起動
 
 ```powershell
-.\$HOME\Documents\setup-new-pc\minInstaller.ps1
-
-md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip; 7z x wpd.zip; .\WPD.exe
+.\$HOME\Documents\setup-new-pc\InstallAll.ps1
 
 ```
+* WPD settings
+  * プライバシー：Windows Update と Defender 以外の項目は全てブロックして構わない
+  * ブロッカー：左2つを適用
+  * アプリ：不要なものを全て選択して、選択したものを削除
 
 
 8. テレメトリーの駆逐
@@ -76,33 +78,18 @@ md $HOME\WPD | Set-Location; iwr -Uri "https://wpd.app/get/latest.zip" -OutFile 
 * `windowsspyblocker`は、1を選択していくだけでOK
 
 
-9. `Print Spooler`と`Windows Search`、そして`Microsoft EdgeUpdate`関連を全て無効化する
+9. 不要なサービスを無効化する
 
 ```powershell
+sudo Set-Service -Name Fax -StartupType Disabled -Status Stopped
 sudo Set-Service -Name Spooler -StartupType Disabled -Status Stopped
 sudo Set-Service -Name WSearch -StartupType Disabled -Status Stopped
-sudo Set-Service -Name edgeupdate -StartupType Disabled -Status Stopped
-sudo Set-Service -Name edgeupdatem -StartupType Disabled -Status Stopped
-sudo Set-Service -Name MicrosoftEdgeElevationService -StartupType Disabled -Status Stopped
 
 ```
 
+10. Microsoft Edgeの削除
 
-10. タスクスケジューラで`Edge Update`関連を全て無効化する
-
-
-## それぞれの役割
-* Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
-
-
-## Notes
-* OneDriveは、WPDやBCuninstallerでも削除できるがうまくアンインストールできず中途半端に残ったりするので、Sophiaで消しておくのがおすすめ
-
-* Microsoft Edgeは消えないし、消さない。色々問題が起きる。ただし、自動アップデートの機能は無効化してOK
-
-* Windowsの既定のアプリに設定したいプログラムは`winget`でインストールする。Windows 11になってから`scoop`でインストールしたプログラムを設定しずらくなった。ブラウザに関しては全く受け付けてもらえない
-
-* wingetでEdgeを一度インストールし、続けてwingetでアンインストールするとEdgeとその関連サービスとタスクが全て消えることが判明
+インストール時にも、アンインストール時にも失敗した旨のメッセージが表示されるが何故かちゃんと消えている
 ```powershell
 winget install --id Microsoft.Edge -s winget
 winget uninstall --id -Microsoft.Edge -s winget
@@ -110,22 +97,17 @@ winget install --id Microsoft.EdgeWebView2Runtime -s winget
 winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
 
 ```
+場合によっては、安定版がインストールされてしまいアンインストールしようとするとパッケージが存在しないためできないことがある。その場合は、一度リスト表示してIDを確認したのち、該当のパッケージをアンインストールすればよい
 
 
-## wingetを手動でインストールする場合
-2022/02/21現在：Windows11をクリーンインストールすると最初から入ってる（Home版では入っていないこともある）
-1. `https://github.com/microsoft/winget-cli`からバイナリファイルを直接ダウンロード
+## それぞれの役割
+Sophiaはゴミ掃除と初期設定、WPDはそれで消しきれないアプリの削除とテレメトリーのブロック、shutup10はテレメトリーのブロックに加え不要な設定を無効化、windowsspyblockerはファイアーウォールのブロックリストにテレメトリー関連の通信を行うIPアドレスを追加
 
-2. powershellを使ってインストール
-```powershell
-Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 
-```
-3. scoopでもインストールできるようになった（ただし、インストールされるのはプレビュー版なので注意が必要）
-```
-scoop install winget
+## Notes
+* OneDriveは、必ずSophiaで消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
 
-```
+* Windowsの既定のアプリに設定したいプログラムは`winget`でインストールする。Windows 11になってから`scoop`でインストールしたプログラムを設定しずらくなった。ブラウザに関しては全く受け付けてもらえない
 
 
 # ブラウザ設定（LibreWolf）

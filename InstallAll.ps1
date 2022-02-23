@@ -68,4 +68,6 @@ foreach ($program in $programs) {
 mkdir $HOME\PortableApps\WPD | Set-Location
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\PortableApps\WPD\wpd.zip
 7z x wpd.zip
+
+# Run WPD
 .\WPD.exe
