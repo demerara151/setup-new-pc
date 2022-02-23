@@ -72,6 +72,9 @@ winget uninstall --id Microsoft.Edge -s winget
 winget uninstall --id Microsoft.EdgeWebView2Runtime -s winget
 
 
+# Set the .config directory
+Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
+
 # Install WPD
 mkdir $HOME\PortableApps\WPD | Set-Location
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\PortableApps\WPD\wpd.zip

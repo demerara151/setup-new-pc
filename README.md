@@ -1,7 +1,8 @@
 # Setup for Windows11
 * 実行環境
-  * Windows 11
+  * Windows 11 Home
   * Powershell 5.1
+  * Sophia Script v6.0.12
 
 
 1. 日本語だとSophiaスクリプトの実行時にローカライズが見つからずエラーになるため、初期設定は英語で行う
@@ -27,11 +28,13 @@
 
 4. 復元ポイントの構成
 
+```powershell
+SystemPropertiesProtection.exe
+```
+復元ポイントの構成をクリックし作成できるようにする
 
-`SystemPropertiesProtection.exe`を起動。復元ポイントの構成をクリックし作成できるようにする
 
-
-5. scoopのインストール及び、このリポジトリのクローン
+5. 不要なサービスの停止、必要なアプリのインストール、Edgeの削除、WPDの起動
 
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
