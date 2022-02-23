@@ -9,7 +9,7 @@
 
 ## How to use
 * Microsoftアカウントの作成を回避
-  * インターネット設定画面で`Alt+F4`を押す
+  * インターネット設定画面で,<kdb>Alt</kdb>+<kdb>F4</kdb>を押す
   * 又は、Microsoftアカウント設定画面で`Shift+F10`を押してコマンドプロンプトを呼び出す
 
     ```CMD
