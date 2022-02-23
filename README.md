@@ -48,6 +48,8 @@
 
   Set-Location $HOME\Documents
   git clone https://github.com/demerara151/setup-new-pc.git
+
+  Set-Location setup-new-pc
   git switch Minimal-Test
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
