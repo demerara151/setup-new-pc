@@ -56,13 +56,12 @@
     * `shutup10`： 'Actions'から'Recommended and somewhat recommended settings'を選択
     * `windowsspyblocker`： 全て１を選択
 
-***
-
 # Notes
 * OneDriveは、必ずSophiaで消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
 
 * Windowsの既定のアプリに設定したいプログラムは`scoop`ではなく、必ず`winget`でインストールする
 
+***
 
 # ブラウザ設定（LibreWolf）
 正直そのままでも問題ない
