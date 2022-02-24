@@ -10,7 +10,7 @@ foreach (
 
 
 # Must-Have tools
-scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep sd so starship sudo shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep so starship sudo shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
