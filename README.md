@@ -15,7 +15,8 @@
 
 ## How to use
 
-* `Microsoft アカウント` の作成を回避
+* `OS` インストール時に `Microsoft アカウント` の作成を回避
+
   * インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd>
   * 又は、`Microsoft アカウント` 設定画面で、<kbd>Shift</kbd> + <kbd>F10</kbd>
 
@@ -25,11 +26,11 @@
     ```
   * プロンプトが閉じたら左上の戻る矢印をクリック
 
-* 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` を繰り返す
+* 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
 
 * **管理者権限**で `PowerShell` を開く。"ファイル名を指定して実行"で、`powershell` と入力し、<kbd>Ctrl</kbd> と <kbd>Shift</kbd> を押しながら `OK` をクリック
 
-* 復元ポイントを構成
+* 復元ポイントを構成。復元ポイントを作成できるようにするだけでここでは作成しなくてよい
 
   ```powershell
   SystemPropertiesProtection.exe
@@ -67,6 +68,14 @@
     * `Actions` から `Recommended and somewhat recommended settings` を選択
   * `windowsspyblocker`
     * 全て `1` を選択
+
+* 再起動したら、ターミナルでデフォルトのシェルを `Powershell 7` に設定する
+
+* ターミナルを再起動して、シンボリックリンクを作成する
+
+  ```powershell
+  .\symLinkCreater.ps1
+  ```
 
 # Notes
 
