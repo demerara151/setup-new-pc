@@ -58,6 +58,7 @@ foreach ($program in $programs) {
 # Stop and Disable Services
 $ServiceName = @(
     "Fax",
+    "iphlpsvc",
     "Spooler",
     "WSearch",
     "edgeupdate",
@@ -72,8 +73,8 @@ foreach ($name in $ServiceName) {
 Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config"
 
 # Install WPD
-mkdir $HOME\PortableApps\WPD | Set-Location
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\PortableApps\WPD\wpd.zip
+mkdir $HOME\setup-new-pc\WPD | Set-Location
+Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\setup-new-pc\WPD\wpd.zip
 7z x wpd.zip
 
 # Run WPD
