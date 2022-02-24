@@ -46,7 +46,6 @@
   scoop install 7zip mingit
   scoop update
 
-  Set-Location $HOME\Documents
   git clone https://github.com/demerara151/setup-new-pc.git
 
   Set-Location setup-new-pc
@@ -60,8 +59,8 @@
 
 * テレメトリーの駆逐
   * `WPD`
-    * プライバシー： `Windows Update` と `Windows Defender ウィルス対策`、`Windows Push Notification Service` 以外の項目を全てオフに
-    * ブロッカー： 3項目全てを適用。`Firewall` はそのまま
+    * プライバシー： `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般 以外の項目を全てオフに
+    * ブロッカー： `Update` 以外を適用。`Firewall` はそのまま
     * アプリ： 不要なものを選択して削除
 
   * `O&O ShutUp10`
