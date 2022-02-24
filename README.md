@@ -17,7 +17,7 @@
 
 * `Microsoft アカウント` の作成を回避
   * インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd>
-  * 又は、Microsoftアカウント設定画面で、<kbd>Shift</kbd> + <kbd>F10</kbd>
+  * 又は、`Microsoft アカウント` 設定画面で、<kbd>Shift</kbd> + <kbd>F10</kbd>
 
     ```CMD
     X:\Sources> netsh wlan disconnect
@@ -26,6 +26,8 @@
   * プロンプトが閉じたら左上の戻る矢印をクリック
 
 * 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` を繰り返す
+
+* **管理者権限**で `PowerShell` を開く。"ファイル名を指定して実行"で、`powershell` と入力し、<kbd>Ctrl</kbd> と <kbd>Shift</kbd> を押しながら `OK` をクリック
 
 * 復元ポイントを構成
 
