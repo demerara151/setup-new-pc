@@ -28,7 +28,7 @@ foreach ($program in $programs) {
 
 
 # Stop and Disable Services
-$SearviceName = @(
+$ServiceName = @(
     "Fax",
     "Spooler",
     "iphlpsvc",
@@ -36,7 +36,7 @@ $SearviceName = @(
     "edgeupdate",
     "edgeupdatem"
 )
-foreach ($name in $SearviceName) {
+foreach ($name in $ServiceName) {
     sudo Set-Service -Name $name -StartupType Disabled -Status Stopped
 }
 

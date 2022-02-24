@@ -36,5 +36,5 @@
 * ターミナルを再起動して、シンボリックリンクを作成する
 
   ```powershell
-  .\symLinkCreater.ps1
+  .\symLinkCreator.ps1
   ```
