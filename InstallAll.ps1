@@ -46,7 +46,7 @@ Move-Item -Path "$HOME/setup-new-pc/.config/*" -Destination "$HOME/.config" -For
 
 # Install WPD
 mkdir WPD | Set-Location
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip
+Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\setup-new-pc\WPD\wpd.zip
 7z x wpd.zip
 
 # Run WPD
