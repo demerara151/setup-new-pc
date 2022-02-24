@@ -187,7 +187,7 @@ scoop install winget
 # Windows11 HOMEにおける"Hyper-V"の有効化
 コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
 ```Powershell
-.\$HOME\Documents\setup-new-pc\hyper-v\hv.bat
+.\hyper-v\hv.bat
 
 ```
 * もし、Windows Insider Program への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll`でMicrosoftアカウントを作成せずにインサイダーへ参加する
