@@ -50,6 +50,7 @@
   git clone https://github.com/demerara151/setup-new-pc.git
 
   Set-Location setup-new-pc
+  git checkout vm
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   .\Sophia\Sophia.ps1
