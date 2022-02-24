@@ -117,6 +117,8 @@
 	"terminal.integrated.cursorBlinking": true,
 
 	"tabnine.experimentalAutoImports": true,
-	"editor.unicodeHighlight.ambiguousCharacters": false
+	"editor.unicodeHighlight.ambiguousCharacters": false,
 
+	"git.enableSmartCommit": true,
+	"workbench.startupEditor": "none"
 }
