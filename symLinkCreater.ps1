@@ -1,6 +1,8 @@
 # ### PowerShell 7.2 is required ###
-if ($PSVersionTable.PSVersion.Major -lt 6) {
+$confHjson = "$env:APPDATA/dystroy/broot/config/conf.hjson"
+if (($PSVersionTable.PSVersion.Major -lt 6) -and (!(Test-Path $confHjson))) {
     Write-Host "Error! Please use PowerShell 7.2 or higher!" -ForegroundColor DarkRed
+    write-host "Warning!! Please run broot at least once!!" -ForegroundColor DarkRed
 }
 else {
     $CONFIG = "$HOME/.config"
@@ -9,16 +11,8 @@ else {
     sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/bat -Target $CONFIG/bat
 
     # broot
-    $confHjson = "$env:APPDATA/dystroy/broot/config/conf.hjson"
-    if (!(Test-Path $confHjson)) {
-        write-host "Warning!! Please run broot at least once!!" -ForegroundColor DarkRed
-        Write-Host "Next, Run the following command: \"Remove-Item $confHjson -Force\""
-        Write-Host "Finally, Run this: \"sudo New-Item -ItemType symboliclink -Path $confHjson -Target $CONFIG/broot/conf.hjson\""
-    }
-    else {
-        Remove-Item $confHjson -Force
-        sudo New-Item -ItemType symboliclink -Path $confHjson -Target $CONFIG/broot/conf.hjson
-    }
+    Remove-Item $confHjson -Force
+    sudo New-Item -ItemType symboliclink -Path $confHjson -Target $CONFIG/broot/conf.hjson
 
     # nushell
     Remove-Item $env:APPDATA/nushell/nu/config -Recurse -Force
