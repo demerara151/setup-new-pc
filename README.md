@@ -2,8 +2,6 @@
 
 **This branch is for test purpose. Too small installer to start using PC.**
 
-# TODO
-
 ## Supported environment
 
 * Windows 11 Home
@@ -15,9 +13,9 @@
 
 ***
 
-## How to use
+## Steps
 
-* `Microsoft アカウント` の作成を回避
+* OSのインストール時に、`Microsoft アカウント` の作成を回避
   
   * インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd>
   
@@ -64,7 +62,7 @@
   
   * `WPD`
     
-    * プライバシー： `Windows Update` と `Windows Defender` 以外の項目を全てオフに
+    * プライバシー： `Windows Update` と `Windows Defender ウイルス対策`、`Windows Push Notification Service` 以外の項目を全てオフに
     * ブロッカー： 3項目全てを適用。`Firewall` はそのまま
     * アプリ： 不要なものを選択して削除
   
