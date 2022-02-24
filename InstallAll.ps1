@@ -2,15 +2,13 @@
 foreach (
     $bucket in @(
         "extras",
-        "nerd-fonts",
-        "games",
-        "nonportable"
+        "nerd-fonts"
     )
 ) { scoop bucket add $bucket }
 
 
 # Must-Have tools
-scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep so starship sudo shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide
+sudo scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep so starship sudo shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono VictorMono-NF-Mono
 
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
@@ -44,11 +42,11 @@ foreach ($name in $SearviceName) {
 
 
 # Set the .config directory
-Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config"
+Move-Item -Path "$HOME/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
 
 # Install WPD
-mkdir $HOME\PortableApps\WPD | Set-Location
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\PortableApps\WPD\wpd.zip
+mkdir WPD | Set-Location
+Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\WPD\wpd.zip
 7z x wpd.zip
 
 # Run WPD
