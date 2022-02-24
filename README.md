@@ -45,7 +45,7 @@
 
   Set-Location $HOME\Documents
   git clone https://github.com/demerara151/setup-new-pc.git
-  git switch Full-Installer
+  git checkout Full-Installer
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   .\$HOME\Documents\setup-new-pc\Sophia\Sophia.ps1
