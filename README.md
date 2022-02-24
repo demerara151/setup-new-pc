@@ -137,12 +137,11 @@
 * [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
   * TrueTypeを選択
 
-
 # "Hyper-V"の有効化
 
 * コマンドプロンプトを管理者権限で開き、次のバッチファイルを実行
   ```Powershell
-  .\$HOME\Documents\setup-new-pc\hyper-v\hv.bat
+  .\hyper-v\hv.bat
 
   ```
 * もし、`Windows Insider Program` への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll` で `Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
