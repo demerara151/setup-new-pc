@@ -45,7 +45,6 @@
 
   Set-Location $HOME\Documents
   git clone https://github.com/demerara151/setup-new-pc.git
-  git checkout Full-Installer
 
   Set-Location setup-new-pc
 
