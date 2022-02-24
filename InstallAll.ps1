@@ -33,6 +33,7 @@ foreach ($program in $programs) {
 $SearviceName = @(
     "Fax",
     "Spooler",
+    "iphlpsvc",
     "WSearch",
     "edgeupdate",
     "edgeupdatem"
