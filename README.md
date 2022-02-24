@@ -47,16 +47,18 @@
   git clone https://github.com/demerara151/setup-new-pc.git
   git checkout Full-Installer
 
-  Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-  .\$HOME\Documents\setup-new-pc\Sophia\Sophia.ps1
+  Set-Location setup-new-pc
 
-  .\$HOME\Documents\setup-new-pc\InstallAll.ps1
+  Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+  .\Sophia\Sophia.ps1
+
+  .\InstallAll.ps1
 
   ```
 
 * テレメトリーの駆逐
   * `WPD`
-    * プライバシー： `Windows Update` と `Windows Defender` 以外の項目を全てオフに
+    * プライバシー： `Windows Update` と `Windows Defender ウィルス対策`、`Windows Push Notification Service` 以外の項目を全てオフに
     * ブロッカー： 3項目全てを適用。`Firewall` はそのまま
     * アプリ： 不要なものを選択して削除
 
