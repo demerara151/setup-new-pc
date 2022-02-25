@@ -1,11 +1,11 @@
 $Services = @(
     "Fax",
-    "iphlpsvc",
-    "IpxlatCfgSvc",
-    "lfsvc",
-    "Spooler",
+    "iphlpsvc", # IP Helper
+    "IpxlatCfgSvc", # IP 変換構成サービス
+    "lfsvc", # Geo location
+    "Spooler", # Print Spooler
     "XboxGipSvc",
-    "WSearch",
+    "WSearch", # Windows search
     "edgeupdate",
     "edgeupdatem",
     "MicrosoftEdgeElevationService"
