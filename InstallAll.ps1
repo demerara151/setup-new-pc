@@ -9,8 +9,8 @@ foreach (
 ) { scoop bucket add $bucket }
 
 
-# Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
+# Must-Have tool
+scoop install aria2 autohotkey bat bitwarden bottom broot czkawka curl dust everything everything-cli exifcleaner fd ffmpeg fzf gitui hwinfo less lightbulb losslesscut lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
 scoop install github python rustup-msvc sqlitebrowser
@@ -23,7 +23,7 @@ scoop install foobar2000 foobar2000-encoders freetube gallery-dl
 
 # Nerd Fonts
 sudo scoop install VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono
-
+ FiraCode-NF-Mono
 # Display thumbnail
 sudo scoop install icaros-np
 
