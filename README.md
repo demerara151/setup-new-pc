@@ -28,7 +28,7 @@
 
 * 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
 
-* **管理者権限**で `PowerShell` を開く。"ファイル名を指定して実行"で、`powershell` と入力し、<kbd>Ctrl</kbd> と <kbd>Shift</kbd> を押しながら `OK` をクリック
+* **管理者権限**で `PowerShell` を開く。"ファイル名を指定して実行"で、`powershell` と入力し、<kbd>Ctrl</kbd> と <kbd>Shift</kbd> を押しながら <kbd>Enter</kbd> 又は、`OK` をクリック
 
 * 復元ポイントを構成。復元ポイントを作成できるようにするだけでここでは作成しなくてよい
 
@@ -70,7 +70,7 @@
 
 * 再起動したら、ターミナルでデフォルトのシェルを `Powershell 7` に設定する
 
-* ターミナルを再起動して、シンボリックリンクを作成する
+* ターミナルを再起動して、各種設定ファイルのシンボリックリンクを作成する
 
   ```powershell
   .\symLinkCreator.ps1
