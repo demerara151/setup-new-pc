@@ -9,7 +9,7 @@ foreach (
 ) { scoop bucket add $bucket }
 
 
-# Must-Have tool
+# Must-Have tools
 scoop install aria2 autohotkey bat bitwarden bottom broot czkawka curl dust everything everything-cli exifcleaner fd ffmpeg fzf gitui hwinfo less lightbulb losslesscut lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
