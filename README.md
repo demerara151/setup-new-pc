@@ -53,7 +53,7 @@
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   .\Sophia\Sophia.ps1
 
-  .\InstallAll.ps1
+  .\installAll.ps1
 
   ```
 
