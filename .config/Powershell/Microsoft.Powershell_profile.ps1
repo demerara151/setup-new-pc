@@ -1,5 +1,5 @@
-﻿### Powershell 7.2 is required ###
-Import-Module -Name posh-git
+﻿Import-Module -Name posh-git
+Import-Module Terminal-Icons
 
 # starship initialization
 Invoke-Expression (&starship init powershell)
@@ -14,6 +14,7 @@ $CONFIG = "$HOME/.config"
 
 # simple back command
 function .. () { Set-Location .. }
+function home () { Set-Location $HOME/home }
 
 # Program ShortCut
 function mail () { Start-Process "$env:LOCALAPPDATA\Mailspring\mailspring.exe" }
@@ -25,7 +26,7 @@ function dis (
 ) {
     Start-Process "$env:LOCALAPPDATA\Discord\Update.exe" $option
 }
-function manga () { Start-Process "$HOME\PortableApps\NeeView39.3\NeeView.exe" }
+function manga () { Start-Process "$HOME\home\apps\NeeView39.3\NeeView.exe" }
 
 # Update All Programs
 function up () { winget upgrade --all; sudo scoop update * }
@@ -37,7 +38,7 @@ function mnv ([string]$option) {
 
 # Shuffle play YoutubeMusic
 function msfl () {
-    $pl = $(fd -t f . $env:USERPROFILE\YoutubeMusic)
+    $pl = $(fd -t f . $HOME\home\music)
     $file = "D:\.cache\YoutubeMusic\_playlist.m3u8"
     Get-Random $pl -Count $pl.Length > $file; mpv --no-video --playlist=$file
 }
