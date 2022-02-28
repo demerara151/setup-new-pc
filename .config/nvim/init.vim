@@ -3,7 +3,6 @@ set t_Co=256
 
 set autoindent          " 改行時に自動でインデントする
 set smartindent
-set encoding=utf-8
 set fileencodings=utf-8,utf-16le,iso-2022-jp,cp932,sjis,euc-jp,ucs-2
 
 set tabstop=4           " タブを何文字の空白に変換するか
@@ -71,15 +70,17 @@ call dein#add('Shougo/neosnippet-snippets')
 call dein#add('nanotee/zoxide.vim')
 call dein#add('vim-airline/vim-airline')
 call dein#add('vim-airline/vim-airline-themes')
-call dein#add('ryanoasis/vim-devicons')
 call dein#add('rust-lang/rust.vim')
+call dein#add('arcticicestudio/nord-vim')
 call dein#add('cohama/lexima.vim')
+call dein#add('preservim/nerdtree')
+call dein#add('ryanoasis/vim-devicons')
 syntax enable
 filetype plugin indent on
 
 set termguicolors
 set background=dark
-colorscheme iceberg
+colorscheme nord
 
 " Required:
 call dein#end()
