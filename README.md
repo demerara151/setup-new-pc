@@ -121,16 +121,16 @@
 ## 追加フィルター
 
 1. AdGuard URL Tracking Protection
-2. [Actually Legitimate URL Shortener Tool]([adfilt/LegitimateURLShortener.txt at master · DandelionSprout/adfilt · GitHub](https://github.com/DandelionSprout/adfilt/blob/master/LegitimateURLShortener.txt))
+2. [Actually Legitimate URL Shortener Tool](https://github.com/DandelionSprout/adfilt/blob/master/LegitimateURLShortener.txt))
 3. Malware Domain List
 4. [NoCoin Filter List](https://github.com/hoshsadiq/adblock-nocoin-list/)
 
 ## about:configで変更したい箇所
 
-| key                                                | value | note                  |
-| -------------------------------------------------- |:-----:| --------------------- |
-| network.http.max-persistent-connections-per-server | 16    | リソースを何分割でダウンロードするか    |
-| browser.cache.disk.capacity                        | 0     | デフォルトは256000          |
+| key                                                | value | note                                       |
+| -------------------------------------------------- | :---: | ------------------------------------------ |
+| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
+| browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
 | browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
 
 ***
