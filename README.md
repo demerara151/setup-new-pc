@@ -101,9 +101,9 @@
 * DarkReader
 * Bitwarden
 * Privacy Redirect
-  * nitter = fdn.fr
-  * invidious = kavin.rocks
-  * reddit = kavin.rocks
+  * nitter = https://nitter.fdn.fr
+  * invidious = https://invidious.kavin.rocks
+  * reddit = https://teddit.ggc-project.de
 
 ## uBlockOriginの上級者設定
 
@@ -118,13 +118,6 @@
    * * 3p-script block
    ```
 
-## 追加フィルター
-
-1. AdGuard URL Tracking Protection
-2. [Actually Legitimate URL Shortener Tool](https://github.com/DandelionSprout/adfilt/blob/master/LegitimateURLShortener.txt))
-3. Malware Domain List
-4. [NoCoin Filter List](https://github.com/hoshsadiq/adblock-nocoin-list/)
-
 ## about:configで変更したい箇所
 
 | key                                                | value | note                                       |
@@ -132,6 +125,7 @@
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
 | browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
 | browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
+| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く         |
 
 ***
 
