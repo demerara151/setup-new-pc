@@ -103,7 +103,7 @@
 * Privacy Redirect
   * nitter = https://nitter.fdn.fr
   * invidious = https://invidious.kavin.rocks
-  * reddit = https://teddit.ggc-project.de
+  * reddit = https://libreddit.kavin.rocks
 
 ## uBlockOriginの上級者設定
 
