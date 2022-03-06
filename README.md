@@ -120,12 +120,10 @@
 
 ## about:configで変更したい箇所
 
-| key                                                | value | note                                       |
-| -------------------------------------------------- | :---: | ------------------------------------------ |
-| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか       |
-| browser.cache.disk.capacity                        |   0   | デフォルトは256000                         |
-| browser.cache.disk.smart_size.enabled              | false | キャッシュサイズを自動で計算してくれる機能 |
-| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く         |
+| key                                                | value | note                                                         |
+| -------------------------------------------------- | :---: | ------------------------------------------------------------ |
+| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか<br />（デフォルトは6。現在保留中） |
+| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く<br />（一時期デフォルトで true だったけど最新版では false になってたので） |
 
 ***
 
