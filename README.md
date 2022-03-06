@@ -94,13 +94,13 @@
 
 # ブラウザ設定（LibreWolf）
 
-正直そのままでも問題ない
+正直そのままでも問題ないが、`Enable letterboxing` にチェックを入れておくとよさげ
 
 ## 拡張機能の導入
 
-* DarkReader
-* Bitwarden
-* Privacy Redirect
+* DarkReader（常にダークモード）
+* Bitwarden（パスワード管理）
+* Privacy Redirect（プライバシーを尊重するサイトへ自動リダイレクト）
   * nitter = https://nitter.fdn.fr
   * invidious = https://invidious.kavin.rocks
   * reddit = https://libreddit.kavin.rocks
@@ -117,6 +117,11 @@
    * * 3p-frame block
    * * 3p-script block
    ```
+
+### 追加フィルタ
+
+* AdGuard Social Media
+* [1HostPro](https://github.com/badmojr/1Hosts)
 
 ## about:configで変更したい箇所
 
