@@ -121,7 +121,8 @@
 ### 追加フィルタ
 
 * AdGuard Social Media
-* [1HostPro](https://github.com/badmojr/1Hosts)
+* [Energized Ultimate Protection](https://filterlists.com/lists/energized-ultimate-protection)
+* [Energized Xtreme Extension](https://filterlists.com/lists/energized-xtreme-extension)
 
 ## about:configで変更したい箇所
 
