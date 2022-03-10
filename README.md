@@ -5,9 +5,9 @@
   ```powershell
   Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-  iwr -useb get.scoop.sh | iex -RunAsAdmin
+  iwr -useb get.scoop.sh | iex
 
-  scoop install 7zip mingit
+  scoop install 7zip mingit sudo
   scoop update
 
   git clone https://github.com/demerara151/setup-new-pc.git
@@ -16,7 +16,7 @@
   git checkout vm
 
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-  .\Sophia\Sophia.ps1
+  sudo .\Sophia\Sophia.ps1
 
   .\installAll.ps1
 
