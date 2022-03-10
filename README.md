@@ -4,7 +4,7 @@
 
   iwr -useb get.scoop.sh | iex
 
-  scoop install 7zip mingit sudo
+  scoop install 7zip mingit
   scoop update
 
   git clone https://github.com/demerara151/setup-new-pc.git
