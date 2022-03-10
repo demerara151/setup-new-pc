@@ -8,7 +8,7 @@ foreach (
 
 
 # Must-Have tools
-sudo scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep so starship sudo shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono VictorMono-NF-Mono
+sudo scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim nu posh-git ripgrep so starship shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono VictorMono-NF-Mono
 
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
