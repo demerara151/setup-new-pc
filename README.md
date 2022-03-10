@@ -5,7 +5,7 @@
   ```powershell
   Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-  iwr -useb get.scoop.sh | iex
+  iwr -useb get.scoop.sh | iex -RunAsAdmin
 
   scoop install 7zip mingit
   scoop update
