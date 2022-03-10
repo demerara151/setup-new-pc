@@ -1,7 +1,5 @@
 # Initial command
 
-* 管理者権限でターミナル、またはPowershell(5.1)を開く
-
   ```powershell
   Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
