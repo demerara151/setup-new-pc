@@ -15,9 +15,6 @@ foreach ($program in $programs) {
     winget install --id $program -s winget
 }
 
-# --- gsudo start --- #
-gsudo
-
 # Adding buckets
 foreach (
     $bucket in @(
@@ -46,9 +43,6 @@ $Services = @(
 foreach ($name in $Services) {
     Set-Service -Name $name -StartupType Disabled -Status Stopped
 }
-
-# --- gsudo end --- #
-exit
 
 # Set the .config directory
 Move-Item -Path "$HOME/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
