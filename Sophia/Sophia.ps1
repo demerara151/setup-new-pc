@@ -102,7 +102,6 @@ WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
 UpdateMicrosoftProducts -Disable
 PowerPlan -Balanced
-LatestInstalled.NET -Enable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
@@ -122,7 +121,6 @@ NetworkDiscovery -Enable
 ActiveHours -Automatically
 RestartDeviceAfterUpdate -Enable
 DefaultTerminalApp -WindowsTerminal
-InstallVCRedistx64
 
 #endregion System
 
