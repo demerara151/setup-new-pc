@@ -50,7 +50,7 @@
 
   git clone https://github.com/demerara151/setup-new-pc.git
 
-  Set-Location setup-new-pc
+  Set-Location setup-new-pc; git switch venv
   ```
 
 * `Sophia Script` の実行
@@ -135,7 +135,7 @@
 ## about:configで変更したい箇所
 
 | key                                                | value | note                                                                                                          |
-| ------------------------------------------------- | :---: | ------------------------------------------------------------------------------------------------------------- |
+| -------------------------------------------------- | :---: | ------------------------------------------------------------------------------------------------------------- |
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか<br />（デフォルトは6。現在保留中）                                       |
 | browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く<br />（一時期デフォルトで true だったけど最新版では false になってたので） |
 
