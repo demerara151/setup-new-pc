@@ -24,7 +24,7 @@ foreach (
 ) { scoop bucket add $bucket }
 
 # Must-Have tools
-sudo scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim posh-git ripgrep starship shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono VictorMono-NF-Mono
+sudo scoop install aria2 autohotkey bat bottom broot dust fd ffmpeg fzf gitui less lsd mpv neovim posh-git ripgrep starship shutup10 vscodium windowsspyblocker yt-dlp zenhan zoxide IBMPlexSans-JP FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono VictorMono-NF-Mono
 
 # Stop and Disable Services
 $Services = @(

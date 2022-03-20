@@ -16,7 +16,7 @@
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   sudo .\Sophia\Sophia.ps1
 
-  .\installAll.ps1
+  .\InstallAll.ps1
 
   ```
 
