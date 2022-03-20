@@ -153,8 +153,6 @@
 
 * [Klee One](https://github.com/fontworks-fonts/Klee)
 * [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
-* [IBM Plex Sans JP](https://github.com/IBM/plex/releases)
-  * TrueTypeを選択
 
 # "Hyper-V"の有効化
 
