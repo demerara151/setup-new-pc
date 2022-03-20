@@ -12,19 +12,19 @@ foreach (
 scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli exifcleaner fd ffmpeg ffsend fzf gitui hwinfo less lightbulb losslesscut lsd mailspring monolith mpv neovim nu posh-git ripgrep sd sharex so starship shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
-scoop install github python rustup-msvc sqlitebrowser
+# scoop install github python rustup-msvc sqlitebrowser
 
 # Gaming
-scoop install legendary playnite osulazer
+# scoop install legendary playnite osulazer
 
 # Media
-scoop install foobar2000 foobar2000-encoders freetube gallery-dl
+# scoop install foobar2000 foobar2000-encoders freetube gallery-dl
 
 # Nerd Fonts
 sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono FiraCode-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
-sudo scoop install icaros-np --global
+# sudo scoop install icaros-np --global
 
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
@@ -34,17 +34,17 @@ $programs = @(
     "gerardog.gsudo",
 
     "Microsoft.PowerShell",
-    "DuongDieuPhap.ImageGlass",
+    # "DuongDieuPhap.ImageGlass",
     "LibreWolf.LibreWolf",
 
     "Microsoft.dotnetRuntime.6-x64",
     "Microsoft.VC++2015-2022Redist-x64",
-    "Microsoft.VC++2015-2022Redist-x86",
-    "Microsoft.VisualStudio.2022.BuildTools",
+    "Microsoft.VC++2015-2022Redist-x86"
+    # "Microsoft.VisualStudio.2022.BuildTools",
 
-    "Valve.Steam",
-    "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher"
+    # "Valve.Steam",
+    # "Discord.Discord",
+    # "HeroicGamesLauncher.HeroicGamesLauncher"
 )
 foreach ($program in $programs) {
     winget install --id $program -s winget
