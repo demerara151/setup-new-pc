@@ -9,7 +9,7 @@
 
 ## Required script
 
-* [Sophia Script for Windows 11 v6.0.12](https://github.com/farag2/Sophia-Script-for-Windows)
+* [Sophia Script for Windows 11 v6.0.13](https://github.com/farag2/Sophia-Script-for-Windows)
 
 ***
 

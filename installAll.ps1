@@ -36,7 +36,7 @@ $programs = @(
     "gerardog.gsudo",
 
     "Microsoft.PowerShell",
-    "LibreWolf.LibreWolf"
+    "LibreWolf.LibreWolf",
     "DuongDieuPhap.ImageGlass",
 
     "Microsoft.dotnetRuntime.6-x64",
