@@ -9,7 +9,7 @@ foreach (
 ) { scoop bucket add $bucket }
 
 # Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship shutup10 sumatrapdf tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli exifcleaner fd ffmpeg ffsend fzf gitui hwinfo less lightbulb losslesscut lsd mailspring monolith mpv neovim nu posh-git ripgrep sd sharex so starship shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
 scoop install github python rustup-msvc sqlitebrowser
