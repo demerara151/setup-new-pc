@@ -8,9 +8,8 @@ foreach (
     )
 ) { scoop bucket add $bucket }
 
-
 # Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot czkawka curl dust everything everything-cli exifcleaner fd ffmpeg ffsend fzf gitui hwinfo less lightbulb losslesscut lsd mailspring monolith mpv neovim nu posh-git ripgrep sd sharex so starship sudo shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom broot czkawka dust everything everything-cli fd ffmpeg fzf gitui less lightbulb lsd monolith mpv neovim nu posh-git ripgrep sd sharex so starship shutup10 sumatrapdf tldr vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # Programming（Optional from here. You can put `#` on top of the line to disable install）
 scoop install github python rustup-msvc sqlitebrowser
@@ -27,7 +26,6 @@ sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono C
 # Display various thumbnails
 sudo scoop install icaros-np --global
 
-
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
@@ -36,8 +34,8 @@ $programs = @(
     "gerardog.gsudo",
 
     "Microsoft.PowerShell",
-    "LibreWolf.LibreWolf",
     "DuongDieuPhap.ImageGlass",
+    "LibreWolf.LibreWolf",
 
     "Microsoft.dotnetRuntime.6-x64",
     "Microsoft.VC++2015-2022Redist-x64",
@@ -47,12 +45,10 @@ $programs = @(
     "Valve.Steam",
     "Discord.Discord",
     "HeroicGamesLauncher.HeroicGamesLauncher"
-
 )
 foreach ($program in $programs) {
     winget install --id $program -s winget
 }
-
 
 # Stop and Disable Services
 $Services = @(
@@ -71,12 +67,11 @@ foreach ($name in $Services) {
     sudo Set-Service -Name $name -StartupType Disabled -Status Stopped
 }
 
-
 # Set the .config directory
-Move-Item -Path "$HOME/Documents/setup-new-pc/.config/*" -Destination "$HOME/.config"
+Move-Item -Path "$HOME/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
 
 # Install WPD
-mkdir $HOME\setup-new-pc\WPD | Set-Location
+mkdir WPD | Set-Location
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\setup-new-pc\WPD\wpd.zip
 7z x wpd.zip
 

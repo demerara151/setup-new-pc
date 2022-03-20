@@ -1,5 +1,6 @@
-﻿Import-Module -Name posh-git
-Import-Module Terminal-Icons
+﻿### Powershell 7.2 is required ###
+Import-Module -Name posh-git
+Import-Module -Name Terminal-Icons
 
 # starship initialization
 Invoke-Expression (&starship init powershell)

@@ -45,7 +45,7 @@
 
   iwr -useb get.scoop.sh | iex
 
-  scoop install 7zip mingit
+  scoop install 7zip mingit sudo
   scoop update
 
   git clone https://github.com/demerara151/setup-new-pc.git
@@ -57,7 +57,7 @@
 
   ```powershell
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-  .\Sophia\Sophia.ps1
+  sudo .\Sophia\Sophia.ps1
   ```
 
 * アプリの一括インストール、及び不要なサービスの停止、`WPD` のインストールと起動
@@ -82,7 +82,7 @@
 
     * 全て `1` を選択
 
-* 再起動したら、ターミナルでデフォルトのシェルを `Powershell 7` に設定する
+* 再起動したら、ターミナルの設定画面で「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更する
 
 * ターミナルを再起動して、各種設定ファイルのシンボリックリンクを作成する
 
@@ -135,7 +135,7 @@
 ## about:configで変更したい箇所
 
 | key                                                | value | note                                                                                                          |
-| -------------------------------------------------- | :---: | ------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------- | :---: | ------------------------------------------------------------------------------------------------------------- |
 | network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか<br />（デフォルトは6。現在保留中）                                       |
 | browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く<br />（一時期デフォルトで true だったけど最新版では false になってたので） |
 
