@@ -1,19 +1,18 @@
 # Setup workflow for Windows 11
 
-**`Windows 11` の設定手順覚書**
+* `Windows` は使いたいけど `Microsoft` は嫌いって人のための新PCセットアップ手順
 
-## Supported environment
+## Requirements
 
 * Windows 11 Home
 * Powershell 5.1
-
-## Required script
-
 * [Sophia Script for Windows 11 v6.0.13](https://github.com/farag2/Sophia-Script-for-Windows)
 
 ***
 
-## How to use
+# Usage
+
+## Avoid Microsoft account creation
 
 * `OS` インストール時に `Microsoft アカウント` の作成を回避
 
@@ -28,9 +27,11 @@
 
   * プロンプトが閉じたら左上の戻る矢印をクリック
 
+## Windows update
+
 * 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
 
-* **管理者権限**で `PowerShell` を開く。"ファイル名を指定して実行"で、`powershell` と入力し、<kbd>Ctrl</kbd> と <kbd>Shift</kbd> を押しながら <kbd>Enter</kbd> 又は、`OK` をクリック
+## Configure system restore point
 
 * 復元ポイントを構成。復元ポイントを作成できるようにするだけでここでは作成しなくてよい
 
@@ -38,7 +39,7 @@
   SystemPropertiesProtection.exe
   ```
 
-* `scoop` のインストール、このリポジトリのクローン
+## Setup `scoop` and clone this repository
 
   ```powershell
   Set-ExecutionPolicy RemoteSigned -scope CurrentUser
@@ -53,20 +54,36 @@
   Set-Location setup-new-pc
   ```
 
-* `Sophia Script` の実行
+## Run `Sophia Script`
 
   ```powershell
   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   sudo .\Sophia\Sophia.ps1
   ```
 
-* アプリの一括インストール、及び不要なサービスの停止、`WPD` のインストールと起動
+## Install apps, disable services, and run `WPD`
 
   ```powershell
   .\installAll.ps1
   ```
 
-* テレメトリーの駆逐
+* アプリのインストールが不要な場合は、サービスの停止と `WPD` のインストールのみ実行
+
+  ```powershell
+  # Disable services
+  .\stopService.ps1
+
+  # Install WPD
+  mkdir WPD | Set-Location
+  Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\setup-new-pc\WPD\wpd.zip
+  7z x wpd.zip
+
+  # Run WPD
+  .\WPD.exe
+
+  ```
+
+## Disable telemetries
 
   * `WPD`
 
@@ -82,9 +99,11 @@
 
     * 全て `1` を選択
 
+## Create symbolic links for dot files (optional)
+
 * 再起動したら、ターミナルの設定画面で「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更する
 
-* ターミナルを再起動して、各種設定ファイルのシンボリックリンクを作成する
+* その後、ターミナルを再起動して各種設定ファイルのシンボリックリンクを作成
 
   ```powershell
   .\symLinkCreator.ps1
@@ -102,7 +121,7 @@
 
 # ブラウザ設定（LibreWolf）
 
-正直そのままでも問題ないが、`Enable letterboxing` にチェックを入れておくとよさげ
+正直そのままでも問題ないが、`Settings` -> `LibreWolf` -> `Fingerprinting` の `Enable letterboxing` にチェックを入れておくとよさげ
 
 ## 拡張機能の導入
 
@@ -134,10 +153,10 @@
 
 ## about:configで変更したい箇所
 
-| key                                                | value | note                                                                                                          |
-| ------------------------------------------------- | :---: | ------------------------------------------------------------------------------------------------------------- |
-| network.http.max-persistent-connections-per-server |  16   | リソースを何分割でダウンロードするか<br />（デフォルトは6。現在保留中）                                       |
-| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く<br />（一時期デフォルトで true だったけど最新版では false になってたので） |
+| key                                                | value | description                                                        |
+| -------------------------------------------------- | :---: | ------------------------------------------------------------------ |
+| network.http.max-persistent-connections-per-server |  16   | 1つのサーバーに対する最大接続数<br />（デフォルトは6。現在保留中） |
+| browser.tabs.loadBookmarksInTabs                   | true  | ブックマークを常に新しいタブで開く                                 |
 
 ***
 
@@ -154,9 +173,7 @@
 * [Klee One](https://github.com/fontworks-fonts/Klee)
 * [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 
-# "Hyper-V"の有効化
-
-* 管理者権限でコマンドプロンプトを開き、バッチファイルを実行
+# `Hyper-V`の有効化
 
   ```Powershell
   sudo
