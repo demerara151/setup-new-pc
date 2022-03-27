@@ -1,16 +1,37 @@
 # Setup workflow for Windows 11
 
-* `Windows` は使いたいけど `Microsoft` は嫌いって人のための新PCセットアップ手順
+**`Windows` を快適に使うための `PC` セットアップ手順**
 
-## Requirements
+## 次のような人におすすめ
+
+* 余計なプログラムやファイルは出来るだけ排除したい
+* `Microsoft` 製品は一部を除いて基本的に使わない
+* プライバシーとセキュリティを強化したい
+* `PC` のスペックが低い、または回線速度に問題がある
+
+## 推奨環境
 
 * Windows 11 Home
-* Powershell 5.1
+* Powershell 5.x （デフォルト）
 * [Sophia Script for Windows 11 v6.0.13](https://github.com/farag2/Sophia-Script-for-Windows)
+
+## 事前準備
+
+リポジトリをクローンしたら、スクリプトを走らせる前に編集すべき点
+
+#### Sophia Script
+
+* デフォルトのまま使ってもいいし、直接中身を編集してもいいけど、上記のリンクから最新バージョンを各自ダウンロードして編集したほうが間違いがなくてよい
+
+* 編集したものを既存の `Sophia` フォルダーの中身と入れ替える
+
+#### installAll.ps1
+
+* 自分用に必要なソフトやアプリをまとめているため、各自不要なものを除外したり必要なものを追加しておくこと
 
 ***
 
-# Usage
+# Workflow
 
 ## Avoid Microsoft account creation
 
@@ -83,7 +104,7 @@
 
   ```
 
-## Disable telemetries
+## Disable telemetry
 
   * `WPD`
 
@@ -99,9 +120,13 @@
 
     * 全て `1` を選択
 
-## Create symbolic links for dot files (optional)
+# More settings
 
-* 再起動したら、ターミナルの設定画面で「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更する
+以下、個人的な設定
+
+## ドットファイル用シンボリックリンクの作成
+
+* ターミナルの「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更する
 
 * その後、ターミナルを再起動して各種設定ファイルのシンボリックリンクを作成
 
@@ -109,7 +134,17 @@
   .\symLinkCreator.ps1
   ```
 
-# Notes
+## Hyper-Vの有効化
+
+* `BIOS` でハイパーバイザーが有効になっている前提
+
+  ```Powershell
+  sudo .\hyper-v\hv.bat
+  ```
+
+* もし、`Windows Insider Program` への参加が条件で実行できない場合は、`scoop` で `offlineinsiderenroll` をインストールし、`Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
+
+# Note
 
 * `OneDrive` は、必ず `Sophia Script` で消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
 
@@ -134,11 +169,9 @@
 
 ## uBlockOriginの上級者設定
 
-1. 設定画面の「私は上級者です」にチェック
-
+1. 設定画面の `I am an advance user` にチェック
 2. デフォルトのフィルターを全て適用
-
-3. `My rules` に、次の2行を追加
+3. `My rules` タブに、次の2行を追加
 
    ```
    * * 3p-frame block
@@ -147,9 +180,14 @@
 
 ### 追加フィルタ
 
-* AdGuard Social Media
-* [Energized Ultimate Protection](https://filterlists.com/lists/energized-ultimate-protection)
-* [Energized Xtreme Extension](https://filterlists.com/lists/energized-xtreme-extension)
+* 現在利用中
+  * AdGuard Social Media
+  * [Energized Ultimate Protection](https://filterlists.com/lists/energized-ultimate-protection)
+  * [Energized Xtreme Extension](https://filterlists.com/lists/energized-xtreme-extension)
+
+* 検討中
+  * [1Hosts Pro](https://github.com/badmojr/1Hosts)
+  * [oisd](https://oisd.nl/)
 
 ## about:configで変更したい箇所
 
@@ -168,17 +206,33 @@
 * [colon.ahk](autohotkey/colon.ahk)を、スタートアッププログラムのあるフォルダ（shell:startup）に配置
 * プロパティを開き、既定のプログラムを `$HOME\scoop\apps\autohotkey\current\autohotkeyU64.exe` に変更
 
-# 日本語フォントの導入（手動）
+# 日本語フォント
+
+最近使ってない
 
 * [Klee One](https://github.com/fontworks-fonts/Klee)
 * [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 
-# `Hyper-V`の有効化
+# 既知の問題
 
-  ```Powershell
-  sudo
-  cmd
-  .\hyper-v\hv.bat
-  ```
+### winget install Microsoft.PowerShell
 
-* もし、`Windows Insider Program` への参加が条件で、実行できない場合は、`scoop install offlineinsiderenroll` で `Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
+  * `Windows 11 Home 21H2 22000.556` 環境で `PowerShell 7` のインストールが終わらない
+  * アンインストールも終わらない
+  * 公式から、`.msi` をダウンロードし実行するも修正もアンインストールもうまくいかない
+  * `scoop install pwsh` では問題なくインストール可能
+  * `Windows 11 Home 22H2 22581.100` では問題なし
+
+### winget install DuongDieuPhap.ImageGlass
+
+  * たまにインストール失敗する
+  * 原因不明
+  * `scoop install imageglass` は問題なし
+
+# TODO
+
+- [ ] `nu shell` 最近使ってないので除外するかどうか検討
+- [ ] システムの復元ポイントの構成の必要性（`Sophia` が作成してくれる）
+- [ ] 英語の殴り書きをできるだけ日本語にする
+- [ ] 気が向いたら `ungoogled-chromium` の設定について書く
+- [ ] 同じく気が向いたら `nextdns` の設定、というか DNSブロッカーについて書く
