@@ -8,17 +8,18 @@ foreach (
     )
 ) { scoop bucket add $bucket }
 
-# Must-Have tools
-scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli exifcleaner fd ffmpeg ffsend fzf gitui hwinfo less lightbulb losslesscut lsd mailspring monolith mpv neovim nu posh-git ripgrep sd sharex so starship shutup10 sumatrapdf terminal-icons tldr trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
+# Essentials
+scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo less lightbulb lsd mailspring mpv neovim nu posh-git ripgrep sd sharex starship shutup10 sumatrapdf terminal-icons trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
-# Programming（Optional from here. You can put `#` on top of the line to disable install）
-scoop install github python rustup-msvc sqlitebrowser
+# --- Optional from here. You can disable install by put `#` on top of each line. --- #
+# Programming
+scoop install github gitui monolith python rustup-msvc so sqlitebrowser tldr
 
 # Gaming
-scoop install legendary playnite osulazer
+scoop install legendary osulazer playnite
 
 # Media
-scoop install foobar2000 foobar2000-encoders freetube gallery-dl
+scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
 
 # Nerd Fonts
 sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono FiraCode-NF-Mono Mononoki-NF-Mono --global
@@ -26,45 +27,58 @@ sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono C
 # Display various thumbnails
 sudo scoop install icaros-np --global
 
+# --- Optional region ends here --- #
+
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
-# Install with winget
+# Install some requirements and softwares that you want to set system default with winget
 $programs = @(
-    "gerardog.gsudo",
+    "Microsoft.PowerShell", # PowerShell 7
+    "LibreWolf.LibreWolf", # Default browser
+    "DuongDieuPhap.ImageGlass", # Image viewer
 
-    "Microsoft.PowerShell",
-    "DuongDieuPhap.ImageGlass",
-    "LibreWolf.LibreWolf",
-
+    # Requirements for some apps
     "Microsoft.dotnetRuntime.6-x64",
     "Microsoft.VC++2015-2022Redist-x64",
     "Microsoft.VC++2015-2022Redist-x86",
-    "Microsoft.VisualStudio.2022.BuildTools",
 
+    # --- Optional from here. You can disable install by put `#` on top of each line. --- #
+    # Gaming
     "Valve.Steam",
     "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher"
+    "HeroicGamesLauncher.HeroicGamesLauncher",
+
+    # Programming
+    "gerardog.gsudo", # Yet another sudo command
+    "Microsoft.VisualStudio.2022.BuildTools"
+
+    # --- Optional region ends here --- #
 )
 foreach ($program in $programs) {
-    winget install --id $program -s winget
+    winget install --id $program --source winget
 }
 
 # Stop and Disable Services
-$Services = @(
-    "Fax",
-    "iphlpsvc", # IP Helper
-    "IpxlatCfgSvc", # IP 変換構成サービス
+$services = @(
+    "Fax", # Who use fax in 2022?
+
     "lfsvc", # Geo location
-    "Spooler", # Print Spooler
-    "XboxGipSvc",
     "WSearch", # Windows search
+    "XboxGipSvc",
+
+    # Make sure you don't use these services, remove `#` from each line.
+    #"Spooler", # Printer
+    #"iphlpsvc", # IPv6
+    #"IpxlatCfgSvc", # IP 変換構成サービス
+
+    # Microsoft Edge Update
     "edgeupdate",
     "edgeupdatem",
     "MicrosoftEdgeElevationService"
 )
-foreach ($name in $Services) {
-    sudo Set-Service -Name $name -StartupType Disabled -Status Stopped
+foreach ($service in $services) {
+    sudo Set-Service -Name $service -StartupType Disabled -Status Stopped
 }
 
 # Set the .config directory
