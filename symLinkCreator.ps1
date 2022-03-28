@@ -5,6 +5,9 @@ if ($PSVersionTable.PSVersion.Major -lt 6) {
 else {
     $CONFIG = "$HOME/.config"
 
+    # autohotkey
+    sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/Microsoft/Windows/Start Menu/Programs/Startup -Target $CONFIG/autohotkey/keyswap.ahk
+
     # bat
     sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/bat -Target $CONFIG/bat
 
@@ -12,7 +15,7 @@ else {
     sudo New-Item -ItemType symboliclink -Path $env:APPDATA/dystroy/broot/config/conf.hjson -Force -Target $CONFIG/broot/conf.hjson
 
     # nushell
-    sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/nushell/nu/config -Force -Target $CONFIG/nushell
+    sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/nushell/ -Force -Target $CONFIG/nushell
 
     # nvim
     sudo New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA/nvim -Target $CONFIG/nvim

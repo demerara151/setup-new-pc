@@ -67,7 +67,7 @@ $services = @(
     "WSearch", # Windows search
     "XboxGipSvc",
 
-    # Make sure you don't use these services, remove `#` from each line.
+    # Make sure you don't use these services. Remove `#` from each line to 'Stop and disable' services.
     #"Spooler", # Printer
     #"iphlpsvc", # IPv6
     #"IpxlatCfgSvc", # IP 変換構成サービス
@@ -82,12 +82,15 @@ foreach ($service in $services) {
 }
 
 # Set the .config directory
-Move-Item -Path "$HOME/setup-new-pc/.config/*" -Destination "$HOME/.config" -Force
+Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 
 # Install WPD
-mkdir WPD | Set-Location
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile $HOME\setup-new-pc\WPD\wpd.zip
+mkdir WPD
+Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
+
+# Extract archive
 7z x wpd.zip
+Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
 
 # Run WPD
-.\WPD.exe
+Start-Process -FilePath ~/setup-new-pc/WPD/WPD.exe
