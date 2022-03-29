@@ -85,7 +85,7 @@ foreach ($service in $services) {
 Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 
 # Install WPD
-mkdir WPD
+New-Item -ItemType Directory -Path ~/setup-new-pc/WPD
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
 
 # Extract archive
