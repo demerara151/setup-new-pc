@@ -1,3 +1,35 @@
+# Check whether winget command is installed
+if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
+
+# Install some requirements and softwares that you want to set system default with winget
+$programs = @(
+    # "Microsoft.PowerShell", # PowerShell 7
+    # "DuongDieuPhap.ImageGlass", # Image viewer
+
+    # Requirements for some apps
+    "Microsoft.dotnetRuntime.6-x64",
+    "Microsoft.VC++2015-2022Redist-x64",
+    "Microsoft.VC++2015-2022Redist-x86",
+
+    # Default Browser
+    "LibreWolf.LibreWolf",
+
+    # --- Optional from here. You can disable install by put `#` on top of each line. --- #
+    # Gaming
+    "Valve.Steam",
+    "Discord.Discord",
+    "HeroicGamesLauncher.HeroicGamesLauncher", # Epic launcher alternative
+
+    # Programming
+    "gerardog.gsudo", # Yet another sudo command
+    "Microsoft.VisualStudio.2022.BuildTools" # for Rust development
+
+    # --- Optional region ends here --- #
+)
+foreach ($program in $programs) {
+    winget install --id $program --source winget
+}
+
 # Adding buckets
 foreach (
     $bucket in @(
@@ -9,7 +41,7 @@ foreach (
 ) { scoop bucket add $bucket }
 
 # Essentials
-scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo less lightbulb lsd mailspring mpv neovim nu posh-git ripgrep sd sharex starship shutup10 sumatrapdf terminal-icons trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim nu posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium ungoogled-chromium vscodium windowsspyblocker yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
@@ -28,36 +60,6 @@ sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono C
 sudo scoop install icaros-np --global
 
 # --- Optional region ends here --- #
-
-# Check whether winget command is installed
-if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
-
-# Install some requirements and softwares that you want to set system default with winget
-$programs = @(
-    "Microsoft.PowerShell", # PowerShell 7
-    "LibreWolf.LibreWolf", # Default browser
-    "DuongDieuPhap.ImageGlass", # Image viewer
-
-    # Requirements for some apps
-    "Microsoft.dotnetRuntime.6-x64",
-    "Microsoft.VC++2015-2022Redist-x64",
-    "Microsoft.VC++2015-2022Redist-x86",
-
-    # --- Optional from here. You can disable install by put `#` on top of each line. --- #
-    # Gaming
-    "Valve.Steam",
-    "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher",
-
-    # Programming
-    "gerardog.gsudo", # Yet another sudo command
-    "Microsoft.VisualStudio.2022.BuildTools"
-
-    # --- Optional region ends here --- #
-)
-foreach ($program in $programs) {
-    winget install --id $program --source winget
-}
 
 # Stop and Disable Services
 $services = @(
@@ -92,5 +94,7 @@ Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/
 7z x wpd.zip
 Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
 
-# Run WPD
+# Run WPD, shutup10, and WindowsSpyBlocker
 Start-Process -FilePath ~/setup-new-pc/WPD/WPD.exe
+Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
+Start-Process -FilePath "$(scoop prefix windowsspyblocker)\WindowsSpyBlocker.exe"

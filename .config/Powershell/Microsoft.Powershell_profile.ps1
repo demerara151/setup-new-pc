@@ -46,7 +46,7 @@ function msfl () {
 
 # Edit history data
 $history = @(
-    "$env:LOCALAPPDATA/nushell/nu/data/history.txt"
+    "$env:LOCALAPPDATA/nushell/history.txt"
     "$env:APPDATA/Microsoft/Windows/Powershell/PSReadLine/ConsoleHost_history.txt"
 )
 function clh () { nvim $history }
@@ -56,7 +56,7 @@ function ppu () { python -m pip install -U $args }
 
 # Alias for unix commands
 function ll () {
-    lsd -lAL --blocks permission --blocks date --blocks size --blocks name --blocks inode --date '+%Y/%m/%d %X' -I venv -I media -I mp -I desktop.ini $args
+    lsd -lAL --blocks permission --blocks date --blocks size --blocks name --blocks inode --date '+%Y/%m/%d %X' -I desktop.ini $args
 }
 function tree ([string]$venv = "venv") { lsd --tree -I $venv }
 function fzfp () {
@@ -94,7 +94,7 @@ function list () { nvim $inputFile }
 function Edit-MyConfig ([string]$filename = "ps") {
     $case = @{
         vim = 'nvim\init.vim'
-        nu  = 'nushell\config.toml'
+        nu  = 'nushell\config.nu'
         mpv = 'mpv.conf'
         ps  = 'Powershell\Microsoft.Powershell_profile.ps1'
     }
@@ -112,9 +112,9 @@ function scannow () { sudo sfc /scannow }
 
 # zoxide
 Invoke-Expression (& {
-    $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
+        $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
     (zoxide init --hook $hook powershell | Out-String)
-})
+    })
 
 # winget completion
 Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {

@@ -2,7 +2,7 @@
 
 **`Windows` を快適に使うための `PC` セットアップ手順**
 
-## 次のような人におすすめ
+## こんな人におすすめ
 
 * 余計なプログラムやファイルは出来るだけ排除したい
 * `Microsoft` 製品は一部を除いて基本的に使わない
@@ -67,13 +67,11 @@ scoop install 7zip mingit sudo
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
-
-Set-Location setup-new-pc
 ```
 
 ## Sophia Script の実行
 
-ターミナルを再起動後
+事前にスクリプトを<u>編集・準備</u>した上で
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
@@ -95,7 +93,7 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 ~/setup-new-pc/stopService.ps1
 
 # Install WPD
-mkdir WPD
+New-Item -ItemType Directory -Path ~/setup-new-pc/WPD
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
 
 # Extract archive
@@ -112,7 +110,7 @@ Start-Process -FilePath ~/setup-new-pc/WPD/wpd.exe
   
   * プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般 以外の項目を全てオフに
   * ブロッカー : `Update` 以外を適用。`Firewall` はそのまま
-  * アプリ : 不要なものを選択して削除
+  * アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
 
 * `O&O ShutUp10`
   
@@ -234,18 +232,20 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 * 公式から、`.msi` をダウンロードし実行するも修正もアンインストールもうまくいかない
 * `scoop install pwsh` では問題なくインストール可能
 * `Windows 11 Home 22H2 22581.100` では問題なし
+* 現在 `scoop` で代用中。特に問題なければそのまま移行予定
 
 ### `winget install DuongDieuPhap.ImageGlass`
 
 * たまにインストールに失敗する
 * 原因不明
 * `scoop install imageglass` は問題なし
+* こちらも現在 `scoop` で代用中。特に問題なければそのまま移行予定
 
 # TODO
 
-- [ ] `nu shell` 最近使ってないので除外するかどうか検討
+- [ ] `nu shell` 最近使ってないので除外するかどうか検討（大幅な更新があったため再度勉強中）
 - [x] システムの復元ポイントの構成の必要性（`Sophia` が作成してくれる）
 - [x] 英語の殴り書きをできるだけ日本語にする
 - [ ] 気が向いたら `ungoogled-chromium` の設定について書く
 - [ ] 同じく気が向いたら `nextdns` の設定、というか DNSブロッカーについて書く
-- [x] Autohotkey : 既定のプログラムの設定を自動化
+- [x] Autohotkey : 既定のプログラムの設定を自動化（できなかった）
