@@ -5,7 +5,6 @@ Import-Module -Name Terminal-Icons
 # starship initialization
 Invoke-Expression (&starship init powershell)
 
-Set-Alias -Name code -Value codium
 Set-Alias -Name br -Value broot
 Set-Alias -Name vim -Value nvim
 

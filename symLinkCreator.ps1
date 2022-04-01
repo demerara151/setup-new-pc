@@ -27,6 +27,6 @@ else {
     sudo New-Item -ItemType SymbolicLink -Path $PROFILE -Force -Target $CONFIG/PowerShell/Microsoft.Powershell_profile.ps1
 
     # vscodium
-    sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/vscodium/data/user-data/User/settings.json -Force -Target $CONFIG/codium/settings.json
+    sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/vscode/data/user-data/User/settings.json -Force -Target $CONFIG/vscode/settings.json
 
 }

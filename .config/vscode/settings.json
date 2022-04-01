@@ -1,14 +1,31 @@
 {
-	"editor.fontSize": 20,
+	"telemetry.telemetryLevel": "off",
+	"workbench.colorTheme": "Nord",
+	"workbench.startupEditor": "none",
+	"workbench.iconTheme": "material-icon-theme",
+	"workbench.productIconTheme": "material-product-icons",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[python]": {
+		"editor.defaultFormatter": "ms-python.python"
+	},
+	"[powershell]": {
+		"debug.saveBeforeStart": "nonUntitledEditorsInActiveGroup",
+		"editor.semanticHighlighting.enabled": true,
+		"editor.wordSeparators": ";:,.[]{}()/\|^&*-=+'`\" !?@#$%&_<>「」（）『』『』［］、，。：；／",
+		"editor.defaultFormatter": "ms-vscode.powershell"
+	},
+	"[rust]": {
+		"editor.defaultFormatter": "matklad.rust-analyzer"
+	},
+	"editor.fontSize": 26,
+	"editor.lineHeight": 28,
 	"editor.fontWeight": "normal",
 	"debug.console.fontSize": 16,
 	"terminal.integrated.fontSize": 16,
 	"terminal.integrated.fontFamily": "'CaskaydiaCove NF', 'IBM Plex Sans JP Light'",
-	"window.zoomLevel": 2,
 
 	"update.enableWindowsBackgroundUpdates": false,
 	"update.showReleaseNotes": false,
-	"telemetry.telemetryLevel": "off",
 	"extensions.autoCheckUpdates": false,
 	"extensions.autoUpdate": false,
 	"workbench.settings.enableNaturalLanguageSearch": false,
@@ -18,28 +35,24 @@
 	"html.format.maxPreserveNewLines": 80,
 
 	"files.autoSave": "afterDelay",
-	"files.autoSaveDelay": 600,
+	"files.autoSaveDelay": 1000,
 	"files.defaultLanguage": "markdown",
 	"files.insertFinalNewline": true,
-	"files.trimFinalNewlines": true,
 
 	"editor.rulers": [88, 119],
 	"editor.renderControlCharacters": true,
 	"editor.wordWrap": "on",
-	"editor.snippetSuggestions": "top",
 	"editor.tabCompletion": "on",
 
 	"editor.minimap.enabled": true,
 	"editor.minimap.renderCharacters": false,
 	"editor.minimap.showSlider": "always",
 
-	"editor.multiCursorModifier": "ctrlCmd",
 	"editor.mouseWheelZoom": true,
 	"editor.linkedEditing": true,
 
 	"python.formatting.provider": "black",
 	"python.linting.enabled": true,
-	"python.linting.pylintEnabled": false,
 	"python.linting.flake8Enabled": true,
 	"python.linting.flake8Args": ["--max-line-length119"],
 
@@ -50,19 +63,16 @@
 	"javascript.format.insertSpaceAfterConstructor": true,
 	"javascript.updateImportsOnFileMove.enabled": "always",
 
-	"markdown.extension.print.theme": "dark",
 	"markdown.preview.fontSize": 18,
 	"markdown.preview.lineHeight": 1.2,
 
 	"editor.autoIndent": "full",
 	"editor.cursorBlinking": "solid",
 	"editor.cursorSmoothCaretAnimation": true,
-	"editor.fontFamily": "'CaskaydiaCove NF', 'IBM Plex Sans JP', 'FiraCode NF', 'VictorMono NF'",
+	"editor.fontFamily": "'Mononoki NF BoldItalic', 'CaskaydiaCove NF', 'IBM Plex Sans JP', 'FiraCode NF', 'VictorMono NF'",
 	"editor.fontLigatures": true,
 	"editor.formatOnType": false,
 	"editor.formatOnSave": true,
-	"editor.lineHeight": 22,
-	"editor.letterSpacing": 0.3,
 	"editor.suggestSelection": "first",
 
 	"search.showLineNumbers": true,
@@ -70,14 +80,6 @@
 	"git.autofetch": true,
 	"git.confirmSync": false,
 
-	"notebook.cellToolbarLocation": {
-		"default": "right",
-		"jupyter-notebook": "left"
-	},
-
-	"workbench.iconTheme": "material-icon-theme",
-	"workbench.productIconTheme": "material-product-icons",
-	"workbench.colorTheme": "Night Owl",
 	"editor.renderLineHighlight": "gutter",
 
 	"prettier.semi": false,
@@ -87,38 +89,41 @@
 
 	"markdown.preview.fontFamily": "'VictorMono NF', 'IBM Plex Sans JP', 'Klee One', 'CaskaydiaCove NF'",
 
-	"workbench.colorCustomizations": {
-		"[Night Owl]": {
-			"activityBar.background": "#000C1D",
-			"activityBar.border": "#102a44",
-			"editorGroup.border": "#102a44",
-			"sideBar.background": "#001122",
-			"sideBar.border": "#102a44",
-			"sideBar.foreground": "#8BADC1"
-		},
-		"[Night Owl (No Italics)]": {
-			"activityBar.background": "#000C1D",
-			"activityBar.border": "#102a44",
-			"editorGroup.border": "#102a44",
-			"sideBar.background": "#001122",
-			"sideBar.border": "#102a44",
-			"sideBar.foreground": "#8BADC1"
-		}
-	},
-
 	"editor.bracketPairColorization.enabled": true,
 	"editor.guides.bracketPairs": true,
 
 	"window.title": "${dirty}${activeEditorMedium}${separator}${rootName}",
+
 	"workbench.tree.indent": 8,
 	"workbench.tree.renderIndentGuides": "always",
+
+	"terminal.integrated.profiles.windows": {
+		"pwsh": {
+			"path": ["${env:USERPROFILE}\\scoop\\shims\\pwsh.exe"],
+			"icon": "terminal-powershell"
+		}
+	},
+	"terminal.integrated.defaultProfile.windows": "pwsh",
+
+	"powershell.powerShellAdditionalExePaths": [
+		{
+			"exePath": "C:\\Users\\user\\scoop\\shims\\pwsh.exe",
+			"versionName": "pwsh"
+		}
+	],
+	"powershell.powerShellDefaultVersion": "pwsh",
+	"powershell.integratedConsole.showOnStartup": false,
 
 	"terminal.integrated.copyOnSelection": true,
 	"terminal.integrated.cursorBlinking": true,
 
-	"tabnine.experimentalAutoImports": true,
 	"editor.unicodeHighlight.ambiguousCharacters": false,
 
+	"vscode-neovim.neovimExecutablePaths.win32": "C:\\Users\\user\\scoop\\apps\\neovim\\current\\bin\\nvim.exe",
+	"vscode-neovim.neovimInitVimPaths.win32": "C:\\Users\\user\\AppData\\Local\\nvim\\init.vim",
+
 	"git.enableSmartCommit": true,
-	"workbench.startupEditor": "none"
+
+	"diffEditor.ignoreTrimWhitespace": false,
+	"trailing-spaces.trimOnSave": true
 }
