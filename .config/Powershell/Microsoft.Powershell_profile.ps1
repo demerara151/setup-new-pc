@@ -62,9 +62,6 @@ function fzfp () {
     fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'
 }
 
-# pdf viewer with dark mode
-function pdf () { sumatrapdf -invert-colors $args }
-
 # monolith
 function mono ([string]$name) {
     monolith --no-js --no-frames --no-metadata --no-fonts --no-video --output D:/Downloads/$name.html $args
@@ -75,7 +72,7 @@ function sym ([string]$path, [string]$target) {
     sudo New-Item -ItemType SymbolicLink -Path $path -Target $target
 }
 
-# Downloaders
+# Downloader
 function yt ([string]$case = "video") {
     yt-dlp --config-location $CONFIG/yt-dlp/$case.conf
 }
@@ -86,7 +83,7 @@ function aria () {
     aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x10 -j16 -s10 -k1M -i $inputFile
 }
 
-# Open list.txt for edit URL for various downloaders
+# Open list.txt for edit URL for various downloader
 function list () { nvim $inputFile }
 
 # Open config file
@@ -143,17 +140,17 @@ Set-PSReadLineOption @PSReadLineOptions
 function OnViModeChange {
     if ($args[0] -eq 'Command') {
         # Set the cursor to a blinking block.
-        Write-Host -NoNewLine "`e[1 q"
+        Write-Host -NoNewline "`e[1 q"
     }
     else {
         # Set the cursor to a blinking line.
-        Write-Host -NoNewLine "`e[5 q"
+        Write-Host -NoNewline "`e[5 q"
     }
 }
 Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $Function:OnViModeChange
 
-# Exclude Save-History settigs
-Set-PSReadlineOption -AddToHistoryHandler {
+# Exclude Save-History settings
+Set-PSReadLineOption -AddToHistoryHandler {
     param ($command)
     switch -regex ($command) {
         "SKIPHISTORY" { return $false }
@@ -267,8 +264,8 @@ Set-PSReadLineKeyHandler -Key "alt+w" -BriefDescription "WrapLineByParenthesis" 
     }
 }
 
-# Insert closing paren
-Remove-PSReadlineKeyHandler "tab"
+# Insert closing parenthesis
+Remove-PSReadLineKeyHandler "tab"
 Set-PSReadLineKeyHandler -Key "tab" -BriefDescription "smartNextCompletion" -LongDescription "insert closing parenthesis in forward completion of method" -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::TabCompleteNext()
     $line = $null
@@ -283,7 +280,7 @@ Set-PSReadLineKeyHandler -Key "tab" -BriefDescription "smartNextCompletion" -Lon
     }
 }
 
-Remove-PSReadlineKeyHandler "shift+tab"
+Remove-PSReadLineKeyHandler "shift+tab"
 Set-PSReadLineKeyHandler -Key "shift+tab" -BriefDescription "smartPreviousCompletion" -LongDescription "insert closing parenthesis in backward completion of method" -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::TabCompletePrevious()
     $line = $null

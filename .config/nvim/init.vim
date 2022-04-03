@@ -40,6 +40,10 @@ let g:airline_powerline_fonts = 1            " Powerline Fontsを利用
 "format .rs file automatically when u save
 let g:rustfmt_autosave = 1
 
+if exists('g:vscode')
+    finish
+endif
+
 " ime off
 if executable('zenhan')
 autocmd InsertLeave * :call system('zenhan 0')

@@ -11,7 +11,7 @@
 	"[powershell]": {
 		"debug.saveBeforeStart": "nonUntitledEditorsInActiveGroup",
 		"editor.semanticHighlighting.enabled": true,
-		"editor.wordSeparators": ";:,.[]{}()/\|^&*-=+'`\" !?@#$%&_<>「」（）『』『』［］、，。：；／",
+		"editor.wordSeparators": ";:,.[]{}()/\\|^&*-=+'`\"!?@#$%&_<>「」（）『』『』［］、，。：；／",
 		"editor.defaultFormatter": "ms-vscode.powershell"
 	},
 	"[rust]": {
