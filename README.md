@@ -13,7 +13,7 @@
 
 -   Windows 11 Home
 -   Powershell 5.x （デフォルト）
--   [Sophia Script for Windows 11 v6.0.13](https://github.com/farag2/Sophia-Script-for-Windows)
+-   [Sophia Script for Windows 11 v6.0.14](https://github.com/farag2/Sophia-Script-for-Windows)
 
 ## 事前準備
 
@@ -27,7 +27,7 @@
 
 #### [installAll.ps1](/installAll.ps1)
 
--   自分用に必要なソフトやアプリをまとめているため、各自不要なものを除外したり必要なものを追加しておくこと
+-   自分用に必要なソフトをまとめています。各自の判断で事前に追加・除外してください
 
 ---
 
@@ -122,7 +122,7 @@ Start-Process -FilePath ~/setup-new-pc/WPD/wpd.exe
 
 # 追加設定
 
-以下、個人的な設定。適用する場合は、必ず**ファイルの中身を事前に確認**すること
+以下は個人的な設定です。適用する場合は、必ずファイルの中身を**事前に確認**してください
 
 ## ドットファイル用シンボリックリンクの作成
 
@@ -238,8 +238,6 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 # TODO
 
 -   [ ] `nu shell` 最近使ってないので除外するかどうか検討（大幅な更新があったため再度勉強中）
--   [x] システムの復元ポイントの構成の必要性（`Sophia` が作成してくれる）
--   [x] 英語の殴り書きをできるだけ日本語にする
 -   [ ] 気が向いたら `ungoogled-chromium` の設定について書く
 -   [ ] 同じく気が向いたら `nextdns` の設定、というか DNS ブロッカーについて書く
--   [x] Autohotkey : 既定のプログラムの設定を自動化（できなかった）
+
