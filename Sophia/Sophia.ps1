@@ -11,7 +11,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.0.13 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.0.14 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
 Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -BaseDirectory $PSScriptRoot\Localizations
@@ -57,7 +57,7 @@ OneDriveFileExplorerAd -Hide
 SnapAssistFlyout -Enable
 SnapAssist -Disable
 FileTransferDialog -Detailed
-RecycleBinDeleteConfirmation -Enable
+RecycleBinDeleteConfirmation -Disable
 QuickAccessRecentFiles -Hide
 QuickAccessFrequentFolders -Hide
 TaskbarAlignment -Center
@@ -89,7 +89,6 @@ OneDrive -Uninstall
 #region System
 
 StorageSense -Disable
-StorageSenseTempFiles -Disable
 Hibernation -Disable
 TempFolder -Default
 Win32LongPathLimit -Disable
@@ -97,11 +96,13 @@ BSoDStopError -Enable
 AdminApprovalMode -Never
 MappedDrivesAppElevatedAccess -Enable
 DeliveryOptimization -Disable
+WaitNetworkStartup -Disable
 WindowsManageDefaultPrinter -Disable
 WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
-UpdateMicrosoftProducts -Disable
+UpdateMicrosoftProducts -Enable
 PowerPlan -Balanced
+LatestInstalled.NET -Disable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
@@ -111,8 +112,6 @@ RecommendedTroubleshooting -Automatically
 FoldersLaunchSeparateProcess -Enable
 ReservedStorage -Disable
 F1HelpPage -Disable
-NumLock -Enable
-CapsLock -Enable
 StickyShift -Disable
 Autoplay -Disable
 ThumbnailCacheRemoval -Disable
@@ -148,6 +147,7 @@ CheckUWPAppsUpdates
 
 XboxGameBar -Disable
 XboxGameTips -Disable
+GPUScheduling -Enable
 SetAppGraphicsPerformance
 
 #endregion Gaming
@@ -161,7 +161,6 @@ SetAppGraphicsPerformance
 
 NetworkProtection -Enable
 PUAppsDetection -Enable
-DefenderSandbox -Enable
 AuditProcess -Enable
 CommandLineProcessAudit -Enable
 EventViewerCustomView -Enable
