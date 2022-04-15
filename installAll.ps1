@@ -45,13 +45,13 @@ scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust ever
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
-scoop install github gitui monolith python rustup-msvc so sqlitebrowser tldr
+scoop install github gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
 
 # Gaming
 scoop install legendary osulazer playnite
 
 # Media
-scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
+scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut picard
 
 # Nerd Fonts
 sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono FiraCode-NF-Mono Mononoki-NF-Mono --global
