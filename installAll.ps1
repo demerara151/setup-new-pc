@@ -1,15 +1,15 @@
+# Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
+# [vcredist-aio](https://github.com/abbodi1406/vcredist)
+sudo scoop install vcredist-aio
+VisualCppRedist_AIO_x86_x64.exe /y
+
 # Check whether winget command is installed
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
 # Install some requirements and softwares that you want to set system default with winget
 $programs = @(
-    # "Microsoft.PowerShell", # PowerShell 7
-    # "DuongDieuPhap.ImageGlass", # Image viewer
-
-    # Requirements for some apps
+    # Requirement for lightbulb
     "Microsoft.dotnetRuntime.6-x64",
-    "Microsoft.VC++2015-2022Redist-x64",
-    "Microsoft.VC++2015-2022Redist-x86",
 
     # Default Browser
     "LibreWolf.LibreWolf",
