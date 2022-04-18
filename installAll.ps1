@@ -91,7 +91,7 @@ New-Item -ItemType Directory -Path ~/setup-new-pc/WPD
 Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
 
 # Extract archive
-7z x wpd.zip
+7z x WPD/wpd.zip -oWPD
 Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
 
 # Run WPD, shutup10, and WindowsSpyBlocker
