@@ -1,12 +1,12 @@
-﻿### Powershell 7.2 is required ###
-Import-Module -Name posh-git
-Import-Module -Name Terminal-Icons
+﻿Import-Module -Name posh-git
+Import-Module Terminal-Icons
 
 # starship initialization
 Invoke-Expression (&starship init powershell)
 
-Set-Alias -Name br -Value broot
 Set-Alias -Name vim -Value nvim
+Set-Alias -Name br -Value broot
+Set-Alias -Name mt -Value marktext
 
 # Global variables
 $inputFile = "$HOME/list.txt"
@@ -17,6 +17,7 @@ function .. () { Set-Location .. }
 function home () { Set-Location $HOME/home }
 
 # Program ShortCut
+# function vim () { nvim -i NONE $args }
 function mail () { Start-Process "$env:LOCALAPPDATA\Mailspring\mailspring.exe" }
 function img () { Start-Process "$env:ProgramFiles\ImageGlass\ImageGlass.exe" $args }
 function lw () { Start-Process "$env:ProgramFiles\LibreWolf\librewolf.exe" $args }
@@ -31,12 +32,17 @@ function manga () { Start-Process "$HOME\home\apps\NeeView39.3\NeeView.exe" }
 # Update All Programs
 function up () { winget upgrade --all; sudo scoop update * }
 
-# Just play any YoutubeMusic
-function mnv ([string]$option) {
-    mpv --no-video $args $option
+# Play music without video. uri will be video link or m3u8 playlist.
+function mnv ([string]$uri) {
+    mpv --no-video $args $uri
 }
 
-# Shuffle play YoutubeMusic
+# Play white noise
+function noise () {
+    mpv --no-video --no-resume-playback $args "https://invidious.snopyta.org/watch?v=WbEGmghn_jo"
+}
+
+# Shuffle playlist, then play music from playlist.
 function msfl () {
     $pl = $(fd -t f . $HOME\home\music)
     $file = "D:\.cache\YoutubeMusic\_playlist.m3u8"
@@ -52,12 +58,17 @@ function clh () { nvim $history }
 
 # Update python packages using pip
 function ppu () { python -m pip install -U $args }
+function ppr () { python -m pip freeze > requirements.txt }
 
-# Alias for unix commands
+# Run python file using poetry
+function prun () { poetry run python -m $args }
+
+# Alias for lsd
 function ll () {
     lsd -lAL --blocks permission --blocks date --blocks size --blocks name --blocks inode --date '+%Y/%m/%d %X' -I desktop.ini $args
 }
-function tree ([string]$venv = "venv") { lsd --tree -I $venv }
+
+# Preview fzf result using bat
 function fzfp () {
     fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'
 }
@@ -72,18 +83,18 @@ function sym ([string]$path, [string]$target) {
     sudo New-Item -ItemType SymbolicLink -Path $path -Target $target
 }
 
-# Downloader
-function yt ([string]$case = "video") {
+# Downloaders
+function yt ([string]$case = "max") {
     yt-dlp --config-location $CONFIG/yt-dlp/$case.conf
 }
 function gld () {
     gallery-dl --input-file $inputFile --destination D:/Pictures/gallery-dl --no-mtime $args
 }
 function aria () {
-    aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x10 -j16 -s10 -k1M -i $inputFile
+    aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x16 -j16 -s16 -k1M -i $inputFile
 }
 
-# Open list.txt for edit URL for various downloader
+# Open list.txt to edit URL for various downloaders
 function list () { nvim $inputFile }
 
 # Open config file
@@ -133,7 +144,7 @@ $PSReadLineOptions = @{
     HistoryNoDuplicates = $true
     # Prediction Intellisense
     PredictionSource    = "History"
-    WordDelimiters      = ";:,.[]{}()/\|^&*-=+'`" !?@#$%&_<>「」（）『』『』［］、，。：；／"
+    WordDelimiters      = ";:,.[]{}()/\|^&*-=+'`"!?@#$%&_<>「」（）『』『』［］、，。：；／"
 }
 Set-PSReadLineOption @PSReadLineOptions
 
@@ -149,7 +160,7 @@ function OnViModeChange {
 }
 Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $Function:OnViModeChange
 
-# Exclude Save-History settings
+# Exclude Save-History settigs
 Set-PSReadLineOption -AddToHistoryHandler {
     param ($command)
     switch -regex ($command) {
@@ -159,7 +170,6 @@ Set-PSReadLineOption -AddToHistoryHandler {
         "cls" { return $false }
         "ll" { return $false }
         "ren" { return $false }
-        "rm" { return $false }
     }
     return $true
 }
@@ -264,7 +274,7 @@ Set-PSReadLineKeyHandler -Key "alt+w" -BriefDescription "WrapLineByParenthesis" 
     }
 }
 
-# Insert closing parenthesis
+# Insert closing paren
 Remove-PSReadLineKeyHandler "tab"
 Set-PSReadLineKeyHandler -Key "tab" -BriefDescription "smartNextCompletion" -LongDescription "insert closing parenthesis in forward completion of method" -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::TabCompleteNext()
