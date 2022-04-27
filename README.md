@@ -184,11 +184,11 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
     -   AdGuard Social Media
     -   [Energized Ultimate Protection](https://filterlists.com/lists/energized-ultimate-protection)
     -   [Energized Xtreme Extension](https://filterlists.com/lists/energized-xtreme-extension)
+    -   [oisd](https://oisd.nl/)
 
 -   検討中
 
     -   [1Hosts Pro](https://github.com/badmojr/1Hosts)
-    -   [oisd](https://oisd.nl/)
 
 ## about:config で変更したい箇所
 
