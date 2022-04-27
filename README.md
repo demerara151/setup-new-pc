@@ -217,24 +217,6 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 -   [Klee One](https://github.com/fontworks-fonts/Klee)
 -   [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 
-# 既知の問題
-
-### `winget install Microsoft.PowerShell`
-
--   `Windows 11 Home 21H2 22000.556` 環境で `PowerShell 7` のインストールが終わらない
--   アンインストールも終わらない
--   公式から、`.msi` をダウンロードし実行するも修正もアンインストールもうまくいかない
--   `scoop install pwsh` では問題なくインストール可能
--   `Windows 11 Home 22H2 22581.100` では問題なし
--   現在 `scoop` で代用中。特に問題なければそのまま移行予定
-
-### `winget install DuongDieuPhap.ImageGlass`
-
--   たまにインストールに失敗する
--   原因不明
--   `scoop install imageglass` は問題なし
--   こちらも現在 `scoop` で代用中。特に問題なければそのまま移行予定
-
 # TODO
 
 -   [ ] `nu shell` 最近使ってないので除外するかどうか検討（大幅な更新があったため再度勉強中）
