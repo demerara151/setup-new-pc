@@ -14,7 +14,7 @@ sudo scoop install vcredist-aio
 VisualCppRedist_AIO_x86_x64.exe /y
 
 # Essentials
-scoop install aria2 autohotkey bat bitwarden bottom broot curl czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim nu posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium ungoogled-chromium vscode windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom brave broot curl czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode windowsspyblocker yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
