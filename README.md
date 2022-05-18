@@ -67,9 +67,9 @@
 `Windowsキー` を押して、検索窓に`wt` と入力して<kbd>Enter</kbd> でターミナルを起動
 
 ```powershell
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-iwr -useb get.scoop.sh | iex
+Invoke-WebRequest get.scoop.sh | Invoke-Expression
 
 scoop install 7zip mingit sudo
 scoop update
