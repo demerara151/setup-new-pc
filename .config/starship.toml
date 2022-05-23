@@ -20,7 +20,7 @@ format = " $symbol [${ram}]($style) "
 # 直前のコマンドに掛かった時間の表示
 [cmd_duration]
 disabled = false
-min_time = 2_000
+min_time = 1_000
 show_milliseconds = true
 format = "took [$duration](bold yellow)"
 

@@ -17,9 +17,7 @@ function .. () { Set-Location .. }
 function home () { Set-Location $HOME/home }
 
 # Program ShortCut
-# function vim () { nvim -i NONE $args }
 function mail () { Start-Process "$env:LOCALAPPDATA\Mailspring\mailspring.exe" }
-function img () { Start-Process "$env:ProgramFiles\ImageGlass\ImageGlass.exe" $args }
 function lw () { Start-Process "$env:ProgramFiles\LibreWolf\librewolf.exe" $args }
 function fo () { Start-Process "$(scoop prefix foobar2000)\foobar2000.exe" }
 function dis (
@@ -30,7 +28,13 @@ function dis (
 function manga () { Start-Process "$HOME\home\apps\NeeView39.3\NeeView.exe" }
 
 # Update All Programs
-function up () { winget upgrade --all; sudo scoop update * }
+function up () { winget upgrade --all; sudo scoop update *; sudo scoop update * --global }
+
+# Launch privacy apps
+function privacy () {
+    Start-Process "$env:USERPROFILE\home\apps\wpd\WPD.exe";
+    Start-Process "$(scoop prefix shutup10)\OOSU10.exe"
+}
 
 # Play music without video. uri will be video link or m3u8 playlist.
 function mnv ([string]$uri) {
@@ -39,7 +43,7 @@ function mnv ([string]$uri) {
 
 # Play white noise
 function noise () {
-    mpv --no-video --no-resume-playback $args "https://invidious.snopyta.org/watch?v=WbEGmghn_jo"
+    mpv --no-video --no-resume-playback $args "https://youtu.be/mkKZvOG9B1c"
 }
 
 # Shuffle playlist, then play music from playlist.
@@ -61,7 +65,9 @@ function ppu () { python -m pip install -U $args }
 function ppr () { python -m pip freeze > requirements.txt }
 
 # Run python file using poetry
-function prun () { poetry run python -m $args }
+function prun ([string]$file = "src.main") {
+    poetry run python -m $file $args
+}
 
 # Alias for lsd
 function ll () {
@@ -101,7 +107,6 @@ function list () { nvim $inputFile }
 function Edit-MyConfig ([string]$filename = "ps") {
     $case = @{
         vim = 'nvim\init.vim'
-        nu  = 'nushell\config.nu'
         mpv = 'mpv.conf'
         ps  = 'Powershell\Microsoft.Powershell_profile.ps1'
     }
