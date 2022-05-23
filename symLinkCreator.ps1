@@ -14,9 +14,6 @@ else {
     # broot
     sudo New-Item -ItemType symboliclink -Path $env:APPDATA/dystroy/broot/config/conf.hjson -Force -Target $CONFIG/broot/conf.hjson
 
-    # nushell
-    sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/nushell/ -Force -Target $CONFIG/nushell
-
     # nvim
     sudo New-Item -ItemType SymbolicLink -Path $env:LOCALAPPDATA/nvim -Target $CONFIG/nvim
 
