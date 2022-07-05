@@ -9,22 +9,22 @@ foreach (
 ) { scoop bucket add $bucket }
 
 # Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
-# [vcredist-aio](https://github.com/abbodi1406/vcredist)
+# More info: https://github.com/abbodi1406/vcredist
 sudo scoop install vcredist-aio
-VisualCppRedist_AIO_x86_x64.exe /y
+VisualCppRedist_AIO_x86_x64.exe /y  # use "/ai1" istead of "/y" to update all packages
 
 # Essentials
-scoop install aria2 autohotkey bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode windowsspyblocker yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
-scoop install github gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
+scoop install gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
 
 # Gaming
 scoop install legendary playnite
 
 # Media
-scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut picard
+scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
 
 # Nerd Fonts
 sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono FiraCode-NF-Mono Mononoki-NF-Mono --global
@@ -94,8 +94,7 @@ Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/
 7z x WPD/wpd.zip -oWPD
 Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
 
-# Run WPD, shutup10, and WindowsSpyBlocker
+# Run WPD and shutup10
 Start-Process -FilePath ~/setup-new-pc/WPD/WPD.exe
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
-Start-Process -FilePath "$(scoop prefix windowsspyblocker)\WindowsSpyBlocker.exe"
 
