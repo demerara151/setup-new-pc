@@ -77,7 +77,7 @@
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-Invoke-WebRequest get.scoop.sh | Invoke-Expression
+Invoke-RestMethod get.scoop.sh | Invoke-Expression
 
 scoop install 7zip mingit sudo
 scoop update
