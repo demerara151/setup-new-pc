@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.0.14
-	Date: 09.04.2022
+	Version: v6.1.2
+	Date: 16.07.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -14,16 +14,16 @@
 	Running the script is best done on a fresh install because running it on wrong tweaked system may result in errors occurring
 
 	.NOTES
-	Minimum Supported Windows 11 version
-	Version: 21H2
-	Build: 22000.556, 22509
+	Supported Windows 11 versions
+	Versions: 21H2/22H2
+	Builds: 22000.739+, 22509+
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
 	Set execution policy to be able to run scripts only in the current PowerShell session:
 		Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
-	.LINK GitHub link
+	.LINK GitHub
 	https://github.com/farag2/Sophia-Script-for-Windows
 
 	.LINK Telegram channel & group
@@ -83,12 +83,14 @@ function Checkings
 		}
 	}
 
-	# Check whether the OS minor build version is 556 minimum
-	switch ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -ge 556)
+	# Check whether the OS minor build version is 739 minimum
+	# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
+	# https://support.microsoft.com/en-us/topic/june-14-2022-kb5014697-os-build-22000-739-cd3aaa0b-a8da-44a0-a778-dfb6f1d9ea11
+	switch ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -ge 739)
 	{
 		$false
 		{
-			if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -lt 22509)
+			if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -eq 22000)
 			{
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
@@ -175,6 +177,26 @@ function Checkings
 		exit
 	}
 
+	# Check whether libraries exist in the bin folder
+	$Libraries = @(
+		"$PSScriptRoot\..\bin\Start_Layout\start.bin",
+		"$PSScriptRoot\..\bin\PolicyFileEditor\Commands.ps1",
+		"$PSScriptRoot\..\bin\PolicyFileEditor\Common.ps1",
+		"$PSScriptRoot\..\bin\PolicyFileEditor\PolFileEditor.dll",
+		"$PSScriptRoot\..\bin\PolicyFileEditor\PolicyFileEditor.psd1",
+		"$PSScriptRoot\..\bin\PolicyFileEditor\PolicyFileEditor.psm1"
+	)
+	if (($Libraries | Test-Path) -contains $false)
+	{
+		Write-Warning -Message $Localization.Bin
+
+		Start-Sleep -Seconds 5
+
+		Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
+
+		exit
+	}
+
 	# Check for a pending reboot
 	$PendingActions = @(
 		# CBS pending
@@ -185,7 +207,7 @@ function Checkings
 		"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\PostRebootReporting",
 		"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired"
 	)
-	if ($null -ne (Get-Item -Path $PendingActions -Force -ErrorAction Ignore))
+	if (($PendingActions | Test-Path) -contains $true)
 	{
 		Write-Warning -Message $Localization.RebootPending
 		exit
@@ -196,34 +218,146 @@ function Checkings
 	{
 		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-		# https://github.com/farag2/Sophia-Script-for-Windows/blob/master/sophia_script_versions.json
+		# Check the internet connection
 		$Parameters = @{
-			Uri              = "https://raw.githubusercontent.com/farag2/Sophia-Script-for-Windows/master/sophia_script_versions.json"
+			Uri              = "https://www.google.com"
+			Method           = "Head"
+			DisableKeepAlive = $true
 			UseBasicParsing  = $true
 		}
-		$LatestRelease = (Invoke-RestMethod @Parameters).Sophia_Script_Windows_11_PowerShell_5_1
-		$CurrentRelease = (Get-Module -Name Sophia).Version.ToString()
-		switch ([System.Version]$LatestRelease -gt [System.Version]$CurrentRelease)
+		if (-not (Invoke-WebRequest @Parameters).StatusDescription)
 		{
-			$true
-			{
-				Write-Warning -Message $Localization.UnsupportedRelease
+			return
+		}
 
-				Start-Sleep -Seconds 5
-
-				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
-				exit
+		try
+		{
+			# https://github.com/farag2/Sophia-Script-for-Windows/blob/master/sophia_script_versions.json
+			$Parameters = @{
+				Uri              = "https://raw.githubusercontent.com/farag2/Sophia-Script-for-Windows/master/sophia_script_versions.json"
+				UseBasicParsing  = $true
 			}
+			$LatestRelease = (Invoke-RestMethod @Parameters).Sophia_Script_Windows_11_PowerShell_5_1
+			$CurrentRelease = (Get-Module -Name Sophia).Version.ToString()
+			switch ([System.Version]$LatestRelease -gt [System.Version]$CurrentRelease)
+			{
+				$true
+				{
+					Write-Warning -Message $Localization.UnsupportedRelease
+
+					Start-Sleep -Seconds 5
+
+					Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
+					exit
+				}
+			}
+		}
+		catch [System.Net.WebException]
+		{
+			Write-Warning -Message ($Localization.NoResponse -f "https://github.com")
+			Write-Error -Message ($Localization.NoResponse -f "https://github.com") -ErrorAction SilentlyContinue
+
+			Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 		}
 	}
 	catch [System.Net.WebException]
 	{
-		Write-Warning -Message ($Localization.NoResponse -f "https://github.com/farag2/Sophia-Script-for-Windows")
-		Write-Error -Message ($Localization.NoResponse -f "https://github.com/farag2/Sophia-Script-for-Windows") -ErrorAction SilentlyContinue
+		Write-Warning -Message $Localization.NoInternetConnection
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 	}
 
 	# Unblock all files in the script folder by removing the Zone.Identifier alternate data stream with a value of "3"
 	Get-ChildItem -Path $PSScriptRoot\..\ -File -Recurse -Force | Unblock-File
+
+	#region Defender Checkings
+	# Turn off Controlled folder access to let the script proceed
+	# Checking whether Defender wasn't disabled first
+	$productState = (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName Antivirusproduct | Where-Object -FilterScript {$_.instanceGuid -eq "{D68DDC3A-831F-4fae-9E44-DA132C1ACF46}"}).productState
+	$DefenderState = ('0x{0:x}' -f $productState).Substring(3, 2)
+	if ($DefenderState -notmatch "00|01")
+	{
+		$Script:DefenderproductState = $true
+	}
+	else
+	{
+		$Script:DefenderproductState = $false
+	}
+
+	# Checking services
+	@("Windefend", "SecurityHealthService", "wscsvc") | ForEach-Object -Process {
+		if ($null -eq (Get-Service -Name $_ -ErrorAction Ignore))
+		{
+			$Localization.DefenderBroken
+			exit
+		}
+		else
+		{
+			if ((Get-Service -Name $_ -ErrorAction Ignore).Status -eq "running")
+			{
+				$Script:DefenderServices = $true
+			}
+			else
+			{
+				$Script:DefenderServices = $false
+			}
+		}
+	}
+
+	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AntispywareEnabled)
+	{
+		$Script:DefenderAntispywareEnabled = $true
+	}
+	else
+	{
+		$Script:DefenderAntispywareEnabled = $false
+	}
+
+	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
+	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).ProductStatus -eq 1)
+	{
+		$Script:DefenderProductStatus = $false
+	}
+	else
+	{
+		$Script:DefenderProductStatus = $true
+	}
+
+	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
+	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AMEngineVersion -eq "0.0.0.0")
+	{
+		$Script:DefenderAMEngineVersion = $false
+	}
+	else
+	{
+		$Script:DefenderAMEngineVersion = $true
+	}
+
+	if ($Script:DefenderproductState -and $Script:DefenderServices -and $Script:DefenderAntispywareEnabled -and $Script:DefenderProductStatus -and $Script:DefenderAMEngineVersion)
+	{
+		# Defender is enabled
+		$Script:DefenderState = $true
+
+		switch ((Get-MpPreference).EnableControlledFolderAccess)
+		{
+			"1"
+			{
+				Write-Warning -Message $Localization.ControlledFolderAccessDisabled
+
+				$Script:ControlledFolderAccess = $true
+				Set-MpPreference -EnableControlledFolderAccess Disabled
+
+				# Open "Ransomware protection" page
+				Start-Process -FilePath windowsdefender://RansomwareProtection
+			}
+			"0"
+			{
+				$Script:ControlledFolderAccess = $false
+			}
+		}
+	}
+	#endregion Defender Checkings
 
 	# Display a warning message about whether a user has customized the preset file
 	if ($Warning)
@@ -253,34 +387,6 @@ function Checkings
 			"1"
 			{
 				continue
-			}
-		}
-	}
-
-	# Turn off Controlled folder access to let the script proceed
-	# Checking whether Defender wasn't disabled first
-	$productState = (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName Antivirusproduct | Where-Object -FilterScript {$_.instanceGuid -eq "{D68DDC3A-831F-4fae-9E44-DA132C1ACF46}"}).productState
-	$DefenderState = ('0x{0:x}' -f $productState).Substring(3, 2)
-	if ($DefenderState -notmatch "00|01")
-	{
-		# Defender is enabled
-		$Script:DefenderState = $true
-
-		switch ((Get-MpPreference).EnableControlledFolderAccess)
-		{
-			"1"
-			{
-				Write-Warning -Message $Localization.ControlledFolderAccessDisabled
-
-				$Script:ControlledFolderAccess = $true
-				Set-MpPreference -EnableControlledFolderAccess Disabled
-
-				# Open "Ransomware protection" page
-				Start-Process -FilePath windowsdefender://RansomwareProtection
-			}
-			"0"
-			{
-				$Script:ControlledFolderAccess = $false
 			}
 		}
 	}
@@ -350,6 +456,9 @@ function CreateRestorePoint
 	DiagTrackService -Enable
 
 	.NOTES
+	Disabling the "Connected User Experiences and Telemetry" service (DiagTrack) can cause you not being able to get Xbox achievements anymore
+
+	.NOTES
 	Current user
 #>
 function DiagTrackService
@@ -376,6 +485,7 @@ function DiagTrackService
 		"Disable"
 		{
 			# Connected User Experiences and Telemetry
+			# Disabling the "Connected User Experiences and Telemetry" service (DiagTrack) can cause you not being able to get Xbox achievements anymore
 			Get-Service -Name DiagTrack | Stop-Service -Force
 			Get-Service -Name DiagTrack | Set-Service -StartupType Disabled
 
@@ -436,15 +546,23 @@ function DiagnosticDataLevel
 	{
 		"Minimal"
 		{
-			if (Get-WindowsEdition -Online | Where-Object -FilterScript {$_.Edition -like "Enterprise*" -or $_.Edition -eq "Education"})
+			if (Get-WindowsEdition -Online | Where-Object -FilterScript {($_.Edition -like "Enterprise*") -or ($_.Edition -eq "Education")})
 			{
 				# Diagnostic data off
-				New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 0 -Force
+				if (-not (Test-Path -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection))
+				{
+					New-Item -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Force
+				}
+				New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 0 -Force
 			}
 			else
 			{
 				# Send required diagnostic data
-				New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 1 -Force
+				if (-not (Test-Path -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection))
+				{
+					New-Item -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Force
+				}
+				New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 1 -Force
 			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 1 -Force
 
@@ -453,7 +571,7 @@ function DiagnosticDataLevel
 		"Default"
 		{
 			# Optional diagnostic data
-			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 3 -Force
+			Remove-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 
 			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
@@ -1511,61 +1629,6 @@ function ThisPC
 
 <#
 	.SYNOPSIS
-	The Windows 10 File Explorer
-
-	.PARAMETER Enable
-	Enable the Windows 10 File Explorer
-
-	.PARAMETER Disable
-	Disable the Windows 10 File Explorer
-
-	.EXAMPLE
-	Windows10FileExplorer -Enable
-
-	.EXAMPLE
-	Windows10FileExplorer -Disable
-
-	.NOTES
-	Current user
-#>
-function Windows10FileExplorer
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Disable"
-		)]
-		[switch]
-		$Disable
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Enable"
-		{
-			if (-not (Test-Path -Path "HKCU:\Software\Classes\CLSID\{d93ed569-3b3e-4bff-8355-3c44f6a52bb5}\InprocServer32"))
-			{
-				New-Item -Path "HKCU:\Software\Classes\CLSID\{d93ed569-3b3e-4bff-8355-3c44f6a52bb5}\InprocServer32" -Force
-			}
-			New-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{d93ed569-3b3e-4bff-8355-3c44f6a52bb5}\InprocServer32" -Name "(default)" -PropertyType String -Value "" -Force
-		}
-		"Disable"
-		{
-			Remove-Item -Path "HKCU:\Software\Classes\CLSID\{d93ed569-3b3e-4bff-8355-3c44f6a52bb5}" -Recurse -Force -ErrorAction Ignore
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
 	Item check boxes
 
 	.PARAMETER Disable
@@ -2251,10 +2314,10 @@ function QuickAccessFrequentFolders
 	Set the taskbar alignment to the center
 
 	.EXAMPLE
-	TaskbarAlignment -Left
+	TaskbarAlignment -Center
 
 	.EXAMPLE
-	TaskbarAlignment -Center
+	TaskbarAlignment -Left
 
 	.NOTES
 	Current user
@@ -2280,13 +2343,13 @@ function TaskbarAlignment
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
-		"Left"
-		{
-			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarAl -PropertyType DWord -Value 0 -Force
-		}
 		"Center"
 		{
 			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarAl -PropertyType DWord -Value 1 -Force
+		}
+		"Left"
+		{
+			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarAl -PropertyType DWord -Value 0 -Force
 		}
 	}
 }
@@ -2911,38 +2974,42 @@ function TaskManagerWindow
 		$Compact
 	)
 
-	$Taskmgr = Get-Process -Name Taskmgr -ErrorAction Ignore
-
-	Start-Sleep -Seconds 1
-
-	if ($Taskmgr)
+	# This function is designed only for 22000 build due to Windows 11 22H2 has a new Task Manager with the new UI
+	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -eq 22000)
 	{
-		$Taskmgr.CloseMainWindow()
-	}
-	Start-Process -FilePath Taskmgr.exe -PassThru
+		$Taskmgr = Get-Process -Name Taskmgr -ErrorAction Ignore
 
-	Start-Sleep -Seconds 3
+		Start-Sleep -Seconds 1
 
-	do
-	{
-		Start-Sleep -Milliseconds 100
-		$Preferences = Get-ItemPropertyValue -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences
-	}
-	until ($Preferences)
-
-	Stop-Process -Name Taskmgr -ErrorAction Ignore
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Expanded"
+		if ($Taskmgr)
 		{
-			$Preferences[28] = 0
-			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
+			$Taskmgr.CloseMainWindow()
 		}
-		"Compact"
+		Start-Process -FilePath Taskmgr.exe -PassThru
+
+		Start-Sleep -Seconds 3
+
+		do
 		{
-			$Preferences[28] = 1
-			New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
+			Start-Sleep -Milliseconds 100
+			$Preferences = Get-ItemPropertyValue -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences
+		}
+		until ($Preferences)
+
+		Stop-Process -Name Taskmgr -ErrorAction Ignore
+
+		switch ($PSCmdlet.ParameterSetName)
+		{
+			"Expanded"
+			{
+				$Preferences[28] = 0
+				New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
+			}
+			"Compact"
+			{
+				$Preferences[28] = 1
+				New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
+			}
 		}
 	}
 }
@@ -5238,6 +5305,11 @@ function NetworkAdaptersSavePower
 		$Enable
 	)
 
+	if (Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"})
+	{
+		$PhysicalAdaptersStatusUp = @((Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"}).Name)
+	}
+
 	$Adapters = Get-NetAdapter -Physical | Get-NetAdapterPowerManagement | Where-Object -FilterScript {$_.AllowComputerToTurnOffDevice -ne "Unsupported"}
 
 	switch ($PSCmdlet.ParameterSetName)
@@ -5259,6 +5331,19 @@ function NetworkAdaptersSavePower
 			}
 		}
 	}
+
+	# All network adapters are turned into "Disconnected" for few seconds, so we need to wait a bit to let them up
+	# Otherwise functions below will indicate that there is no the Internet connection
+	if ($PhysicalAdaptersStatusUp)
+	{
+		while
+		(
+			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | ForEach-Object -Process {$_.Status -eq "Disconnected"}
+		)
+		{
+			Start-Sleep -Seconds 2
+		}
+	}
 }
 
 <#
@@ -5266,10 +5351,10 @@ function NetworkAdaptersSavePower
 	Internet Protocol Version 6 (TCP/IPv6) component
 
 	.PARAMETER Disable
-	Disable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections
+	Disable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections if your ISP doesn't support it
 
 	.PARAMETER Enable
-	Enable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections
+	Enable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections if your ISP supports it
 
 	.EXAMPLE
 	IPv6Component -Disable
@@ -5316,12 +5401,34 @@ function IPv6Component
 			return
 		}
 
-		# Check whether the ISP supports IPv6 protocol using https://ipv6-test.com
-		$Parameters = @{
-			Uri             = "https://v4v6.ipv6-test.com/api/myip.php?json"
-			UseBasicParsing = $true
+		try
+		{
+			# Check whether the https://ipv6-test.com site is alive
+			$Parameters = @{
+				Uri              = "https://ipv6-test.com"
+				Method           = "Head"
+				DisableKeepAlive = $true
+				UseBasicParsing  = $true
+			}
+			if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+			{
+				return
+			}
+
+			# Check whether the ISP supports IPv6 protocol using https://ipv6-test.com
+			$Parameters = @{
+				Uri             = "https://v4v6.ipv6-test.com/api/myip.php?json"
+				UseBasicParsing = $true
+			}
+			$IPVersion = (Invoke-RestMethod @Parameters).proto
 		}
-		$IPv6Test = Invoke-RestMethod @Parameters | Where-Object -FilterScript {$_.proto -eq "ipv6"}
+		catch [System.Net.WebException]
+		{
+			Write-Warning -Message ($Localization.NoResponse -f "https://ipv6-test.com")
+			Write-Error -Message ($Localization.NoResponse -f "https://ipv6-test.com") -ErrorAction SilentlyContinue
+
+			Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+		}
 	}
 	catch [System.Net.WebException]
 	{
@@ -5335,14 +5442,14 @@ function IPv6Component
 	{
 		"Disable"
 		{
-			if ($null -eq $IPv6Test)
+			if ($IPVersion -ne "ipv6")
 			{
 				Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6
 			}
 		}
 		"Enable"
 		{
-			if ($IPv6Test)
+			if ($IPVersion -eq "ipv6")
 			{
 				Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6
 			}
@@ -5705,10 +5812,10 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 
 	# Get the localized user folders names
 	$Signature = @{
-	Namespace        = "WinAPI"
-	Name             = "GetStr"
-	Language         = "CSharp"
-	MemberDefinition = @"
+		Namespace        = "WinAPI"
+		Name             = "GetStr"
+		Language         = "CSharp"
+		MemberDefinition = @"
 [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 public static extern IntPtr GetModuleHandle(string lpModuleName);
 
@@ -5771,9 +5878,9 @@ public static string GetString(uint strId)
 
 			$Title = ""
 			$Message       = $Localization.UserFolderRequest -f $DesktopLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5804,9 +5911,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $DocumentsLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5837,9 +5944,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $DownloadsLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5870,9 +5977,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $MusicLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5903,9 +6010,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $PicturesLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5936,9 +6043,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $VideosLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$No            = $Localization.No
+			$Yes           = $Localization.Yes
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -5970,8 +6077,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DesktopLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6013,8 +6120,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DocumentsLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6056,8 +6163,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DownloadsLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6099,8 +6206,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $MusicLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6142,8 +6249,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $PicturesLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6185,8 +6292,8 @@ public static string GetString(uint strId)
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $VideosLocalizedString
 			$Browse        = $Localization.Browse
-			$Skip          = $Localization.Skip
-			$Options       = "&$Browse", "&$Skip"
+			$No            = $Localization.No
+			$Options       = "&$Browse", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6229,9 +6336,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DesktopLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6259,9 +6366,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DocumentsLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6289,9 +6396,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DownloadsLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6319,9 +6426,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $MusicLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6349,9 +6456,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $PicturesLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6379,9 +6486,9 @@ public static string GetString(uint strId)
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $VideosLocalizedString
-			$Change        = $Localization.Change
-			$Skip          = $Localization.Skip
-			$Options       = "&$Change", "&$Skip"
+			$Yes           = $Localization.Yes
+			$No            = $Localization.No
+			$Options       = "&$Yes", "&$No"
 			$DefaultChoice = 1
 			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -6553,7 +6660,7 @@ function RecommendedTroubleshooting
 	}
 
 	# Set the OS level of diagnostic data gathering to "Optional diagnostic data"
-	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 3 -Force
+	New-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 3 -Force
 	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 
 	New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
@@ -7948,27 +8055,331 @@ function DefaultTerminalApp
 #>
 function InstallVCRedistx64
 {
-	$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-	$Parameters = @{
-		Uri             = "https://aka.ms/vs/17/release/VC_redist.x64.exe"
-		OutFile         = "$DownloadsFolder\VC_redist.x64.exe"
-		UseBasicParsing = $true
-		Verbose         = $true
+	try
+	{
+		# Check the internet connection
+		$Parameters = @{
+			Uri              = "https://www.google.com"
+			Method           = "Head"
+			DisableKeepAlive = $true
+			UseBasicParsing  = $true
+		}
+		if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+		{
+			return
+		}
+
+		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
+		{
+			winget install --id=Microsoft.VC++2015-2022Redist-x64 --exact --accept-source-agreements
+		}
+		else
+		{
+			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+			$Parameters = @{
+				Uri             = "https://aka.ms/vs/17/release/VC_redist.x64.exe"
+				OutFile         = "$DownloadsFolder\VC_redist.x64.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+
+			Start-Process -FilePath "$DownloadsFolder\VC_redist.x64.exe" -ArgumentList "/install /passive /norestart" -Wait
+
+			<#
+				PowerShell 5.1 (7.2 too) interprets the 8.3 file name literally, if an environment variable contains a non-latin word,
+				so you won't be able to remove "$env:TEMP\dd_vcredist_amd64_*.log" file explicitly
+
+				Another ways to get normal path to %TEMP%
+				[Environment]::GetEnvironmentVariable("TEMP", "User")
+				(Get-ItemProperty -Path HKCU:\Environment -Name TEMP).TEMP
+				[System.IO.Path]::GetTempPath()
+			#>
+			Get-ChildItem -Path "$DownloadsFolder\VC_redist.x64.exe", "$env:TEMP\dd_vcredist_amd64_*.log" -Force | Remove-Item -Recurse -Force -ErrorAction Ignore
+		}
 	}
-	Invoke-WebRequest @Parameters
+	catch [System.Net.WebException]
+	{
+		Write-Warning -Message $Localization.NoInternetConnection
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
 
-	Start-Process -FilePath "$DownloadsFolder\VC_redist.x64.exe" -ArgumentList "/install /passive /norestart" -Wait
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+	}
+}
 
-	<#
-		PowerShell 5.1 (7.2 too) interprets the 8.3 file name literally, if an environment variable contains a non-latin word,
-		so you won't be able to remove "$env:TEMP\dd_vcredist_amd64_*.log" file explicitly
+<#
+	.SYNOPSIS
+	Install the latest .NET Desktop Runtime 6 (x86/x64)
 
-		Another ways to get normal path to %TEMP%
-		[Environment]::GetEnvironmentVariable("TEMP", "User")
-		(Get-ItemProperty -Path HKCU:\Environment -Name TEMP).TEMP
-		[System.IO.Path]::GetTempPath()
-	#>
-	Get-ChildItem -Path "$DownloadsFolder\VC_redist.x64.exe", "$env:TEMP\dd_vcredist_amd64_*.log" -Force | Remove-Item -Recurse -Force -ErrorAction Ignore
+	.EXAMPLE
+	InstallDotNetRuntime6
+
+	.LINK
+	https://docs.microsoft.com/en-us/dotnet/core/install/windows?tabs=net60
+
+	.NOTES
+	Machine-wide
+#>
+function InstallDotNetRuntime6
+{
+	try
+	{
+		# Check the internet connection
+		$Parameters = @{
+			Uri              = "https://www.google.com"
+			Method           = "Head"
+			DisableKeepAlive = $true
+			UseBasicParsing  = $true
+		}
+		if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+		{
+			return
+		}
+
+		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
+		{
+			# .NET Desktop Runtime x86
+			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x86 --exact --accept-source-agreements
+			# .NET Desktop Runtime x64
+			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x64 --exact --accept-source-agreements
+		}
+		else
+		{
+			# https://github.com/dotnet/core/blob/main/release-notes/releases-index.json
+			$Parameters = @{
+				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json"
+				UseBasicParsing = $true
+			}
+			$LatestRelease = (Invoke-RestMethod @Parameters)."latest-release"
+			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+
+			# .NET Desktop Runtime x86
+			$Parameters = @{
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x64.exe"
+				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+
+			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe" -ArgumentList "/install /passive /norestart" -Wait
+
+			# .NET Desktop Runtime x64
+			$Parameters = @{
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x86.exe"
+				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+
+			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe" -ArgumentList "/install /passive /norestart" -Wait
+
+			<#
+				PowerShell 5.1 (7.2 too) interprets the 8.3 file name literally, if an environment variable contains a non-latin word,
+				so you won't be able to remove "$env:TEMP\Microsoft_Windows_Desktop_Runtime*.log" file explicitly
+
+				Another ways to get normal path to %TEMP%
+				[Environment]::GetEnvironmentVariable("TEMP", "User")
+				(Get-ItemProperty -Path HKCU:\Environment -Name TEMP).TEMP
+				[System.IO.Path]::GetTempPath()
+			#>
+			$Paths = @(
+				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe",
+				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe",
+				"$env:TEMP\Microsoft_Windows_Desktop_Runtime*.log"
+			)
+			Get-ChildItem -Path $Paths -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
+		}
+	}
+	catch [System.Net.WebException]
+	{
+		Write-Warning -Message $Localization.NoInternetConnection
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+	}
+}
+
+<#
+	.SYNOPSIS
+	Bypass RKN restrictins using antizapret.prostovpn.org proxies
+
+	.PARAMETER Enable
+	Enable proxying only blocked sites from the unified registry of Roskomnadzor using antizapret.prostovpn.org servers
+
+	.PARAMETER Disable
+	Disable proxying only blocked sites from the unified registry of Roskomnadzor using antizapret.prostovpn.org servers
+
+	.EXAMPLE
+	RKNBypass -Enable
+
+	.EXAMPLE
+	RKNBypass -Disable
+
+	.LINK
+	https://antizapret.prostovpn.org
+
+	.NOTES
+	Current user
+#>
+function RKNBypass
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Enable"
+		{
+			# If current region is Russia
+			if (((Get-WinHomeLocation).GeoId -eq "203"))
+			{
+				New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name AutoConfigURL -PropertyType String -Value "https://antizapret.prostovpn.org/proxy.pac" -Force
+			}
+		}
+		"Disable"
+		{
+			Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name AutoConfigURL -Force
+		}
+	}
+}
+
+<#
+	.SYNOPSIS
+	Enable the latest Windows Subsystem for Android™ with Amazon Appstore
+
+	.EXAMPLE Enable all necessary dependencies (reboot may require) and open Microsoft Store WSA page to install it manually
+	WSA -Enable
+
+	.EXAMPLE Disable all necessary dependencies (reboot may require) and uninstall Windows Subsystem for Android™ with Amazon Appstore
+	WSA -Disable
+
+	.LINK
+	https://support.microsoft.com/en-us/windows/install-mobile-apps-and-the-amazon-appstore-f8d0abb5-44ad-47d8-b9fb-ad6b1459ff6c
+
+	.LINK
+	https://docs.microsoft.com/en-us/windows/android/wsa/
+
+	.LINK
+	https://www.microsoft.com/store/productId/9P3395VX91NR
+
+	.NOTES
+	Machine-wide
+#>
+function WSA
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Enable"
+		{
+			# Check if Windows 11 is installed on an SSD
+			$DiskNumber = (Get-Disk | Where-Object -FilterScript {$_.Isboot -and $_.IsSystem -and ($_.OperationalStatus -eq "Online")}).Number
+			if (Get-PhysicalDisk -DeviceNumber $DiskNumber | Where-Object -FilterScript {$_.MediaType -ne "SSD"})
+			{
+				Write-Warning -Message $Localization.SSDRequired
+
+				return
+			}
+
+			# Enable Windows Subsystem for Android (WSA)
+			if ((Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux).State -eq "Disabled")
+			{
+				Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+
+				Write-Warning -Message $Localization.RestartWarning
+				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+				return
+			}
+
+			# Enable Virtual Machine Platform
+			if ((Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State -eq "Disabled")
+			{
+				Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
+
+				Write-Warning -Message $Localization.RestartWarning
+				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+				return
+			}
+
+			if (Get-AppxPackage -Name MicrosoftCorporationII.WindowsSubsystemForAndroid)
+			{
+				return
+			}
+
+			try
+			{
+				# Check the internet connection
+				$Parameters = @{
+					Uri              = "https://www.google.com"
+					Method           = "Head"
+					DisableKeepAlive = $true
+					UseBasicParsing  = $true
+				}
+				if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+				{
+					return
+				}
+
+				if (((Get-WinHomeLocation).GeoId -ne "244"))
+				{
+					# Set Windows region to USA
+					$Script:Region = (Get-WinHomeLocation).GeoId
+					Set-WinHomeLocation -GeoId 244
+
+					$Script:RegionChanged = $true
+				}
+
+				# Open Misrosoft Store WSA page to install it manually
+				Start-Process -FilePath ms-windows-store://pdp/?ProductId=9P3395VX91NR
+			}
+			catch [System.Net.WebException]
+			{
+				Write-Warning -Message $Localization.NoInternetConnection
+				Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+			}
+		}
+		"Disable"
+		{
+			Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+			Get-AppxPackage -Name MicrosoftCorporationII.WindowsSubsystemForAndroid | Remove-AppxPackage
+		}
+	}
 }
 #endregion System
 
@@ -8173,12 +8584,33 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 #>
 function UnpinAllStartApps
 {
-	$Parameters = @{
-		Path        = "$PSScriptRoot\..\Start_Layout\start.bin"
-		Destination = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
-		Force       = $true
+	# Due to Windows 11 22H2 changes name of start.bin to start2.bin we need to check this first
+	if (Test-Path -Path "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin")
+	{
+		$Parameters = @{
+			Path        = "$PSScriptRoot\..\bin\Start_Layout\start.bin"
+			Destination = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
+			Force       = $true
+		}
+		Copy-Item @Parameters
 	}
-	Copy-Item @Parameters
+	else
+	{
+		$Parameters = @{
+			Path        = "$PSScriptRoot\..\bin\Start_Layout\start.bin"
+			Destination = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
+			Force       = $true
+		}
+		Copy-Item @Parameters
+
+		Remove-Item -Path "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin" -Force
+		$Parameters = @{
+			Path    = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin"
+			NewName = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin"
+			Force   = $true
+		}
+		Rename-Item @Parameters
+	}
 }
 
 <#
@@ -8362,6 +8794,7 @@ function UninstallUWPApps
 		# Photos (and Video Editor)
 		"Microsoft.Windows.Photos",
 		"Microsoft.Photos.MediaEngineDLC",
+		"Microsoft.RawImageExtension"
 
 		# HEVC Video Extensions from Device Manufacturer
 		"Microsoft.HEVCVideoExtension",
@@ -8423,7 +8856,13 @@ function UninstallUWPApps
 		"Microsoft.WindowsTerminalPreview",
 
 		# Web Media Extensions
-		"Microsoft.WebMediaExtensions"
+		"Microsoft.WebMediaExtensions",
+
+		# AV1 Video Extension
+		"Microsoft.AV1VideoExtension",
+
+		# HEVC Video Extensions from Device Manufacturer
+		"Microsoft.HEVCVideoExtension"
 	)
 
 	#region Variables
@@ -9119,7 +9558,7 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	Install "HEVC Video Extensions from Device Manufacturer" to be able to open .heic and .heif formats
 
 	.PARAMETER Install
-	Download and install the "HEVC Video Extensions from Device Manufacturer" extension using the https://store.rg-adguard.net parser
+	Download and install the "HEVC Video Extensions from Device Manufacturer" extension
 
 	.PARAMETER Manually
 	Open Microsoft Store "HEVC Video Extensions from Device Manufacturer" page to install the extension manually
@@ -9133,11 +9572,11 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	.LINK
 	https://www.microsoft.com/store/productId/9n4wgh0z6vhq
 
-	.LINK
-	https://dev.to/kaiwalter/download-windows-store-apps-with-powershell-from-https-store-rg-adguard-net-155m
-
 	.NOTES
 	The extension can be installed without Microsoft account
+
+	.NOTES
+	HEVC Video Extension is already installed in Windows 11 22H2 by default
 
 	.NOTES
 	Current user
@@ -9166,13 +9605,30 @@ function HEIF
 		"Install"
 		{
 			# Check whether the extension is already installed
-			if ((-not (Get-AppxPackage -Name Microsoft.HEVCVideoExtension)) -and (Get-AppxPackage -Name Microsoft.Windows.Photos))
+			if ((Get-AppxPackage -Name Microsoft.HEVCVideoExtension) -and (Get-AppxPackage -Name Microsoft.Windows.Photos))
 			{
+				return
+			}
+
+			try
+			{
+				# Check the internet connection
+				$Parameters = @{
+					Uri              = "https://www.google.com"
+					Method           = "Head"
+					DisableKeepAlive = $true
+					UseBasicParsing  = $true
+				}
+				if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+				{
+					return
+				}
+
 				try
 				{
-					# Check the internet connection
+					# Check whether https://github.com is alive
 					$Parameters = @{
-						Uri              = "https://www.google.com"
+						Uri              = "https://github.com"
 						Method           = "Head"
 						DisableKeepAlive = $true
 						UseBasicParsing  = $true
@@ -9182,76 +9638,35 @@ function HEIF
 						return
 					}
 
-					try
-					{
-						# Check whether the https://store.rg-adguard.net site is alive
-						$Parameters = @{
-							Uri              = "https://store.rg-adguard.net/api/GetFiles"
-							Method           = "Head"
-							DisableKeepAlive = $true
-							UseBasicParsing  = $true
-						}
-						if (-not (Invoke-WebRequest @Parameters).StatusDescription)
-						{
-							return
-						}
-
-						$Parameters = @{
-							Method      = "Post"
-							Uri         = "https://store.rg-adguard.net/api/GetFiles"
-							ContentType = "application/x-www-form-urlencoded"
-							Body        = @{
-								type = "url"
-								# HEVC Video Extensions from Device Manufacturer
-								url  = "https://www.microsoft.com/store/productId/9n4wgh0z6vhq"
-								ring = "Retail"
-								lang = "en-US"
-							}
-							UseBasicParsing = $true
-						}
-						$Raw = Invoke-WebRequest @Parameters
-
-						# Parsing the page
-						$Raw | Select-String -Pattern '<tr style.*<a href=\"(?<url>.*)"\s.*>(?<text>.*)<\/a>' -AllMatches | ForEach-Object -Process {$_.Matches} | ForEach-Object -Process {
-							$TempURL = $_.Groups[1].Value
-							$Package = $_.Groups[2].Value
-
-							if ($Package -like "Microsoft.HEVCVideoExtension_*_x64__8wekyb3d8bbwe.appx")
-							{
-								Write-Information -MessageData "" -InformationAction Continue
-								Write-Verbose -Message $Localization.HEVCDownloading -Verbose
-
-								$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-								$Parameters = @{
-									Uri             = $TempURL
-									OutFile         = "$DownloadsFolder\$Package"
-									UseBasicParsing = $true
-									Verbose         = $true
-								}
-								Invoke-WebRequest @Parameters
-
-								# Installing "HEVC Video Extensions from Device Manufacturer"
-								Add-AppxPackage -Path "$DownloadsFolder\$Package" -Verbose
-
-								Remove-Item -Path "$DownloadsFolder\$Package" -Force
-							}
-						}
+					# https://github.com/Sophia-Community/SophiApp/tree/master/AppX
+					$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+					$Parameters = @{
+						Uri             = "https://github.com/Sophia-Community/SophiApp/raw/master/AppX/Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.Appx"
+						OutFile         = "$DownloadsFolder\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.Appx"
+						UseBasicParsing = $true
+						Verbose         = $true
 					}
-					catch [System.Net.WebException]
-					{
-						Write-Warning -Message ($Localization.NoResponse -f "https://store.rg-adguard.net")
-						Write-Error -Message ($Localization.NoResponse -f "https://store.rg-adguard.net") -ErrorAction SilentlyContinue
+					Invoke-WebRequest @Parameters
 
-						Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
-					}
+					# Installing "HEVC Video Extensions from Device Manufacturer"
+					Add-AppxPackage -Path "$DownloadsFolder\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.Appx" -Verbose
+
+					Remove-Item -Path "$DownloadsFolder\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.Appx" -Force
 				}
 				catch [System.Net.WebException]
 				{
-					Write-Warning -Message $Localization.NoInternetConnection
-					Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+					Write-Warning -Message ($Localization.NoResponse -f "https://github.com")
+					Write-Error -Message ($Localization.NoResponse -f "https://github.com") -ErrorAction SilentlyContinue
 
 					Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 				}
+			}
+			catch [System.Net.WebException]
+			{
+				Write-Warning -Message $Localization.NoInternetConnection
+				Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 			}
 		}
 		"Manually"
@@ -9443,7 +9858,7 @@ function CheckUWPAppsUpdates
 	XboxGameBar -Enable
 
 	.NOTES
-	To prevent popping up the "You'll need a new app to open this `ms-gamingoverlay`" warning, you need to disable the `Xbox Game Bar` app, even if you uninstalled it before.
+	To prevent popping up the "You'll need a new app to open this ms-gamingoverlay" warning, you need to disable the Xbox Game Bar app, even if you uninstalled it before
 
 	.NOTES
 	Current user
@@ -9558,9 +9973,9 @@ function SetAppGraphicsPerformance
 	{
 		$Title         = $Localization.GraphicsPerformanceTitle
 		$Message       = $Localization.GraphicsPerformanceRequest
-		$Add           = $Localization.Add
-		$Skip          = $Localization.Skip
-		$Options       = "&$Add", "&$Skip"
+		$Yes           = $Localization.Yes
+		$No            = $Localization.No
+		$Options       = "&$Yes", "&$No"
 		$DefaultChoice = 1
 
 		do
@@ -9721,32 +10136,26 @@ function CleanupTask
 				}
 
 				$VolumeCaches = @(
-					# Delivery Optimization Files
 					"Delivery Optimization Files",
-
-					# Device driver packages
+					"BranchCache",
 					"Device Driver Packages",
-
-					# Previous Windows Installation(s)
+					"Language Pack",
 					"Previous Installations",
-
-					# Setup log files
 					"Setup Log Files",
-
-					# Temporary Setup Files
+					"System error memory dump files",
+					"System error minidump files",
 					"Temporary Setup Files",
-
-					# Windows Update Cleanup
 					"Update Cleanup",
-
-					# Microsoft Defender
 					"Windows Defender",
-
-					# Windows upgrade log files
+					"Windows ESD installation files",
 					"Windows Upgrade Log Files"
 				)
 				foreach ($VolumeCache in $VolumeCaches)
 				{
+					if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache"))
+					{
+						New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Force
+					}
 					New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Name StateFlags1337 -PropertyType DWord -Value 2 -Force
 				}
 
@@ -10081,7 +10490,7 @@ function TempTask
 			if (-not (Get-ScheduledTask -TaskPath "\SophiApp\" -TaskName "Temp" -ErrorAction Ignore))
 			{
 				$TempTask = @"
-Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
+Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
@@ -10901,8 +11310,8 @@ function DNSoverHTTPS
 				else
 				{
 					# Set a primary and secondary DNS servers
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
-					$InterfaceGuid = (Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter).InterfaceGuid
+					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
+					$InterfaceGuid = (Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter).InterfaceGuid
 				}
 
 				# Set the DNS servers
@@ -10932,7 +11341,7 @@ function DNSoverHTTPS
 				else
 				{
 					# Configure DNS servers automatically
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
+					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
 				}
 
 				Remove-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\*" -Recurse -Force -ErrorAction Ignore
@@ -11827,7 +12236,7 @@ function OpenWindowsTerminalAdminContext
 				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name "(default)" -PropertyType String -Value $Localization.OpenInWindowsTerminalAdmin -Force
 				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name Icon -PropertyType String -Value "imageres.dll,73" -Force
 				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name NoWorkingDirectory -PropertyType String -Value "" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas\command -Name "(default)" -PropertyType String -Value "wt.exe -d ""%V""" -Force
+				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas\command -Name "(default)" -PropertyType String -Value "wt.exe -d ""%V\.""" -Force
 
 				# Show the option in the folders context menu
 				if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas\command))
@@ -11907,6 +12316,154 @@ function Windows10ContextMenu
 }
 #endregion Context menu
 
+#region Update Policies
+<#
+	.SYNOPSIS
+	Update Local Group Policy Editor (gpedit.msc) to make all manually created policy keys in the registry visible in the snap-in
+
+	.EXAMPLE
+	UpdateLGPEPolicies
+
+	.NOTES
+	Uses PolicyFileEditor module created by Dave Wyatt
+
+	.LINK
+	https://www.powershellgallery.com/packages/PolicyFileEditor
+
+	.LINK
+	https://github.com/dlwyatt/PolicyFileEditor
+
+	.NOTES
+	Machine-wide user
+#>
+function UpdateLGPEPolicies
+{
+	if (-not (Get-WindowsEdition -Online | Where-Object -FilterScript {
+		($_.Edition -eq "Professional") -or ($_.Edition -like "Enterprise*") -or ($_.Edition -eq "Education")
+	}))
+	{
+		return
+	}
+
+	Write-Verbose -Message $Localization.Patient -Verbose
+	Write-Information -MessageData "" -InformationAction Continue
+
+	# Local Machine policies paths to scan recursively
+	$LM_Paths = @(
+		"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
+		"HKLM:\SOFTWARE\Policies\Microsoft\Windows"
+	)
+	foreach ($Path in (@(Get-ChildItem -Path $LM_Paths -Recurse -Force)))
+	{
+		foreach ($Item in $Path.Property)
+		{
+			# Check if property isn't equal to "(default)" and exists
+			if (($null -ne $Item) -and ($Item -ne "(default)"))
+			{
+				# Where all ADMX templates are located to compare with
+				foreach ($admx in @(Get-ChildItem -Path "$env:SystemRoot\PolicyDefinitions" -File -Force))
+				{
+					# Parse every ADMX template searching if it contains full path and registry key simultaneously
+					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
+					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "HKLM:") -NoQualifier
+
+					if ($config.policyDefinitions.policies.policy | Where-Object -FilterScript {
+						($_.key -eq $SplitPath) -and ($_.valueName -eq $Item) -or (($_.key -eq $SplitPath) -and ($_.Name -eq $Item))
+					})
+					{
+						try
+						{
+							Write-Verbose -Message $Item.Replace("{}", "") -Verbose
+
+							$Parameters = @{
+								Path           = "$env:SystemRoot\System32\GroupPolicy\Machine\Registry.pol"
+								# e.g. SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
+								Key            = Split-Path -Path $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "HKLM:") -NoQualifier
+								ValueName      = $Item.Replace("{}", "")
+								Data           = Get-ItemPropertyValue -Path $Path.PSPath -Name $Item
+								# DWord, String, etc.
+								Type           = (Get-Item -Path $Path.PSPath).GetValueKind($Item)
+								# Do not update the policy DB every time
+								NoGptIniUpdate = $true
+							}
+							Set-PolicyFileEntry @Parameters
+						}
+						catch
+						{}
+					}
+				}
+			}
+		}
+	}
+
+	# Current User policies paths to scan recursively
+	$CU_Paths = @(
+		"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
+		"HKCU:\SOFTWARE\Policies\Microsoft\Windows"
+	)
+	foreach ($Path in (@(Get-ChildItem -Path $CU_Paths -Recurse -Force)))
+	{
+		foreach ($Item in $Path.Property)
+		{
+			# Check if property isn't equal to "(default)" and exists
+			if (($null -ne $Item) -and ($Item -ne "(default)"))
+			{
+				# Where all ADMX templates are located to compare with
+				foreach ($admx in @(Get-ChildItem -Path "$env:SystemRoot\PolicyDefinitions" -File -Force))
+				{
+					# Parse every ADMX template searching if it contains full path and registry key simultaneously
+					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
+					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_CURRENT_USER\", "HKCU:") -NoQualifier
+
+					if ($config.policyDefinitions.policies.policy | Where-Object -FilterScript {
+						($_.key -eq $SplitPath) -and ($_.valueName -eq $Item) -or (($_.key -eq $SplitPath) -and ($_.Name -eq $Item))
+					})
+					{
+						try
+						{
+							Write-Verbose -Message $Item.Replace("{}", "") -Verbose
+
+							$Parameters = @{
+								Path           = "$env:SystemRoot\System32\GroupPolicy\User\Registry.pol"
+								# e.g. SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
+								Key            = Split-Path -Path $Path.Name.Replace("HKEY_CURRENT_USER\", "HKCU:") -NoQualifier
+								ValueName      = $Item.Replace("{}", "")
+								Data           = Get-ItemPropertyValue -Path $Path.PSPath -Name $Item
+								# DWord, String, etc.
+								Type           = (Get-Item -Path $Path.PSPath).GetValueKind($Item)
+								# Do not update the policy DB every time
+								NoGptIniUpdate = $true
+							}
+							Set-PolicyFileEntry @Parameters
+						}
+						catch
+						{}
+					}
+				}
+			}
+		}
+	}
+
+	# Re-build GPT.ini if it doesn't exist
+	if (-not (Test-Path -Path $env:SystemRoot\System32\GroupPolicy\GPT.ini))
+	{
+		Start-Process -FilePath gpedit.msc
+		Start-Sleep -Seconds 2
+
+		# Get mmc.exe's Id with its' argument (gpedit.msc) to close
+		$gpedit_Process_ID = (Get-CimInstance -ClassName CIM_Process | Where-Object -FilterScript {
+			$_.Name -eq "mmc.exe"
+		} | Where-Object -FilterScript {$_.CommandLine -match "GPEDIT.MSC"}).Handle
+		Get-Process -Id $gpedit_Process_ID | Stop-Process -Force
+	}
+
+	Update-GptIniVersion -Path $env:SystemRoot\System32\GroupPolicy\GPT.ini -PolicyType Machine, User
+
+	# Apply the new policy immediately
+	gpupdate.exe /force
+}
+#endregion Update Policies
+
 #region Refresh Environment
 function RefreshEnvironment
 {
@@ -11976,6 +12533,12 @@ public static void PostMessage()
 		{
 			Set-MpPreference -EnableControlledFolderAccess Enabled
 		}
+	}
+
+	if ($Script:RegionChanged)
+	{
+		# Set the original region ID
+		Set-WinHomeLocation -GeoId $Script:Region
 	}
 
 	# In order for the changes to take effect the File Explorer process has to be restarted
@@ -12092,3 +12655,155 @@ function Errors
 		} | Sort-Object -Property Line | Format-Table -AutoSize -Wrap | Out-String).Trim()
 	}
 }
+
+# SIG # Begin signature block
+# MIIbvwYJKoZIhvcNAQcCoIIbsDCCG6wCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUf1jTmGGjSC+KdppJDHzCpj5i
+# 2r+gghY3MIIDAjCCAeqgAwIBAgIQbPiUYMntEr9PH9C5Mau3xTANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjA3MTYxNDM2MDda
+# Fw0yNDA3MTYxNDQ2MDdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtFM5b/hNUQPcNCKlWVisE5zIERdC
+# TZWdsnkliCg98qv0qkPH08AAuZ5LOgdctfaocVX4RbygcWCLyaphktSC29aMHmP/
+# T/JPBSYnLmWIJ6NbNVBn4BqqCZusjmYRj1LH+Ega9Kv4gFfF4lyCE8OnebDkWPu1
+# Y+5VAoZ6BaVvHEw5rtrHcH8/W15mE1Z+uuYIKNVPg3MMGNGQ5MiLUduuCu5l+J4K
+# yU/nLvx7tI3tIx8wJY2S2SYDNPf/bMOeeb0jlcD1/bVh5TNn3Z4wIXQ3r4yNxllO
+# dBPidPT3Ck4+aDTzP/Y8vrFeIMLKSCYGY+cOCankPZmUCVFJxABvW5EKDQIDAQAB
+# o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
+# BBYEFMJrBhADhZmuEvA18MvGfrBsUpDhMA0GCSqGSIb3DQEBCwUAA4IBAQCzuSeY
+# YdiLsJYFPUW21r2QjSbIi7oOAa58Y2C7KM+QvAm7R6W7l3y6Zz58mBZmSCt+u6au
+# HHYYxo71eCKcH6Lx/2BAeg3GBfZClCZ480nxH1+T4fobdWuT/f4Iw8ZalqcnqJQQ
+# xXhK2U8sMS6oIlb8VZhzosiP68gSZwNgcBbO8P1nAVa7WXyhdmo5CTpa1CihfOT2
+# a3x7runLfgPHmgDcTQpJYAl4xA1JgM+5adlGo33uDXNDgN+6MPZKCuD89wFIYbXw
+# WM6i+SHOBvqACWvM5goBCiVuIq2aI/6r6jeW8UiN51L0/IIniY+P0e7ZibjiadZR
+# DuMQLs5d3GLELtT3MIIFsTCCBJmgAwIBAgIQASQK+x44C4oW8UtxnfTTwDANBgkq
+# hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
+# MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
+# c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwNjA5MDAwMDAwWhcNMzExMTA5MjM1OTU5
+# WjBiMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQL
+# ExB3d3cuZGlnaWNlcnQuY29tMSEwHwYDVQQDExhEaWdpQ2VydCBUcnVzdGVkIFJv
+# b3QgRzQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC/5pBzaN675F1K
+# PDAiMGkz7MKnJS7JIT3yithZwuEppz1Yq3aaza57G4QNxDAf8xukOBbrVsaXbR2r
+# snnyyhHS5F/WBTxSD1Ifxp4VpX6+n6lXFllVcq9ok3DCsrp1mWpzMpTREEQQLt+C
+# 8weE5nQ7bXHiLQwb7iDVySAdYyktzuxeTsiT+CFhmzTrBcZe7FsavOvJz82sNEBf
+# sXpm7nfISKhmV1efVFiODCu3T6cw2Vbuyntd463JT17lNecxy9qTXtyOj4DatpGY
+# QJB5w3jHtrHEtWoYOAMQjdjUN6QuBX2I9YI+EJFwq1WCQTLX2wRzKm6RAXwhTNS8
+# rhsDdV14Ztk6MUSaM0C/CNdaSaTC5qmgZ92kJ7yhTzm1EVgX9yRcRo9k98FpiHaY
+# dj1ZXUJ2h4mXaXpI8OCiEhtmmnTK3kse5w5jrubU75KSOp493ADkRSWJtppEGSt+
+# wJS00mFt6zPZxd9LBADMfRyVw4/3IbKyEbe7f/LVjHAsQWCqsWMYRJUadmJ+9oCw
+# ++hkpjPRiQfhvbfmQ6QYuKZ3AeEPlAwhHbJUKSWJbOUOUlFHdL4mrLZBdd56rF+N
+# P8m800ERElvlEFDrMcXKchYiCd98THU/Y+whX8QgUWtvsauGi0/C1kVfnSD8oR7F
+# wI+isX4KJpn15GkvmB0t9dmpsh3lGwIDAQABo4IBXjCCAVowDwYDVR0TAQH/BAUw
+# AwEB/zAdBgNVHQ4EFgQU7NfjgtJxXWRM3y5nP+e6mK4cD08wHwYDVR0jBBgwFoAU
+# Reuir/SSy4IxLVGLp6chnfNtyA8wDgYDVR0PAQH/BAQDAgGGMBMGA1UdJQQMMAoG
+# CCsGAQUFBwMIMHkGCCsGAQUFBwEBBG0wazAkBggrBgEFBQcwAYYYaHR0cDovL29j
+# c3AuZGlnaWNlcnQuY29tMEMGCCsGAQUFBzAChjdodHRwOi8vY2FjZXJ0cy5kaWdp
+# Y2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURSb290Q0EuY3J0MEUGA1UdHwQ+MDww
+# OqA4oDaGNGh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRJ
+# RFJvb3RDQS5jcmwwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMA0G
+# CSqGSIb3DQEBDAUAA4IBAQCaFgKlAe+B+w20WLJ4ragjGdlzN9pgnlHXy/gvQLmj
+# H3xATjM+kDzniQF1hehiex1W4HG63l7GN7x5XGIATfhJelFNBjLzxdIAKicg6oku
+# FTngLD74dXwsgkFhNQ8j0O01ldKIlSlDy+CmWBB8U46fRckgNxTA7Rm6fnc50lSW
+# x6YR3zQz9nVSQkscnY2W1ZVsRxIUJF8mQfoaRr3esOWRRwOsGAjLy9tmiX8rnGW/
+# vjdOvi3znUrDzMxHXsiVla3Ry7sqBiD5P3LqNutFcpJ6KXsUAzz7TdZIcXoQEYoI
+# dM1sGwRc0oqVA3ZRUFPWLvdKRsOuECxxTLCHtic3RGBEMIIGrjCCBJagAwIBAgIQ
+# BzY3tyRUfNhHrP0oZipeWzANBgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEV
+# MBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29t
+# MSEwHwYDVQQDExhEaWdpQ2VydCBUcnVzdGVkIFJvb3QgRzQwHhcNMjIwMzIzMDAw
+# MDAwWhcNMzcwMzIyMjM1OTU5WjBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGln
+# aUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5
+# NiBTSEEyNTYgVGltZVN0YW1waW5nIENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8A
+# MIICCgKCAgEAxoY1BkmzwT1ySVFVxyUDxPKRN6mXUaHW0oPRnkyibaCwzIP5WvYR
+# oUQVQl+kiPNo+n3znIkLf50fng8zH1ATCyZzlm34V6gCff1DtITaEfFzsbPuK4CE
+# iiIY3+vaPcQXf6sZKz5C3GeO6lE98NZW1OcoLevTsbV15x8GZY2UKdPZ7Gnf2ZCH
+# RgB720RBidx8ald68Dd5n12sy+iEZLRS8nZH92GDGd1ftFQLIWhuNyG7QKxfst5K
+# fc71ORJn7w6lY2zkpsUdzTYNXNXmG6jBZHRAp8ByxbpOH7G1WE15/tePc5OsLDni
+# pUjW8LAxE6lXKZYnLvWHpo9OdhVVJnCYJn+gGkcgQ+NDY4B7dW4nJZCYOjgRs/b2
+# nuY7W+yB3iIU2YIqx5K/oN7jPqJz+ucfWmyU8lKVEStYdEAoq3NDzt9KoRxrOMUp
+# 88qqlnNCaJ+2RrOdOqPVA+C/8KI8ykLcGEh/FDTP0kyr75s9/g64ZCr6dSgkQe1C
+# vwWcZklSUPRR8zZJTYsg0ixXNXkrqPNFYLwjjVj33GHek/45wPmyMKVM1+mYSlg+
+# 0wOI/rOP015LdhJRk8mMDDtbiiKowSYI+RQQEgN9XyO7ZONj4KbhPvbCdLI/Hgl2
+# 7KtdRnXiYKNYCQEoAA6EVO7O6V3IXjASvUaetdN2udIOa5kM0jO0zbECAwEAAaOC
+# AV0wggFZMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLoW2W1NhS9zKXaa
+# L3WMaiCPnshvMB8GA1UdIwQYMBaAFOzX44LScV1kTN8uZz/nupiuHA9PMA4GA1Ud
+# DwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEFBQcDCDB3BggrBgEFBQcBAQRrMGkw
+# JAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcw
+# AoY1aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJv
+# b3RHNC5jcnQwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybDMuZGlnaWNlcnQu
+# Y29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcmwwIAYDVR0gBBkwFzAIBgZngQwB
+# BAIwCwYJYIZIAYb9bAcBMA0GCSqGSIb3DQEBCwUAA4ICAQB9WY7Ak7ZvmKlEIgF+
+# ZtbYIULhsBguEE0TzzBTzr8Y+8dQXeJLKftwig2qKWn8acHPHQfpPmDI2AvlXFvX
+# bYf6hCAlNDFnzbYSlm/EUExiHQwIgqgWvalWzxVzjQEiJc6VaT9Hd/tydBTX/6tP
+# iix6q4XNQ1/tYLaqT5Fmniye4Iqs5f2MvGQmh2ySvZ180HAKfO+ovHVPulr3qRCy
+# Xen/KFSJ8NWKcXZl2szwcqMj+sAngkSumScbqyQeJsG33irr9p6xeZmBo1aGqwpF
+# yd/EjaDnmPv7pp1yr8THwcFqcdnGE4AJxLafzYeHJLtPo0m5d2aR8XKc6UsCUqc3
+# fpNTrDsdCEkPlM05et3/JWOZJyw9P2un8WbDQc1PtkCbISFA0LcTJM3cHXg65J6t
+# 5TRxktcma+Q4c6umAU+9Pzt4rUyt+8SVe+0KXzM5h0F4ejjpnOHdI/0dKNPH+ejx
+# mF/7K9h+8kaddSweJywm228Vex4Ziza4k9Tm8heZWcpw8De/mADfIBZPJ/tgZxah
+# ZrrdVcA6KYawmKAr7ZVBtzrVFZgxtGIJDwq9gdkT/r+k0fNX2bwE+oLeMt8EifAA
+# zV3C+dAjfwAL5HYCJtnwZXZCpimHCUcr5n8apIUP/JiW9lVUKx+A+sDyDivl1vup
+# L0QVSucTDh3bNzgaoSv27dZ8/DCCBsYwggSuoAMCAQICEAp6SoieyZlCkAZjOE2G
+# l50wDQYJKoZIhvcNAQELBQAwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lD
+# ZXJ0LCBJbmMuMTswOQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYg
+# U0hBMjU2IFRpbWVTdGFtcGluZyBDQTAeFw0yMjAzMjkwMDAwMDBaFw0zMzAzMTQy
+# MzU5NTlaMEwxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjEk
+# MCIGA1UEAxMbRGlnaUNlcnQgVGltZXN0YW1wIDIwMjIgLSAyMIICIjANBgkqhkiG
+# 9w0BAQEFAAOCAg8AMIICCgKCAgEAuSqWI6ZcvF/WSfAVghj0M+7MXGzj4CUu0jHk
+# PECu+6vE43hdflw26vUljUOjges4Y/k8iGnePNIwUQ0xB7pGbumjS0joiUF/DbLW
+# +YTxmD4LvwqEEnFsoWImAdPOw2z9rDt+3Cocqb0wxhbY2rzrsvGD0Z/NCcW5QWpF
+# QiNBWvhg02UsPn5evZan8Pyx9PQoz0J5HzvHkwdoaOVENFJfD1De1FksRHTAMkcZ
+# W+KYLo/Qyj//xmfPPJOVToTpdhiYmREUxSsMoDPbTSSF6IKU4S8D7n+FAsmG4dUY
+# FLcERfPgOL2ivXpxmOwV5/0u7NKbAIqsHY07gGj+0FmYJs7g7a5/KC7CnuALS8gI
+# 0TK7g/ojPNn/0oy790Mj3+fDWgVifnAs5SuyPWPqyK6BIGtDich+X7Aa3Rm9n3RB
+# Cq+5jgnTdKEvsFR2wZBPlOyGYf/bES+SAzDOMLeLD11Es0MdI1DNkdcvnfv8zbHB
+# p8QOxO9APhk6AtQxqWmgSfl14ZvoaORqDI/r5LEhe4ZnWH5/H+gr5BSyFtaBocra
+# MJBr7m91wLA2JrIIO/+9vn9sExjfxm2keUmti39hhwVo99Rw40KV6J67m0uy4rZB
+# Peevpxooya1hsKBBGBlO7UebYZXtPgthWuo+epiSUc0/yUTngIspQnL3ebLdhOon
+# 7v59emsCAwEAAaOCAYswggGHMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAA
+# MBYGA1UdJQEB/wQMMAoGCCsGAQUFBwMIMCAGA1UdIAQZMBcwCAYGZ4EMAQQCMAsG
+# CWCGSAGG/WwHATAfBgNVHSMEGDAWgBS6FtltTYUvcyl2mi91jGogj57IbzAdBgNV
+# HQ4EFgQUjWS3iSH+VlhEhGGn6m8cNo/drw0wWgYDVR0fBFMwUTBPoE2gS4ZJaHR0
+# cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0UlNBNDA5NlNI
+# QTI1NlRpbWVTdGFtcGluZ0NBLmNybDCBkAYIKwYBBQUHAQEEgYMwgYAwJAYIKwYB
+# BQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBYBggrBgEFBQcwAoZMaHR0
+# cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0UlNBNDA5
+# NlNIQTI1NlRpbWVTdGFtcGluZ0NBLmNydDANBgkqhkiG9w0BAQsFAAOCAgEADS0j
+# dKbR9fjqS5k/AeT2DOSvFp3Zs4yXgimcQ28BLas4tXARv4QZiz9d5YZPvpM63io5
+# WjlO2IRZpbwbmKrobO/RSGkZOFvPiTkdcHDZTt8jImzV3/ZZy6HC6kx2yqHcoSuW
+# uJtVqRprfdH1AglPgtalc4jEmIDf7kmVt7PMxafuDuHvHjiKn+8RyTFKWLbfOHzL
+# +lz35FO/bgp8ftfemNUpZYkPopzAZfQBImXH6l50pls1klB89Bemh2RPPkaJFmMg
+# a8vye9A140pwSKm25x1gvQQiFSVwBnKpRDtpRxHT7unHoD5PELkwNuTzqmkJqIt+
+# ZKJllBH7bjLx9bs4rc3AkxHVMnhKSzcqTPNc3LaFwLtwMFV41pj+VG1/calIGnjd
+# RncuG3rAM4r4SiiMEqhzzy350yPynhngDZQooOvbGlGglYKOKGukzp123qlzqkhq
+# WUOuX+r4DwZCnd8GaJb+KqB0W2Nm3mssuHiqTXBt8CzxBxV+NbTmtQyimaXXFWs1
+# DoXW4CzM4AwkuHxSCx6ZfO/IyMWMWGmvqz3hz8x9Fa4Uv4px38qXsdhH6hyF4EVO
+# EhwUKVjMb9N/y77BDkpvIJyu2XMyWQjnLZKhGhH+MpimXSuX4IvTnMxttQ2uR2M4
+# RxdbbxPaahBuH0m3RFu0CAqHWlkEdhGhp3cCExwxggTyMIIE7gIBATAtMBkxFzAV
+# BgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBs+JRgye0Sv08f0Lkxq7fFMAkGBSsOAwIa
+# BQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
+# BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3
+# DQEJBDEWBBQL1uSSPwEQ3eKWisyh56mLW4iNuDANBgkqhkiG9w0BAQEFAASCAQBA
+# D2tYhaG9doHMa5VD/X2MHyJnf+Fd0JnYS0t58cMhsScONsbxlCK+fy7ktqhCEk4e
+# leL34XsbraUv0Bsg7JA6QX2y8oloVurgb+acl+Kj9hPuLxwSPAC2PPoTLjbHL2mN
+# R//qB5khNW3l7BEzySRHBwy7ftGjI4xBTwoJkyabV/vnrF1vai1gCh9++A/0gHzj
+# SO/mqCgQGJ7yzn/uL0YWtn6/CZCB84rsS9jdKsHMzcG1utA12ISQYvRmjmClMU44
+# mmOMsoiQygXI6xnitEDhwhuxqyKv+kSB9Olfizo3Ua/A2CCTmmbCozmiUM5UCi7R
+# yar7vCLrDyE1o3lsJQzAoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJAgEBMHcw
+# YzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQD
+# EzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGlu
+# ZyBDQQIQCnpKiJ7JmUKQBmM4TYaXnTANBglghkgBZQMEAgEFAKBpMBgGCSqGSIb3
+# DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcxNjE0NDYyMVow
+# LwYJKoZIhvcNAQkEMSIEIGUTNxvTh5CoUSsfNpw4NXpD3aSWlmQWLWGyzD/KFhg7
+# MA0GCSqGSIb3DQEBAQUABIICADNrnSyFO59nhGv0VRq/JhWUNKaKUhnZjXbdrMZh
+# DY+NLhqDqbkkJK+nwZw8g2jI+B/L0NAf3e1TkTbYuDSg0miPesUcnzUPUvY508Sq
+# R3U0C6vxF12GxJC8P9MjmIJLk08tIZHVlXGTiOFFg7ygXSNa9cBmP6J1C6tbWeoZ
+# iBBXIy+JRSyUENM2GhpvqMPVwociL6UW5vaMOJEje/LnYVGorsDcEzs0xzW/i2Zp
+# ZmLBSMvIJlVY9IMEVLkximjP0rR9WhV98OrAe8Aho89yFSbaHU4AMtxMumssQcd8
+# 1EhyqNeT4jv/J5Q9j4/3RA+T4fV66R3KQQOkke53fbXtv9R7eWW6YVNLsPI7B5HF
+# JIWdgClGmrz6dr7HUmaYlNoxpxBxvUnwKGMK9yh8raihRPl78AqIymUztLSwm/vc
+# re9mdMci086xqL406JQ4hu5DOVkAuynICIbPCnHIz19Egx3qOM4Htn1dGe/YeF/x
+# 5N/dHqLTPLiT2XoFfCH6b9jSBElhulUYFd7aQTOAbBUgHUiK2JFuxgfgSwcN7lqx
+# v5SMNX5H626XIFYKc4uyr4f+fuhhl9VPYAx0xMQwJwDBGmuqwqYKj6D3JGuKK2h+
+# TM7O7J5Vfzw9+YeQGDueSCD6hsK3TV5/enxa8v4zpPobj7jcSo+QpGilnUqmEM5V
+# CGZl
+# SIG # End signature block
