@@ -3,7 +3,6 @@ foreach (
     $bucket in @(
         "extras",
         "nerd-fonts",
-        "games",
         "nonportable"
     )
 ) { scoop bucket add $bucket }
@@ -11,7 +10,8 @@ foreach (
 # Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
 # More info: https://github.com/abbodi1406/vcredist
 sudo scoop install vcredist-aio
-VisualCppRedist_AIO_x86_x64.exe /y  # use "/ai1" istead of "/y" to update all packages
+Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe /y"
+# If you want to update all packages, use `/ai1` istead of `/y`.
 
 # Essentials
 scoop install aria2 autohotkey bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode windowsdesktop-runtime-lts yt-dlp zenhan zoxide
@@ -80,7 +80,7 @@ foreach ($service in $services) {
     sudo Set-Service -Name $service -StartupType Disabled -Status Stopped
 }
 
-# Set the .config directory
+# Setting up dot file
 Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 
 # Install WPD
@@ -94,4 +94,3 @@ Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
 # Run WPD and shutup10
 Start-Process -FilePath ~/setup-new-pc/WPD/WPD.exe
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
-

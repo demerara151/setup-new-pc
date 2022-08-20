@@ -1,4 +1,4 @@
-# ### PowerShell 7.2 is required ###
+### PowerShell 7.2 is required ###
 if ($PSVersionTable.PSVersion.Major -lt 6) {
     Write-Host "Error! Please use PowerShell 7.2 or higher!" -ForegroundColor DarkRed
 }
@@ -22,8 +22,4 @@ else {
 
     # powershell
     sudo New-Item -ItemType SymbolicLink -Path $PROFILE -Force -Target $CONFIG/PowerShell/Microsoft.Powershell_profile.ps1
-
-    # vscodium
-    sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/vscode/data/user-data/User/settings.json -Force -Target $CONFIG/vscode/settings.json
-
 }
