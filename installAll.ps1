@@ -2,6 +2,7 @@
 foreach (
     $bucket in @(
         "extras",
+        "games",
         "nerd-fonts",
         "nonportable"
     )
@@ -9,19 +10,19 @@ foreach (
 
 # Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
 # More info: https://github.com/abbodi1406/vcredist
-sudo scoop install vcredist-aio
+sudo scoop install vcredist-aio windowsdesktop-runtime-lts
 Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe /y"
 # If you want to update all packages, use `/ai1` istead of `/y`.
 
 # Essentials
-scoop install aria2 autohotkey bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode windowsdesktop-runtime-lts yt-dlp zenhan zoxide
+scoop install aria2 autohotkey bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
 scoop install gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
 
 # Gaming
-scoop install legendary playnite
+scoop install legendary playnite heroic-games-launcher
 
 # Media
 scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
@@ -46,7 +47,6 @@ $programs = @(
     # Gaming
     "Valve.Steam",
     "Discord.Discord",
-    "HeroicGamesLauncher.HeroicGamesLauncher", # Epic launcher alternative
 
     # Programming
     "gerardog.gsudo", # Yet another sudo command
