@@ -9,7 +9,7 @@ Set-Alias -Name br -Value broot
 Set-Alias -Name mt -Value marktext
 
 # Global variables
-$inputFile = "$HOME/list.txt"
+$LIST = "$HOME/list.txt"
 $CONFIG = "$HOME/.config"
 
 # simple back command
@@ -41,11 +41,6 @@ function mnv ([string]$uri) {
     mpv --no-video $args $uri
 }
 
-# Play white noise
-function noise () {
-    mpv --no-video --no-resume-playback $args "https://youtu.be/mkKZvOG9B1c"
-}
-
 # Shuffle playlist, then play music from playlist.
 function msfl () {
     $pl = $(fd -t f . $HOME\home\music)
@@ -59,15 +54,6 @@ $history = @(
     "$env:APPDATA/Microsoft/Windows/Powershell/PSReadLine/ConsoleHost_history.txt"
 )
 function clh () { nvim $history }
-
-# Update python packages using pip
-function ppu () { python -m pip install -U $args }
-function ppr () { python -m pip freeze > requirements.txt }
-
-# Run python file using poetry
-function prun ([string]$file = "src.main") {
-    poetry run python -m $file $args
-}
 
 # Alias for lsd
 function ll () {
@@ -94,14 +80,14 @@ function yt ([string]$case = "max") {
     yt-dlp --config-location $CONFIG/yt-dlp/$case.conf
 }
 function gld () {
-    gallery-dl --input-file $inputFile --destination D:/Pictures/gallery-dl --no-mtime $args
+    gallery-dl --input-file $LIST --destination D:/Pictures/gallery-dl --no-mtime $args
 }
 function aria () {
-    aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x16 -j16 -s16 -k1M -i $inputFile
+    aria2c --conf-path=$CONFIG/aria2.conf -d "D:/Downloads" -x16 -j16 -s16 -k1M -i $LIST
 }
 
 # Open list.txt to edit URL for various downloaders
-function list () { nvim $inputFile }
+function list () { nvim $LIST }
 
 # Open config file
 function Edit-MyConfig ([string]$filename = "ps") {
