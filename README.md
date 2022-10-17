@@ -51,6 +51,14 @@
 
 -   `vscodium` の設定ファイルの設置プロセスを削除。(`vscode` の同期機能を利用し始めたため)
 
+### 10/17
+
+-   `legendary` が、バケットを移動していたのは間違いだったようで、元の `games bucket` に戻っていたため修正。
+
+-   加えて、`Heroic launcher` が、`scoop` でもインストールできるようになったので、`winget` から移動。
+
+-   [`privacy.sexy`](https://privacy.sexy) の導入を検討中。
+
 ---
 
 # 手順
