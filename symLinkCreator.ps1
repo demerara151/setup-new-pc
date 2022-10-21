@@ -1,12 +1,12 @@
-### PowerShell 7.2 is required ###
+### PowerShell 7.2 or higher version is required ###
 if ($PSVersionTable.PSVersion.Major -lt 6) {
-    Write-Host "Error! Please use PowerShell 7.2 or higher!" -ForegroundColor DarkRed
+    Write-Host "[Error]: Please use PowerShell 7.2 or higher version." -ForegroundColor DarkRed
 }
 else {
     $CONFIG = "$HOME/.config"
 
     # autohotkey
-    sudo New-Item -ItemType SymbolicLink -Path "$($env:APPDATA)/Microsoft/Windows/Start Menu/Programs/Startup/keyswap.ahk" -Target $CONFIG/autohotkey/keyswap.ahk
+    sudo New-Item -ItemType SymbolicLink -Path "$($env:APPDATA)/Microsoft/Windows/Start Menu/Programs/Startup/KeySwapV2.ahk" -Target $CONFIG/AutoHotkey/KeySwapV2.ahk
 
     # bat
     sudo New-Item -ItemType SymbolicLink -Path $env:APPDATA/bat -Target $CONFIG/bat

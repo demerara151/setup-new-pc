@@ -59,6 +59,10 @@
 
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中。
 
+### 10/21
+
+-   `AutoHotkey` のバージョンを更新。以前のバージョンとの互換性はないため、再度スクリプトの配置及び実行ファイルを選択する必要あり。詳しくは、[AutoHokey](#autohotkey) の項目を参照のこと
+
 ---
 
 # 手順
@@ -220,19 +224,24 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 ---
 
-# [Autohotkey](/.config/autohotkey/keyswap.ahk)
+# [AutoHotkey](/.config/AutoHotkey/KeySwapV2.ahk)
+
+-   10/21 更新: _AutoHotkey のバージョンを `Version 1.1.34.04` から `Version 2.0-beta.12` へアップグレード。_ 既存のバージョンとの互換性はないため、以前のスクリプトを削除。スクリプトファイル、及び実行ファイルのパスも変わっているため注意。
+
+> 参照: [AutoHotkey V2](https://lexikos.github.io/v2/docs/AutoHotkey.htm) `https://lexikos.github.io/v2/docs/AutoHotkey.htm`
 
 英語配列キーボード向けのキーの挙動変更。入れ替えるキーは以下の 2 つ
 
-| Before                   | After                |
-| :----------------------- | :------------------- |
-| <kbd>;</kbd>  セミコロン | <kbd>:</kbd>  コロン |
-| <kbd>CapsLock</kbd>      | <kbd>ESC</kbd>       |
+|  1  | <kbd>;</kbd>  セミコロン | <kbd>:</kbd>  コロン |
+| :-: | :----------------------- | :------------------- |
+|  2  | <kbd>CapsLock</kbd>      | <kbd>ESC</kbd>       |
 
-> 上記の手順でシンボリックリンクを作成していたなら、PC の再起動後に既定のプログラムを設定するようポップアップが出るので、`~/scoop/apps/autohotkey/current/autohotkeyU64.exe` を選択
+> 上記の手順でシンボリックリンクを作成していたなら、PC の再起動後に既定のプログラムを設定するようポップアップが出るので、`~/scoop/apps/autohotkey2/current/AutoHotkey64.exe` を選択
+
+> または、Windows の設定 > アプリ > 既定のアプリで、ファイルの種類の既定値を設定する。上部の窓に、`.ahk`と入力して上記のプログラムをエクスプローラーから探して選択
 
 # 日本語フォント
 
 必要に応じて手動でインストール
 
--   [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll) `foobar2000` のプレイリストにフォント適用中
+-   [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll): 現在 `foobar2000` のプレイリストにフォント適用中
