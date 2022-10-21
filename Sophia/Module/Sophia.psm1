@@ -1,9 +1,9 @@
-﻿<#
+<#
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.1.2
-	Date: 16.07.2022
+	Version: v6.1.5
+	Date: 09.10.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -15,8 +15,8 @@
 
 	.NOTES
 	Supported Windows 11 versions
-	Versions: 21H2/22H2
-	Builds: 22000.739+, 22509+
+	Versions: 21H2/22H2/23H2+
+	Builds: 22000.739+, 22621+
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
@@ -41,8 +41,8 @@
 	https://github.com/Inestic
 #>
 
-#region Checkings
-function Checkings
+#region Checks
+function Checks
 {
 	param
 	(
@@ -56,44 +56,23 @@ function Checkings
 	# Сlear the $Error variable
 	$Global:Error.Clear()
 
+	# Unblock all files in the script folder by removing the Zone.Identifier alternate data stream with a value of "3"
+	Get-ChildItem -Path $PSScriptRoot\..\ -File -Recurse -Force | Unblock-File
+
 	# Detect the OS build version
-	switch ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22000)
+	switch ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber)
 	{
-		$false
+		{$_ -eq 22000}
 		{
-			Write-Warning -Message $Localization.UnsupportedOSBuild
-
-			# Enable receiving updates for other Microsoft products when you update Windows
-			(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-			Start-Sleep -Seconds 1
-
-			# Check for UWP apps updates
-			Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
-
-			# Open the "Windows Update" page
-			Start-Process -FilePath "ms-settings:windowsupdate-action"
-
-			Start-Sleep -Seconds 1
-
-			# Trigger Windows Update for detecting new updates
-			(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
-
-			exit
-		}
-	}
-
-	# Check whether the OS minor build version is 739 minimum
-	# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
-	# https://support.microsoft.com/en-us/topic/june-14-2022-kb5014697-os-build-22000-739-cd3aaa0b-a8da-44a0-a778-dfb6f1d9ea11
-	switch ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -ge 739)
-	{
-		$false
-		{
-			if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -eq 22000)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 978)
 			{
+				# Check whether the OS minor build version is 739 minimum
+				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
+				# https://support.microsoft.com/en-us/topic/september-13-2022-kb5017328-os-build-22000-978-40843fca-a0be-4a60-b68b-6cb23a73a5aa
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
+
+				Start-Process -FilePath "https://t.me/sophia_chat"
 
 				# Enable receiving updates for other Microsoft products when you update Windows
 				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
@@ -114,19 +93,51 @@ function Checkings
 				exit
 			}
 		}
+		{$_ -ge 22621}
+		{
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 521)
+			{
+				# Check whether the OS minor build version is 521 minimum
+				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
+				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
+				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
+
+				Start-Process -FilePath "https://t.me/sophia_chat"
+
+				# Enable receiving updates for other Microsoft products when you update Windows
+				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+				Start-Sleep -Seconds 1
+
+				# Check for UWP apps updates
+				Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
+
+				# Open the "Windows Update" page
+				Start-Process -FilePath "ms-settings:windowsupdate-action"
+
+				Start-Sleep -Seconds 1
+
+				# Trigger Windows Update for detecting new updates
+				(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+
+				exit
+			}
+		}
+		{$_ -lt 22000}
+		{
+			Write-Warning -Message $Localization.UnsupportedOSBuild
+			Start-Process -FilePath "https://t.me/sophia_chat"
+			exit
+		}
 	}
 
 	# Check the language mode
-	switch ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage")
+	if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage")
 	{
-		$true
-		{
-			Write-Warning -Message $Localization.UnsupportedLanguageMode
-
-			Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes"
-
-			exit
-		}
+		Write-Warning -Message $Localization.UnsupportedLanguageMode
+		Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes"
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
 	}
 
 	# Check whether the logged-in user is an admin
@@ -134,19 +145,18 @@ function Checkings
 	$CurrentSessionId = (Get-Process -Id $PID -IncludeUserName).SessionId
 	$LoginUserName = (Get-Process -IncludeUserName | Where-Object -FilterScript {($_.ProcessName -eq "explorer") -and ($_.SessionId -eq $CurrentSessionId)}).UserName | Select-Object -First 1 | Split-Path -Leaf
 
-	switch ($CurrentUserName -ne $LoginUserName)
+	if ($CurrentUserName -ne $LoginUserName)
 	{
-		$true
-		{
-			Write-Warning -Message $Localization.LoggedInUserNotAdmin
-			exit
-		}
+		Write-Warning -Message $Localization.LoggedInUserNotAdmin
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
 	}
 
-	# Check whether the script was run via PowerShell 5.1
-	if ($PSVersionTable.PSVersion.Major -ne 5)
+	# Check whether the script was run via PowerShell 7
+	if ($PSVersionTable.PSVersion.Major -ne 7)
 	{
 		Write-Warning -Message ($Localization.UnsupportedPowerShell -f $PSVersionTable.PSVersion.Major, $PSVersionTable.PSVersion.Minor)
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
@@ -154,6 +164,7 @@ function Checkings
 	if ($Host.Name -match "ISE")
 	{
 		Write-Warning -Message $Localization.UnsupportedISE
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
@@ -162,10 +173,9 @@ function Checkings
 	if (Test-Path -Path "HKCU:\Software\Win 10 Tweaker")
 	{
 		Write-Warning -Message $Localization.Win10TweakerWarning
-
 		Start-Process -FilePath "https://youtu.be/na93MS-1EkM"
 		Start-Process -FilePath "https://pikabu.ru/story/byekdor_v_win_10_tweaker_ili_sovremennyie_metodyi_borbyi_s_piratstvom_8227558"
-
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
@@ -177,8 +187,20 @@ function Checkings
 		exit
 	}
 
+	# Check whether this is ReviOS
+	# https://www.revi.cc
+	$DocumentsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Personal
+	if (Test-Path -Path "$DocumentsFolder\Workspace\Revision-Tool")
+	{
+		Write-Warning -Message $Localization.ReviOS
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
+	}
+
 	# Check whether libraries exist in the bin folder
 	$Libraries = @(
+		"$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll",
+		"$PSScriptRoot\..\bin\WinRT.Runtime.dll",
 		"$PSScriptRoot\..\bin\Start_Layout\start.bin",
 		"$PSScriptRoot\..\bin\PolicyFileEditor\Commands.ps1",
 		"$PSScriptRoot\..\bin\PolicyFileEditor\Common.ps1",
@@ -189,11 +211,17 @@ function Checkings
 	if (($Libraries | Test-Path) -contains $false)
 	{
 		Write-Warning -Message $Localization.Bin
-
 		Start-Sleep -Seconds 5
-
 		Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
+	}
 
+	# A temp workaround to check whether PolFileEditor.dl assembly was loaded due to even it was unblocked it's blocked loading into PowerShell session
+	$PolFileEditor = (Resolve-Path -Path "$PSScriptRoot\..\bin\PolicyFileEditor\PolFileEditor.dll").Path
+	if ([System.AppDomain]::CurrentDomain.GetAssemblies().Location -notcontains $PolFileEditor)
+	{
+		Write-Verbose -Message "You must close powershell.exe and re-run script" -Verbose
 		exit
 	}
 
@@ -237,19 +265,17 @@ function Checkings
 				Uri              = "https://raw.githubusercontent.com/farag2/Sophia-Script-for-Windows/master/sophia_script_versions.json"
 				UseBasicParsing  = $true
 			}
-			$LatestRelease = (Invoke-RestMethod @Parameters).Sophia_Script_Windows_11_PowerShell_5_1
+			$LatestRelease = (Invoke-RestMethod @Parameters).Sophia_Script_Windows_11_PowerShell_7
 			$CurrentRelease = (Get-Module -Name Sophia).Version.ToString()
-			switch ([System.Version]$LatestRelease -gt [System.Version]$CurrentRelease)
+			if ([System.Version]$LatestRelease -gt [System.Version]$CurrentRelease)
 			{
-				$true
-				{
-					Write-Warning -Message $Localization.UnsupportedRelease
+				Write-Warning -Message $Localization.UnsupportedRelease
 
-					Start-Sleep -Seconds 5
+				Start-Sleep -Seconds 5
 
-					Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
-					exit
-				}
+				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows/releases/latest"
+				Start-Process -FilePath "https://t.me/sophia_chat"
+				exit
 			}
 		}
 		catch [System.Net.WebException]
@@ -268,12 +294,30 @@ function Checkings
 		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 	}
 
-	# Unblock all files in the script folder by removing the Zone.Identifier alternate data stream with a value of "3"
-	Get-ChildItem -Path $PSScriptRoot\..\ -File -Recurse -Force | Unblock-File
+	#region Defender checks
+	# Checking whether WMI is corrupted
+	try
+	{
+		Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender -ErrorAction Stop | Out-Null
+	}
+	catch [Microsoft.Management.Infrastructure.CimException]
+	{
+		# Provider Load Failure exception
+		Write-Warning -Message $Global:Error.Exception.Message | Select-Object -First 1
+		Write-Warning -Message $Localization.WindowsBroken
 
-	#region Defender Checkings
-	# Turn off Controlled folder access to let the script proceed
-	# Checking whether Defender wasn't disabled first
+		Start-Process -FilePath "https://t.me/sophia_chat"
+
+		exit
+	}
+
+	# Check Microsoft Defender state
+	if ($null -eq (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct -ErrorAction Ignore))
+	{
+		$Localization.WindowsBroken
+		exit
+	}
+
 	$productState = (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName Antivirusproduct | Where-Object -FilterScript {$_.instanceGuid -eq "{D68DDC3A-831F-4fae-9E44-DA132C1ACF46}"}).productState
 	$DefenderState = ('0x{0:x}' -f $productState).Substring(3, 2)
 	if ($DefenderState -notmatch "00|01")
@@ -289,12 +333,12 @@ function Checkings
 	@("Windefend", "SecurityHealthService", "wscsvc") | ForEach-Object -Process {
 		if ($null -eq (Get-Service -Name $_ -ErrorAction Ignore))
 		{
-			$Localization.DefenderBroken
+			$Localization.WindowsBroken
 			exit
 		}
 		else
 		{
-			if ((Get-Service -Name $_ -ErrorAction Ignore).Status -eq "running")
+			if ((Get-Service -Name $_).Status -eq "running")
 			{
 				$Script:DefenderServices = $true
 			}
@@ -305,6 +349,7 @@ function Checkings
 		}
 	}
 
+	# Specifies whether Antispyware protection is enabled
 	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AntispywareEnabled)
 	{
 		$Script:DefenderAntispywareEnabled = $true
@@ -334,10 +379,56 @@ function Checkings
 		$Script:DefenderAMEngineVersion = $true
 	}
 
-	if ($Script:DefenderproductState -and $Script:DefenderServices -and $Script:DefenderAntispywareEnabled -and $Script:DefenderProductStatus -and $Script:DefenderAMEngineVersion)
+	# Check whether Microsoft Defender was turned off
+	# Due to "Set-StrictMode -Version Latest" we have to use try/catch & GetValue()
+	try
+	{
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender", "DisableAntiSpyware", $false) -eq 1)
+		{
+			$Script:DisableAntiSpyware = $true
+		}
+		else
+		{
+			$Script:DisableAntiSpyware = $false
+		}
+	}
+	catch {}
+
+	# Check whether real-time protection prompts for known malware detection
+	# Due to "Set-StrictMode -Version Latest" we have to use try/catch & GetValue()
+	try
+	{
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring", $false) -eq 1)
+		{
+			$Script:DisableRealtimeMonitoring = $true
+		}
+		else
+		{
+			$Script:DisableRealtimeMonitoring = $false
+		}
+	}
+	catch {}
+
+	# Check whether behavior monitoring was disabled
+	# Due to "Set-StrictMode -Version Latest" we have to use try/catch & GetValue()
+	try
+	{
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableBehaviorMonitoring", $false) -eq 1)
+		{
+			$Script:DisableBehaviorMonitoring = $true
+		}
+		else
+		{
+			$Script:DisableBehaviorMonitoring = $false
+		}
+	}
+	catch {}
+
+	if ($Script:DefenderproductState -and $Script:DefenderServices -and $Script:DefenderAntispywareEnabled -and $Script:DefenderAMEngineVersion -and
+	(-not $Script:DisableAntiSpyware) -and (-not $Script:DisableRealtimeMonitoring) -and (-not $Script:DisableBehaviorMonitoring))
 	{
 		# Defender is enabled
-		$Script:DefenderState = $true
+		$Script:DefenderEnabled = $true
 
 		switch ((Get-MpPreference).EnableControlledFolderAccess)
 		{
@@ -345,6 +436,7 @@ function Checkings
 			{
 				Write-Warning -Message $Localization.ControlledFolderAccessDisabled
 
+				# Turn off Controlled folder access to let the script proceed
 				$Script:ControlledFolderAccess = $true
 				Set-MpPreference -EnableControlledFolderAccess Disabled
 
@@ -357,7 +449,7 @@ function Checkings
 			}
 		}
 	}
-	#endregion Defender Checkings
+	#endregion Defender checks
 
 	# Display a warning message about whether a user has customized the preset file
 	if ($Warning)
@@ -391,10 +483,13 @@ function Checkings
 		}
 	}
 
+	# Import PowerShell 5.1 modules
+	Import-Module -Name Microsoft.PowerShell.Management, PackageManagement, Appx -UseWindowsPowerShell
+
 	# Save all opened folders in order to restore them after File Explorer restart
 	$Script:OpenedFolders = {(New-Object -ComObject Shell.Application).Windows() | ForEach-Object -Process {$_.Document.Folder.Self.Path}}.Invoke()
 }
-#endregion Checkings
+#endregion Checks
 
 #region Protection
 # Enable script logging. The log will be being recorded into the script root folder
@@ -411,16 +506,12 @@ function CreateRestorePoint
 	$SystemDriveUniqueID = (Get-Volume | Where-Object -FilterScript {$_.DriveLetter -eq "$($env:SystemDrive[0])"}).UniqueID
 	$SystemProtection = ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SPP\Clients" -ErrorAction Ignore)."{09F7EDC5-294E-4180-AF6A-FB0E6A0E9513}") | Where-Object -FilterScript {$_ -match [regex]::Escape($SystemDriveUniqueID)}
 
-	$ComputerRestorePoint = $false
-
-	switch ($null -eq $SystemProtection)
-	{
-		$true
-		{
-			$ComputerRestorePoint = $true
+	$Script:ComputerRestorePoint = $false
+	$SystemProtection ?? (& {
+			$Script:ComputerRestorePoint = $true
 			Enable-ComputerRestore -Drive $env:SystemDrive
 		}
-	}
+	)
 
 	# Never skip creating a restore point
 	New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name SystemRestorePointCreationFrequency -PropertyType DWord -Value 0 -Force
@@ -431,7 +522,7 @@ function CreateRestorePoint
 	New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name SystemRestorePointCreationFrequency -PropertyType DWord -Value 1440 -Force
 
 	# Turn off System Protection for the system drive if it was turned off before without deleting the existing restore points
-	if ($ComputerRestorePoint)
+	if ($Script:ComputerRestorePoint)
 	{
 		Disable-ComputerRestore -Drive $env:SystemDrive
 	}
@@ -2640,10 +2731,13 @@ public static string GetString(uint strId)
 			Store
 			{
 				# Start-Job is used due to that the calling this function before UninstallUWPApps breaks the retrieval of the localized UWP apps packages names
-				Start-Job -ScriptBlock {
-					$Apps = (New-Object -ComObject Shell.Application).NameSpace("shell:::{4234d49b-0245-4df3-b780-3893943456e1}").Items()
-					($Apps | Where-Object -FilterScript {$_.Name -eq "Microsoft Store"}).Verbs() | Where-Object -FilterScript {$_.Name -eq $Using:LocalizedString} | ForEach-Object -Process {$_.DoIt()}
-				} | Receive-Job -Wait -AutoRemoveJob
+				if ((New-Object -ComObject Shell.Application).NameSpace("shell:::{4234d49b-0245-4df3-b780-3893943456e1}").Items() | Where-Object -FilterScript {$_.Path -eq "Microsoft.WindowsStore_8wekyb3d8bbwe!App"})
+				{
+					Start-Job -ScriptBlock {
+						$Apps = (New-Object -ComObject Shell.Application).NameSpace("shell:::{4234d49b-0245-4df3-b780-3893943456e1}").Items()
+						($Apps | Where-Object -FilterScript {$_.Name -eq "Microsoft Store"}).Verbs() | Where-Object -FilterScript {$_.Name -eq $Using:LocalizedString} | ForEach-Object -Process {$_.DoIt()}
+					} | Receive-Job -Wait -AutoRemoveJob
+				}
 			}
 		}
 	}
@@ -2932,84 +3026,6 @@ function JPEGWallpapersQuality
 		"Default"
 		{
 			Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name JPEGImportQuality -Force -ErrorAction Ignore
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
-	The Task Manager mode
-
-	.PARAMETER Expanded
-	Start Task Manager in the expanded mode
-
-	.PARAMETER Compact
-	Start Task Manager in the compact mode
-
-	.EXAMPLE
-	TaskManagerWindow -Expanded
-
-	.EXAMPLE
-	TaskManagerWindow -Compact
-
-	.NOTES
-	Current user
-#>
-function TaskManagerWindow
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Expanded"
-		)]
-		[switch]
-		$Expanded,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Compact"
-		)]
-		[switch]
-		$Compact
-	)
-
-	# This function is designed only for 22000 build due to Windows 11 22H2 has a new Task Manager with the new UI
-	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -eq 22000)
-	{
-		$Taskmgr = Get-Process -Name Taskmgr -ErrorAction Ignore
-
-		Start-Sleep -Seconds 1
-
-		if ($Taskmgr)
-		{
-			$Taskmgr.CloseMainWindow()
-		}
-		Start-Process -FilePath Taskmgr.exe -PassThru
-
-		Start-Sleep -Seconds 3
-
-		do
-		{
-			Start-Sleep -Milliseconds 100
-			$Preferences = Get-ItemPropertyValue -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences
-		}
-		until ($Preferences)
-
-		Stop-Process -Name Taskmgr -ErrorAction Ignore
-
-		switch ($PSCmdlet.ParameterSetName)
-		{
-			"Expanded"
-			{
-				$Preferences[28] = 0
-				New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
-			}
-			"Compact"
-			{
-				$Preferences[28] = 1
-				New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\TaskManager -Name Preferences -PropertyType Binary -Value $Preferences -Force
-			}
 		}
 	}
 }
@@ -3320,7 +3336,9 @@ function OneDrive
 	{
 		"Uninstall"
 		{
-			[string]$UninstallString = Get-Package -Name "Microsoft OneDrive" -ProviderName Programs -ErrorAction Ignore | ForEach-Object -Process {$_.Meta.Attributes["UninstallString"]}
+			[xml]$Uninstall = Get-Package -Name "Microsoft OneDrive" -ProviderName Programs -ErrorAction Ignore | ForEach-Object -Process {$_.SwidTagText}
+			[xml]$Uninstall = $Uninstall.SoftwareIdentity.InnerXml
+			[string]$UninstallString = $Uninstall.Meta.UninstallString
 			if ($UninstallString)
 			{
 				Write-Information -MessageData "" -InformationAction Continue
@@ -3475,6 +3493,7 @@ public static bool MarkFileDelete (string sourcefile)
 						$Parameters = @{
 							Uri              = "https://www.google.com"
 							Method           = "Head"
+							SslProtocol      = "Tls13"
 							DisableKeepAlive = $true
 							UseBasicParsing  = $true
 						}
@@ -3491,6 +3510,7 @@ public static bool MarkFileDelete (string sourcefile)
 						# https://go.microsoft.com/fwlink/p/?LinkID=844652
 						$Parameters = @{
 							Uri             = "https://g.live.com/1rewlive5skydrive/OneDriveProduction"
+							SslProtocol     = "Tls13"
 							UseBasicParsing = $true
 							Verbose         = $true
 						}
@@ -3504,6 +3524,7 @@ public static bool MarkFileDelete (string sourcefile)
 						$Parameters = @{
 							Uri             = $OneDriveURL
 							OutFile         = "$DownloadsFolder\OneDriveSetup.exe"
+							SslProtocol     = "Tls13"
 							UseBasicParsing = $true
 							Verbose         = $true
 						}
@@ -3707,6 +3728,7 @@ function StorageSenseFrequency
 		}
 	}
 }
+
 #endregion StorageSense
 
 <#
@@ -3817,6 +3839,11 @@ function TempFolder
 				if (-not (Test-Path -Path $env:SystemDrive\Temp))
 				{
 					New-Item -Path $env:SystemDrive\Temp -ItemType Directory -Force
+				}
+
+				# Copy all imported module folders to the new %TEMP% folder
+				Get-ChildItem -Path $env:TEMP -Force | Where-Object -FilterScript {$_.Name -like "*remoteIpMoProxy*"} | ForEach-Object -Process {
+					Copy-Item $_.FullName -Destination $env:SystemDrive\Temp -Recurse -Force
 				}
 
 				# Cleaning up folders
@@ -3940,6 +3967,11 @@ Unregister-ScheduledTask -TaskName SymbolicLink -Confirm:`$false
 				if (-not (Test-Path -Path $env:LOCALAPPDATA\Temp))
 				{
 					New-Item -Path $env:LOCALAPPDATA\Temp -ItemType Directory -Force
+				}
+
+				# Copy all imported module folders to the new %TEMP% folder
+				Get-ChildItem -Path $env:TEMP -Force | Where-Object -FilterScript {$_.Name -like "*remoteIpMoProxy*"} | ForEach-Object -Process {
+					Copy-Item $_.FullName -Destination $env:LOCALAPPDATA\Temp -Recurse -Force
 				}
 
 				# Removing folders
@@ -5002,6 +5034,7 @@ function WindowsCapabilities
 				$Parameters = @{
 					Uri              = "https://www.google.com"
 					Method           = "Head"
+					SslProtocol      = "Tls13"
 					DisableKeepAlive = $true
 					UseBasicParsing  = $true
 				}
@@ -7349,23 +7382,27 @@ function Set-Association
 			Mandatory = $true,
 			Position = 0
 		)]
-		[String]
+		[string]
 		$ProgramPath,
 
 		[Parameter(
 			Mandatory = $true,
 			Position = 1
 		)]
-		[String]
+		[string]
 		$Extension,
 
 		[Parameter(Mandatory = $false)]
-		[String]
+		[string]
 		$Icon
 	)
 
 	$ProgramPath = [System.Environment]::ExpandEnvironmentVariables($ProgramPath)
-	$Icon = [System.Environment]::ExpandEnvironmentVariables($Icon)
+
+	if ($Icon)
+	{
+		$Icon = [System.Environment]::ExpandEnvironmentVariables($Icon)
+	}
 
 	if (Test-Path -Path $ProgramPath)
 	{
@@ -7393,22 +7430,60 @@ namespace RegistryUtils
 		[DllImport("advapi32.dll", CharSet = CharSet.Auto)]
 		private static extern int RegOpenKeyEx(UIntPtr hKey, string subKey, int ulOptions, int samDesired, out UIntPtr hkResult);
 
-		[DllImport("advapi32.dll", EntryPoint = "RegQueryInfoKey", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
-		private static extern int RegQueryInfoKey(UIntPtr hkey, out StringBuilder lpClass, ref uint lpcbClass, IntPtr lpReserved,
-			out uint lpcSubKeys, out uint lpcbMaxSubKeyLen, out uint lpcbMaxClassLen, out uint lpcValues, out uint lpcbMaxValueNameLen,
-			out uint lpcbMaxValueLen, out uint lpcbSecurityDescriptor, ref FILETIME lpftLastWriteTime);
-
 		[DllImport("advapi32.dll", SetLastError = true)]
 		private static extern int RegCloseKey(UIntPtr hKey);
 
 		[DllImport("advapi32.dll", SetLastError=true, CharSet = CharSet.Unicode)]
 		private static extern uint RegDeleteKey(UIntPtr hKey, string subKey);
 
-		public static void DeleteKey(RegistryHive registryHive, string subkey) {
+		[DllImport("advapi32.dll", EntryPoint = "RegQueryInfoKey", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+		private static extern int RegQueryInfoKey(UIntPtr hkey, out StringBuilder lpClass, ref uint lpcbClass, IntPtr lpReserved,
+			out uint lpcSubKeys, out uint lpcbMaxSubKeyLen, out uint lpcbMaxClassLen, out uint lpcValues, out uint lpcbMaxValueNameLen,
+			out uint lpcbMaxValueLen, out uint lpcbSecurityDescriptor, ref FILETIME lpftLastWriteTime);
+
+		[DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+		internal static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr phtok);
+
+		[DllImport("kernel32.dll", ExactSpelling = true)]
+		internal static extern IntPtr GetCurrentProcess();
+
+		[DllImport("advapi32.dll", SetLastError = true)]
+		internal static extern bool LookupPrivilegeValue(string host, string name, ref long pluid);
+
+		[DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+		internal static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall, ref TokPriv1Luid newst, int len, IntPtr prev, IntPtr relen);
+
+		[DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern int RegLoadKey(uint hKey, string lpSubKey, string lpFile);
+
+		[DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern int RegUnLoadKey(uint hKey, string lpSubKey);
+
+		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+		internal struct TokPriv1Luid
+		{
+			public int Count;
+			public long Luid;
+			public int Attr;
+		}
+
+		public static void DeleteKey(RegistryHive registryHive, string subkey)
+		{
 			UIntPtr hKey = UIntPtr.Zero;
-			var hive = new UIntPtr(unchecked((uint)registryHive));
-			RegOpenKeyEx(hive, subkey, 0, 0x20019, out hKey);
-			RegDeleteKey(hive, subkey);
+
+			try
+			{
+				var hive = new UIntPtr(unchecked((uint)registryHive));
+				RegOpenKeyEx(hive, subkey, 0, 0x20019, out hKey);
+				RegDeleteKey(hive, subkey);
+			}
+			finally
+			{
+				if (hKey != UIntPtr.Zero)
+				{
+					RegCloseKey(hKey);
+				}
+			}
 		}
 
 		private static DateTime ToDateTime(FILETIME ft)
@@ -7434,14 +7509,14 @@ namespace RegistryUtils
 			var lastModified = new FILETIME();
 			var lpcbClass = new uint();
 			var lpReserved = new IntPtr();
-			UIntPtr key = UIntPtr.Zero;
+			UIntPtr hKey = UIntPtr.Zero;
 
 			try
 			{
 				try
 				{
 					var hive = new UIntPtr(unchecked((uint)registryHive));
-					if (RegOpenKeyEx(hive, subKey, 0, (int)RegistryRights.ReadKey, out key) != 0)
+					if (RegOpenKeyEx(hive, subKey, 0, (int)RegistryRights.ReadKey, out hKey) != 0)
 					{
 						return null;
 					}
@@ -7454,8 +7529,9 @@ namespace RegistryUtils
 					uint maxValueLen;
 					uint securityDescriptor;
 					StringBuilder sb;
-
-					if (RegQueryInfoKey(key, out sb, ref lpcbClass, lpReserved, out lpcbSubKeys, out lpcbMaxKeyLen, out lpcbMaxClassLen, out lpcValues, out maxValueName, out maxValueLen, out securityDescriptor, ref lastModified) != 0)
+					
+					if (RegQueryInfoKey(hKey, out sb, ref lpcbClass, lpReserved, out lpcbSubKeys, out lpcbMaxKeyLen, out lpcbMaxClassLen,
+						out lpcValues, out maxValueName, out maxValueLen, out securityDescriptor, ref lastModified) != 0)
 					{
 						return null;
 					}
@@ -7465,9 +7541,9 @@ namespace RegistryUtils
 				}
 				finally
 				{
-					if (key != UIntPtr.Zero)
+					if (hKey != UIntPtr.Zero)
 					{
-						RegCloseKey(key);
+						RegCloseKey(hKey);
 					}
 				}
 			}
@@ -7475,6 +7551,54 @@ namespace RegistryUtils
 			{
 				return null;
 			}
+		}
+
+		internal const int SE_PRIVILEGE_DISABLED = 0x00000000;
+		internal const int SE_PRIVILEGE_ENABLED = 0x00000002;
+		internal const int TOKEN_QUERY = 0x00000008;
+		internal const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
+
+		public enum RegistryHives : uint
+		{
+			HKEY_USERS = 0x80000003,
+			HKEY_LOCAL_MACHINE = 0x80000002
+		}
+
+		public static void AddPrivilege(string privilege)
+		{
+			bool retVal;
+			TokPriv1Luid tp;
+			IntPtr hproc = GetCurrentProcess();
+			IntPtr htok = IntPtr.Zero;
+			retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
+			tp.Count = 1;
+			tp.Luid = 0;
+			tp.Attr = SE_PRIVILEGE_ENABLED;
+			retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
+			retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
+			///return retVal;
+		}
+
+		public static int LoadHive(RegistryHives hive, string subKey, string filePath)
+		{
+			AddPrivilege("SeRestorePrivilege");
+			AddPrivilege("SeBackupPrivilege");
+
+			uint regHive = (uint)hive;
+			int result = RegLoadKey(regHive, subKey, filePath);
+
+			return result;
+		}
+
+		public static int UnloadHive(RegistryHives hive, string subKey)
+		{
+			AddPrivilege("SeRestorePrivilege");
+			AddPrivilege("SeBackupPrivilege");
+
+			uint regHive = (uint)hive;
+			int result = RegUnLoadKey(regHive, subKey);
+
+			return result;
 		}
 	}
 }
@@ -7494,14 +7618,14 @@ namespace RegistryUtils
 				Position = 0
 
 			)]
-			[String]
+			[string]
 			$ProgId,
 
 			[Parameter(
 				Mandatory = $true,
 				Position = 1
 			)]
-			[String]
+			[string]
 			$Icon
 		)
 
@@ -7566,7 +7690,7 @@ namespace RegistryUtils
 				Mandatory = $true,
 				Position = 1
 			)]
-			[String]
+			[string]
 			$Extension
 		)
 
@@ -7721,7 +7845,8 @@ namespace RegistryUtils
 				Mandatory = $true,
 				Position = 1
 			)]
-			[string] $Extension,
+			[string]
+			$Extension,
 
 			[Parameter(
 				Mandatory = $true,
@@ -7828,7 +7953,6 @@ namespace FileAssoc
 					uint v3 = 0x1D830000 * (0x12CEB96D * (v2 >> 16) - 0x46930000 * v2) + 0x257E1D83 * ((0x12CEB96D * (v2 >> 16) - 0x46930000 * v2) >> 16);
 					uint v4 = 0x16F50000 * c1 * v3 - 0x5D8BE90B * ((c1 * v3) >> 16);
 					uint v5 = 0x96FF0000 * v4 - 0x2C7C6901 * (v4 >> 16);
-
 					o1 = 0x9F690000 * (0x2B890000 * v5 + 0x7C932B89 * (v5 >> 16)) - 0x405B6097 * ((0x2B890000 * v5 + 0x7C932B89 * (v5 >> 16)) >> 16);
 					o2 += o1 + v2;
 				}
@@ -7933,11 +8057,11 @@ namespace FileAssoc
 	Write-Information -MessageData "" -InformationAction Continue
 	Write-Verbose -Message $Localization.Patient -Verbose
 
-	# Setting additional parameters to comply with the requirements before configuring the extension
-	Write-AdditionalKeys -ProgId $ProgId -Extension $Extension
-
 	# If the file extension specified configure the extension
 	Write-ExtensionKeys -ProgId $ProgId -Extension $Extension
+
+	# Setting additional parameters to comply with the requirements before configuring the extension
+	Write-AdditionalKeys -ProgId $ProgId -Extension $Extension
 
 	# Refresh the desktop icons
 	$UpdateExplorer = @{
@@ -7947,7 +8071,6 @@ namespace FileAssoc
 		MemberDefinition = @"
 [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = false)]
 private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
-
 public static void Refresh()
 {
 	// Update desktop icons
@@ -8071,7 +8194,7 @@ function InstallVCRedistx64
 
 		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
 		{
-			winget install --id=Microsoft.VC++2015-2022Redist-x64 --exact --accept-source-agreements
+			winget install --id=Microsoft.VCRedist.2015+.x64 --exact --accept-source-agreements
 		}
 		else
 		{
@@ -8155,7 +8278,7 @@ function InstallDotNetRuntime6
 
 			# .NET Desktop Runtime x86
 			$Parameters = @{
-				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x64.exe"
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x86.exe"
 				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe"
 				UseBasicParsing = $true
 				Verbose         = $true
@@ -8166,7 +8289,7 @@ function InstallDotNetRuntime6
 
 			# .NET Desktop Runtime x64
 			$Parameters = @{
-				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x86.exe"
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x64.exe"
 				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe"
 				UseBasicParsing = $true
 				Verbose         = $true
@@ -8655,15 +8778,15 @@ function RunPowerShellShortcut
 	{
 		"Elevated"
 		{
-			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Encoding Byte -Raw
+			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -AsByteStream -Raw
 			$bytes[0x15] = $bytes[0x15] -bor 0x20
-			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -Encoding Byte -Force
+			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -AsByteStream -Force
 		}
 		"NonElevated"
 		{
-			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Encoding Byte -Raw
+			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -AsByteStream -Raw
 			$bytes[0x15] = $bytes[0x15] -bxor 0x20
-			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -Encoding Byte -Force
+			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -AsByteStream -Force
 		}
 	}
 }
@@ -8691,7 +8814,7 @@ function RunPowerShellShortcut
 	StartLayout -ShowMoreRecommendations
 
 	.NOTES
-	For Windows 11 Insider Preview 22509+ build only
+	For Windows 11 22H2+
 
 	.NOTES
 	Current user
@@ -8722,7 +8845,7 @@ function StartLayout
 		$ShowMoreRecommendations
 	)
 
-	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22509)
+	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22621)
 	{
 		switch ($PSCmdlet.ParameterSetName)
 		{
@@ -8761,6 +8884,13 @@ function StartLayout
 	UninstallUWPApps -ForAllUsers
 
 	.NOTES
+	Load the WinRT.Runtime.dll and Microsoft.Windows.SDK.NET.dll assemblies in the current session in order to get localized UWP apps names
+
+	.LINK
+	https://github.com/microsoft/CsWinRT
+	https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref
+
+	.NOTES
 	Current user
 #>
 function UninstallUWPApps
@@ -8772,6 +8902,9 @@ function UninstallUWPApps
 		[switch]
 		$ForAllUsers
 	)
+
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
 
 	Add-Type -AssemblyName PresentationCore, PresentationFramework
 
@@ -8862,7 +8995,10 @@ function UninstallUWPApps
 		"Microsoft.AV1VideoExtension",
 
 		# HEVC Video Extensions from Device Manufacturer
-		"Microsoft.HEVCVideoExtension"
+		"Microsoft.HEVCVideoExtension",
+
+		# Raw Image Extension
+		"Microsoft.RawImageExtension"
 	)
 
 	#region Variables
@@ -8986,7 +9122,7 @@ function UninstallUWPApps
 			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers:$AllUsers | Select-Object -Index 0
 		}
 
-		$PackagesIds = [Windows.Management.Deployment.PackageManager, Windows.Web, ContentType = WindowsRuntime]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
+		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
 
 		foreach ($AppxPackage in $AppxPackages)
 		{
@@ -9228,11 +9364,21 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	.NOTES
 	UWP apps can be restored only if they were uninstalled for the current user
 
+	.LINK
+	https://github.com/microsoft/CsWinRT
+	https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref
+
+	.NOTES
+	Load the WinRT.Runtime.dll and Microsoft.Windows.SDK.NET.dll assemblies in the current session in order to get localized UWP apps names
+
 	.NOTES
 	Current user
 #>
 function RestoreUWPApps
 {
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
+
 	Add-Type -AssemblyName PresentationCore, PresentationFramework
 
 	#region Variables
@@ -9342,7 +9488,7 @@ function RestoreUWPApps
 			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers | Where-Object -FilterScript {$_.PackageUserInformation -match "Staged"} | Select-Object -Index 0
 		}
 
-		$PackagesIds = [Windows.Management.Deployment.PackageManager, Windows.Web, ContentType = WindowsRuntime]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
+		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
 
 		foreach ($AppxPackage in $AppxPackages)
 		{
@@ -9804,11 +9950,11 @@ function TeamsAutostart
 		$Enable
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if (Get-AppxPackage -Name MicrosoftTeams)
 	{
-		"Disable"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if (Get-AppxPackage -Name MicrosoftTeams)
+			"Disable"
 			{
 				if (-not (Test-Path -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\SystemAppData\MicrosoftTeams_8wekyb3d8bbwe\TeamsStartupTask"))
 				{
@@ -9816,10 +9962,7 @@ function TeamsAutostart
 				}
 				New-ItemProperty -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\SystemAppData\MicrosoftTeams_8wekyb3d8bbwe\TeamsStartupTask" -Name State -PropertyType DWord -Value 1 -Force
 			}
-		}
-		"Enable"
-		{
-			if (Get-AppxPackage -Name MicrosoftTeams)
+			"Enable"
 			{
 				if (-not (Test-Path -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\SystemAppData\MicrosoftTeams_8wekyb3d8bbwe\TeamsStartupTask"))
 				{
@@ -10129,37 +10272,37 @@ function CleanupTask
 	{
 		"Register"
 		{
-			if (-not (Get-ScheduledTask -TaskPath "\SophiApp\" -TaskName "Windows Cleanup" -ErrorAction Ignore))
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification" -Confirm:$false -ErrorAction Ignore
+
+			Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches | ForEach-Object -Process {
+				Remove-ItemProperty -Path $_.PsPath -Name StateFlags1337 -Force -ErrorAction Ignore
+			}
+
+			$VolumeCaches = @(
+				"Delivery Optimization Files",
+				"BranchCache",
+				"Device Driver Packages",
+				"Language Pack",
+				"Previous Installations",
+				"Setup Log Files",
+				"System error memory dump files",
+				"System error minidump files",
+				"Temporary Setup Files",
+				"Update Cleanup",
+				"Windows Defender",
+				"Windows ESD installation files",
+				"Windows Upgrade Log Files"
+			)
+			foreach ($VolumeCache in $VolumeCaches)
 			{
-				Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches | ForEach-Object -Process {
-					Remove-ItemProperty -Path $_.PsPath -Name StateFlags1337 -Force -ErrorAction Ignore
-				}
-
-				$VolumeCaches = @(
-					"Delivery Optimization Files",
-					"BranchCache",
-					"Device Driver Packages",
-					"Language Pack",
-					"Previous Installations",
-					"Setup Log Files",
-					"System error memory dump files",
-					"System error minidump files",
-					"Temporary Setup Files",
-					"Update Cleanup",
-					"Windows Defender",
-					"Windows ESD installation files",
-					"Windows Upgrade Log Files"
-				)
-				foreach ($VolumeCache in $VolumeCaches)
+				if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache"))
 				{
-					if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache"))
-					{
-						New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Force
-					}
-					New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Name StateFlags1337 -PropertyType DWord -Value 2 -Force
+					New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Force
 				}
+				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Name StateFlags1337 -PropertyType DWord -Value 2 -Force
+			}
 
-				$CleanupTask = @"
+			$CleanupTask = @"
 Get-Process -Name cleanmgr | Stop-Process -Force
 Get-Process -Name Dism | Stop-Process -Force
 Get-Process -Name DismHost | Stop-Process -Force
@@ -10227,40 +10370,40 @@ while (`$true)
 `$Process.Start() | Out-Null
 "@
 
-				# Create the "Windows Cleanup" task
-				$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $CleanupTask"
-				$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
-				$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-				$Parameters = @{
-					TaskName    = "Windows Cleanup"
-					TaskPath    = "Sophia Script"
-					Principal   = $Principal
-					Action      = $Action
-					Description = $Localization.CleanupTaskDescription
-					Settings    = $Settings
-				}
-				Register-ScheduledTask @Parameters -Force
+			# Create the "Windows Cleanup" task
+			$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $CleanupTask"
+			$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
+			$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+			$Parameters = @{
+				TaskName    = "Windows Cleanup"
+				TaskPath    = "Sophia"
+				Principal   = $Principal
+				Action      = $Action
+				Description = $Localization.CleanupTaskDescription
+				Settings    = $Settings
+			}
+			Register-ScheduledTask @Parameters -Force
 
-				# Persist the Settings notifications to prevent to immediately disappear from Action Center
-				if (-not (Test-Path -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
-				{
-					New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
-				}
-				New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+			# Persist the Settings notifications to prevent to immediately disappear from Action Center
+			if (-not (Test-Path -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
+			{
+				New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
+			}
+			New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
 
-				# Register the "WindowsCleanup" protocol to be able to run the scheduled task by clicking the "Run" button in a toast
-				if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command))
-				{
-					New-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Force
-				}
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "(default)" -PropertyType String -Value "URL:WindowsCleanup" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "URL Protocol" -PropertyType String -Value "" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name EditFlags -PropertyType DWord -Value 2162688 -Force
+			# Register the "WindowsCleanup" protocol to be able to run the scheduled task by clicking the "Run" button in a toast
+			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command))
+			{
+				New-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Force
+			}
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "(default)" -PropertyType String -Value "URL:WindowsCleanup" -Force
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "URL Protocol" -PropertyType String -Value "" -Force
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name EditFlags -PropertyType DWord -Value 2162688 -Force
 
-				# Start the "Windows Cleanup" task if the "Run" button clicked
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Name "(default)" -PropertyType String -Value 'powershell.exe -Command "& {Start-ScheduledTask -TaskPath ''\Sophia Script\'' -TaskName ''Windows Cleanup''}"' -Force
+			# Start the "Windows Cleanup" task if the "Run" button clicked
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Name "(default)" -PropertyType String -Value 'powershell.exe -Command "& {Start-ScheduledTask -TaskPath ''\Sophia Script\'' -TaskName ''Windows Cleanup''}"' -Force
 
-				$ToastNotification = @"
+			$ToastNotification = @"
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
@@ -10302,22 +10445,21 @@ while (`$true)
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
 "@
 
-				# Create the "Windows Cleanup Notification" task
-				$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $ToastNotification"
-				$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
-				$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-				$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 30 -At 9pm
-				$Parameters = @{
-					TaskName    = "Windows Cleanup Notification"
-					TaskPath    = "Sophia Script"
-					Action      = $Action
-					Settings    = $Settings
-					Principal   = $Principal
-					Trigger     = $Trigger
-					Description = $Localization.CleanupNotificationTaskDescription
-				}
-				Register-ScheduledTask @Parameters -Force
+			# Create the "Windows Cleanup Notification" task
+			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $ToastNotification"
+			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
+			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 30 -At 9pm
+			$Parameters = @{
+				TaskName    = "Windows Cleanup Notification"
+				TaskPath    = "Sophia"
+				Action      = $Action
+				Settings    = $Settings
+				Principal   = $Principal
+				Trigger     = $Trigger
+				Description = $Localization.CleanupNotificationTaskDescription
 			}
+			Register-ScheduledTask @Parameters -Force
 		}
 		"Delete"
 		{
@@ -10327,7 +10469,7 @@ while (`$true)
 
 			Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -Force -ErrorAction Ignore
 
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\" -TaskName "Windows Cleanup", "Windows Cleanup Notification" -Confirm:$false -ErrorAction Ignore
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\", "\Sophia\" -TaskName "Windows Cleanup", "Windows Cleanup Notification" -Confirm:$false -ErrorAction Ignore
 
 			Remove-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Recurse -Force -ErrorAction Ignore
 		}
@@ -10379,16 +10521,16 @@ function SoftwareDistributionTask
 	{
 		"Register"
 		{
-			if (-not (Get-ScheduledTask -TaskPath "\SophiApp\" -TaskName "SoftwareDistribution" -ErrorAction Ignore))
-			{
-				# Persist the Settings notifications to prevent to immediately disappear from Action Center
-				if (-not (Test-Path -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
-				{
-					New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
-				}
-				New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\", "\Sophia\" -TaskName SoftwareDistribution -Confirm:$false -ErrorAction Ignore
 
-				$SoftwareDistributionTask = @"
+			# Persist the Settings notifications to prevent to immediately disappear from Action Center
+			if (-not (Test-Path -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
+			{
+				New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
+			}
+			New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+
+			$SoftwareDistributionTask = @"
 (Get-Service -Name wuauserv).WaitForStatus('Stopped', '01:00:00')
 Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
 
@@ -10418,26 +10560,25 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
 "@
 
-				# Create the "SoftwareDistribution" task
-				$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $SoftwareDistributionTask"
-				$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
-				$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-				$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 90 -At 9pm
-				$Parameters = @{
-					TaskName    = "SoftwareDistribution"
-					TaskPath    = "Sophia Script"
-					Action      = $Action
-					Settings    = $Settings
-					Principal   = $Principal
-					Trigger     = $Trigger
-					Description = $Localization.FolderTaskDescription -f "%SystemRoot%\SoftwareDistribution\Download"
-				}
-				Register-ScheduledTask @Parameters -Force
+			# Create the "SoftwareDistribution" task
+			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $SoftwareDistributionTask"
+			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
+			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 90 -At 9pm
+			$Parameters = @{
+				TaskName    = "SoftwareDistribution"
+				TaskPath    = "Sophia"
+				Action      = $Action
+				Settings    = $Settings
+				Principal   = $Principal
+				Trigger     = $Trigger
+				Description = $Localization.FolderTaskDescription -f "%SystemRoot%\SoftwareDistribution\Download"
 			}
+			Register-ScheduledTask @Parameters -Force
 		}
 		"Delete"
 		{
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\" -TaskName SoftwareDistribution -Confirm:$false -ErrorAction Ignore
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\", "\Sophia\" -TaskName SoftwareDistribution -Confirm:$false -ErrorAction Ignore
 		}
 	}
 }
@@ -10487,9 +10628,9 @@ function TempTask
 	{
 		"Register"
 		{
-			if (-not (Get-ScheduledTask -TaskPath "\SophiApp\" -TaskName "Temp" -ErrorAction Ignore))
-			{
-				$TempTask = @"
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\", "\Sophia\" -TaskName Temp -Confirm:$false -ErrorAction Ignore
+
+			$TempTask = @"
 Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
@@ -10518,26 +10659,25 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
 "@
 
-				# Create the "Temp" task
-				$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $TempTask"
-				$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
-				$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-				$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 60 -At 9pm
-				$Parameters = @{
-					TaskName    = "Temp"
-					TaskPath    = "Sophia Script"
-					Action      = $Action
-					Settings    = $Settings
-					Principal   = $Principal
-					Trigger     = $Trigger
-					Description = $Localization.FolderTaskDescription -f "%TEMP%"
-				}
-				Register-ScheduledTask @Parameters -Force
+			# Create the "Temp" task
+			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $TempTask"
+			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
+			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 60 -At 9pm
+			$Parameters = @{
+				TaskName    = "Temp"
+				TaskPath    = "Sophia"
+				Action      = $Action
+				Settings    = $Settings
+				Principal   = $Principal
+				Trigger     = $Trigger
+				Description = $Localization.FolderTaskDescription -f "%TEMP%"
 			}
+			Register-ScheduledTask @Parameters -Force
 		}
 		"Delete"
 		{
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\" -TaskName Temp -Confirm:$false -ErrorAction Ignore
+			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\", "\Sophia\" -TaskName Temp -Confirm:$false -ErrorAction Ignore
 		}
 	}
 }
@@ -10582,18 +10722,15 @@ function NetworkProtection
 		$Disable
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if ($Script:DefenderEnabled)
 	{
-		"Enable"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if ((Get-MpComputerStatus).AntivirusEnabled)
+			"Enable"
 			{
 				Set-MpPreference -EnableNetworkProtection Enabled
 			}
-		}
-		"Disable"
-		{
-			if ((Get-MpComputerStatus).AntivirusEnabled)
+			"Disable"
 			{
 				Set-MpPreference -EnableNetworkProtection Disabled
 			}
@@ -10639,18 +10776,15 @@ function PUAppsDetection
 		$Disable
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if ($Script:DefenderEnabled)
 	{
-		"Enable"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if ((Get-MpComputerStatus).AntivirusEnabled)
+			"Enable"
 			{
 				Set-MpPreference -PUAProtection Enabled
 			}
-		}
-		"Disable"
-		{
-			if ((Get-MpComputerStatus).AntivirusEnabled)
+			"Disable"
 			{
 				Set-MpPreference -PUAProtection Disabled
 			}
@@ -10661,13 +10795,19 @@ function PUAppsDetection
 # Dismiss Microsoft Defender offer in the Windows Security about signing in Microsoft account
 function DismissMSAccount
 {
-	New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name AccountProtection_MicrosoftAccount_Disconnected -PropertyType DWord -Value 1 -Force
+	if ($Script:DefenderEnabled)
+	{
+		New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name AccountProtection_MicrosoftAccount_Disconnected -PropertyType DWord -Value 1 -Force
+	}
 }
 
 # Dismiss Microsoft Defender offer in the Windows Security about turning on the SmartScreen filter for Microsoft Edge
 function DismissSmartScreenFilter
 {
-	New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name AppAndBrowser_EdgeSmartScreenOff -PropertyType DWord -Value 0 -Force
+	if ($Script:DefenderEnabled)
+	{
+		New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows Security Health\State" -Name AppAndBrowser_EdgeSmartScreenOff -PropertyType DWord -Value 0 -Force
+	}
 }
 
 <#
@@ -10854,7 +10994,7 @@ function EventViewerCustomView
 			}
 
 			# Save ProcessCreation.xml in the UTF-8 with BOM encoding
-			Set-Content -Path "$env:ProgramData\Microsoft\Event Viewer\Views\ProcessCreation.xml" -Value $XML -Encoding UTF8 -Force
+			Set-Content -Path "$env:ProgramData\Microsoft\Event Viewer\Views\ProcessCreation.xml" -Value $XML -Encoding utf8BOM -Force
 		}
 		"Disable"
 		{
@@ -11013,15 +11153,18 @@ function AppsSmartScreen
 		$Enable
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if ($Script:DefenderEnabled)
 	{
-		"Disable"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer -Name SmartScreenEnabled -PropertyType String -Value Off -Force
-		}
-		"Enable"
-		{
-			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer -Name SmartScreenEnabled -PropertyType String -Value Warn -Force
+			"Disable"
+			{
+				New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer -Name SmartScreenEnabled -PropertyType String -Value Off -Force
+			}
+			"Enable"
+			{
+				New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer -Name SmartScreenEnabled -PropertyType String -Value Warn -Force
+			}
 		}
 	}
 }
@@ -11274,14 +11417,18 @@ function DNSoverHTTPS
 		[Parameter(Mandatory = $false)]
 		[ValidateSet("1.0.0.1", "1.1.1.1", "149.112.112.112", "8.8.4.4", "8.8.8.8", "9.9.9.9")]
 		# Isolate the IPv4 addresses only
-		[ValidateScript({(@((Get-ChildItem -Path HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DohWellKnownServers).PSChildName) | Where-Object {$_ -notmatch ":"}) -contains $_})]
+		[ValidateScript({
+			(@((Get-ChildItem -Path HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DohWellKnownServers).PSChildName) | Where-Object {$_ -notmatch ":"}) -contains $_
+		})]
 		[string]
 		$PrimaryDNS,
 
 		[Parameter(Mandatory = $false)]
 		[ValidateSet("1.0.0.1", "1.1.1.1", "149.112.112.112", "8.8.4.4", "8.8.8.8", "9.9.9.9")]
 		# Isolate the IPv4 addresses only
-		[ValidateScript({(@((Get-ChildItem -Path HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DohWellKnownServers).PSChildName) | Where-Object {$_ -notmatch ":"}) -contains $_})]
+		[ValidateScript({
+			(@((Get-ChildItem -Path HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DohWellKnownServers).PSChildName) | Where-Object {$_ -notmatch ":"}) -contains $_
+		})]
 		[string]
 		$SecondaryDNS,
 
@@ -11293,39 +11440,47 @@ function DNSoverHTTPS
 		$Disable
 	)
 
+	# Determining whether Hyper-V is enabled
+	# After enabling Hyper-V feature a virtual switch breing created, so we need to use different method to isolate the proper adapter
+	if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
+	{
+		$InterfaceGuids = @((Get-NetAdapter -Physical).InterfaceGuid)
+	}
+	else
+	{
+		$InterfaceGuids = @((Get-NetRoute -AddressFamily IPv4 | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter).InterfaceGuid)
+	}
+
 	switch ($PSCmdlet.ParameterSetName)
 	{
 		"Enable"
 		{
 			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
 			{
-				# Determining whether Hyper-V is enabled
-				# After enabling Hyper-V feature a virtual switch breing created, so we need to use different method to isolate the proper adapter
+				# Set a primary and secondary DNS servers
 				if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
 				{
-					# Set a primary and secondary DNS servers
 					Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
-					$InterfaceGuid = (Get-NetAdapter -Physical).InterfaceGuid
 				}
 				else
 				{
-					# Set a primary and secondary DNS servers
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
-					$InterfaceGuid = (Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter).InterfaceGuid
+					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
 				}
 
-				# Set the DNS servers
-				if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
+				foreach ($InterfaceGuid in $InterfaceGuids)
 				{
-					New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
+					if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
+					{
+						New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
+					}
+					if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
+					{
+						New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
+					}
+					# Encrypted preffered, unencrypted allowed
+					New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+					New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
 				}
-				if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
-				{
-					New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
-				}
-				# Encrypted preffered, unencrypted allowed
-				New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
-				New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
 			}
 		}
 		"Disable"
@@ -11341,10 +11496,13 @@ function DNSoverHTTPS
 				else
 				{
 					# Configure DNS servers automatically
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
+					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
 				}
 
-				Remove-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\*" -Recurse -Force -ErrorAction Ignore
+				foreach ($InterfaceGuid in $InterfaceGuids)
+				{
+					Remove-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh" -Recurse -Force -ErrorAction Ignore
+				}
 			}
 		}
 	}
@@ -11670,18 +11828,15 @@ function EditWithPhotosContext
 		$Show
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if (Get-AppxPackage -Name Microsoft.Windows.Photos)
 	{
-		"Hide"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if (Get-AppxPackage -Name Microsoft.Windows.Photos)
+			"Hide"
 			{
 				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellEdit -Name ProgrammaticAccessOnly -PropertyType String -Value "" -Force
 			}
-		}
-		"Show"
-		{
-			if (Get-AppxPackage -Name Microsoft.Windows.Photos)
+			"Show"
 			{
 				Remove-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellEdit -Name ProgrammaticAccessOnly -Force -ErrorAction Ignore
 			}
@@ -11727,18 +11882,15 @@ function CreateANewVideoContext
 		$Show
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if (Get-AppxPackage -Name Microsoft.Windows.Photos)
 	{
-		"Hide"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if (Get-AppxPackage -Name Microsoft.Windows.Photos)
+			"Hide"
 			{
 				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellCreateVideo -Name ProgrammaticAccessOnly -PropertyType String -Value "" -Force
 			}
-		}
-		"Show"
-		{
-			if (Get-AppxPackage -Name Microsoft.Windows.Photos)
+			"Show"
 			{
 				Remove-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellCreateVideo -Name ProgrammaticAccessOnly -Force -ErrorAction Ignore
 			}
@@ -11897,66 +12049,6 @@ function SendToContext
 		"Show"
 		{
 			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo -Name "(default)" -PropertyType String -Value "{7BA4C740-9E81-11CF-99D3-00AA004AE837}" -Force
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
-	The "Turn on BitLocker" item in the drives context menu
-
-	.PARAMETER Hide
-	Hide the "Turn on BitLocker" item from the drives context menu
-
-	.PARAMETER Show
-	Show the "Turn on BitLocker" item in the drives context menu
-
-	.EXAMPLE
-	BitLockerContext -Hide
-
-	.EXAMPLE
-	BitLockerContext -Show
-
-	.NOTES
-	Current user
-#>
-function BitLockerContext
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Hide"
-		)]
-		[switch]
-		$Hide,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Show"
-		)]
-		[switch]
-		$Show
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Hide"
-		{
-			if (Get-WindowsEdition -Online | Where-Object -FilterScript {($_.Edition -eq "Professional") -or ($_.Edition -like "Enterprise*")})
-			{
-				if ((Get-BitLockerVolume).ProtectionStatus -eq "Off")
-				{
-					New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Drive\shell\encrypt-bde-elev -Name ProgrammaticAccessOnly -PropertyType String -Value "" -Force
-				}
-			}
-		}
-		"Show"
-		{
-			if (Get-WindowsEdition -Online | Where-Object -FilterScript {$_.Edition -eq "Professional" -or $_.Edition -like "Enterprise*"})
-			{
-				Remove-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Drive\shell\encrypt-bde-elev -Name ProgrammaticAccessOnly -Force -ErrorAction Ignore
-			}
 		}
 	}
 }
@@ -12134,76 +12226,15 @@ function UseStoreOpenWith
 	Show the "Open in Windows Terminal" item in the folders context menu
 
 	.EXAMPLE
-	OpenWindowsTerminalContext -Hide
+	OpenWindowsTerminalContext -Show
 
 	.EXAMPLE
-	OpenWindowsTerminalContext -Show
+	OpenWindowsTerminalContext -Hide
 
 	.NOTES
 	Current user
 #>
 function OpenWindowsTerminalContext
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Hide"
-		)]
-		[switch]
-		$Hide,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Show"
-		)]
-		[switch]
-		$Show
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Hide"
-		{
-			if (Get-AppxPackage -Name Microsoft.WindowsTerminal)
-			{
-				if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"))
-				{
-					New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Force
-				}
-				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{9F156763-7844-4DC4-B2B1-901F640F5155}" -PropertyType String -Value "WindowsTerminal" -Force
-			}
-		}
-		"Show"
-		{
-			if (Get-AppxPackage -Name Microsoft.WindowsTerminal)
-			{
-				Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{9F156763-7844-4DC4-B2B1-901F640F5155}" -Force -ErrorAction Ignore
-			}
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
-	The "Open in Windows Terminal" (Admin) item in the Desktop and folders context menu
-
-	.PARAMETER Show
-	Show the "Open in Windows Terminal" (Admin) item in the Desktop and folders context menu
-
-	.PARAMETER Hide
-	Hide the "Open in Windows Terminal" (Admin) item from the Desktop and folders context menu
-
-	.EXAMPLE
-	OpenWindowsTerminalAdminContext -Show
-
-	.EXAMPLE
-	OpenWindowsTerminalAdminContext -Hide
-
-	.NOTES
-	Current user
-#>
-function OpenWindowsTerminalAdminContext
 {
 	param
 	(
@@ -12222,41 +12253,126 @@ function OpenWindowsTerminalAdminContext
 		$Hide
 	)
 
-	switch ($PSCmdlet.ParameterSetName)
+	if (Get-AppxPackage -Name Microsoft.WindowsTerminal)
 	{
-		"Show"
+		switch ($PSCmdlet.ParameterSetName)
 		{
-			if (Get-AppxPackage -Name Microsoft.WindowsTerminal)
+			"Show"
 			{
-				# Show the option in the Desktop context menu
-				if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas\command))
+				Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{9F156763-7844-4DC4-B2B1-901F640F5155}" -Force -ErrorAction Ignore
+			}
+			"Hide"
+			{
+				if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"))
 				{
-					New-Item -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas\command -ItemType Directory -Force
+					New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Force
 				}
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name "(default)" -PropertyType String -Value $Localization.OpenInWindowsTerminalAdmin -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name Icon -PropertyType String -Value "imageres.dll,73" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas -Name NoWorkingDirectory -PropertyType String -Value "" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas\command -Name "(default)" -PropertyType String -Value "wt.exe -d ""%V\.""" -Force
-
-				# Show the option in the folders context menu
-				if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas\command))
-				{
-					New-Item -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas\command -ItemType Directory -Force
-				}
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas -Name "(default)" -PropertyType String -Value $Localization.OpenInWindowsTerminalAdmin -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas -Name Icon -PropertyType String -Value "imageres.dll,73" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas -Name NoWorkingDirectory -PropertyType String -Value "" -Force
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\Directory\shell\runas\command -Name "(default)" -PropertyType String -Value "wt.exe -d ""%1""" -Force
+				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{9F156763-7844-4DC4-B2B1-901F640F5155}" -PropertyType String -Value "WindowsTerminal" -Force
 			}
 		}
-		"Hide"
+	}
+}
+
+<#
+	.SYNOPSIS
+	Open Windows Terminal in context menu as administrator
+
+	.PARAMETER Enable
+	Open Windows Terminal in context menu as administrator by default
+
+	.PARAMETER Disable
+	Do not open Windows Terminal in context menu as administrator by default
+
+	.EXAMPLE
+	OpenWindowsTerminalAdminContext -Enable
+
+	.EXAMPLE
+	OpenWindowsTerminalAdminContext -Disable
+
+	.NOTES
+	Current user
+#>
+function OpenWindowsTerminalAdminContext
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	if
+	(
+		# Check if it is not blocked by policy
+		(-not (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{9F156763-7844-4DC4-B2B1-901F640F5155}" -ErrorAction Ignore)) -and
+		# Check if the package installed
+		(Get-AppxPackage -Name Microsoft.WindowsTerminal) -and
+		# Check if Windows Terminal version is greater or equal than 1.11
+		([System.Version](Get-AppxPackage -Name Microsoft.WindowsTerminal).Version -ge [System.Version]"1.11")
+	)
+	{
+		if (-not (Test-Path -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"))
 		{
-			$Items = @(
-				"Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\runas",
-				"Registry::HKEY_CLASSES_ROOT\Directory\shell\runas"
-			)
-			Remove-Item -Path $Items -Recurse -Force -ErrorAction Ignore
+			Start-Process -FilePath wt -PassThru
+			Start-Sleep -Seconds 2
+			Stop-Process -Name WindowsTerminal -Force -PassThru
 		}
+
+		$settings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+
+		try
+		{
+			Get-Content -Path $settings -Raw | Test-Json -ErrorAction Stop
+		}
+		catch
+		{
+			Write-Error -Message ($Global:Error.Exception.Message | Select-Object -First 1) -ErrorAction SilentlyContinue
+
+			Invoke-Item -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+
+			return
+		}
+
+		$Terminal = Get-Content -Path $settings -Encoding UTF8 -Force | ConvertFrom-Json
+
+		switch ($PSCmdlet.ParameterSetName)
+		{
+			"Enable"
+			{
+				if ($Terminal.profiles.defaults.elevate)
+				{
+					$Terminal.profiles.defaults.elevate = $true
+				}
+				else
+				{
+					$Terminal.profiles.defaults | Add-Member -MemberType NoteProperty -Name elevate -Value $true -Force
+				}
+			}
+			"Disable"
+			{
+				if ($Terminal.profiles.defaults.elevate)
+				{
+					$Terminal.profiles.defaults.elevate = $false
+				}
+				else
+				{
+					$Terminal.profiles.defaults | Add-Member -MemberType NoteProperty -Name elevate -Value $false -Force
+				}
+			}
+		}
+
+		# Save in the UTF-8 without BOM encoding due to JSON must not has the BOM: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
+		ConvertTo-Json -InputObject $Terminal -Depth 4 | Set-Content -Path $settings -Encoding utf8nobom -Force
 	}
 }
 
@@ -12285,17 +12401,17 @@ function Windows10ContextMenu
 	(
 		[Parameter(
 			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
 			ParameterSetName = "Disable"
 		)]
 		[switch]
-		$Disable
+		$Disable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable
 	)
 
 	switch ($PSCmdlet.ParameterSetName)
@@ -12338,9 +12454,7 @@ function Windows10ContextMenu
 #>
 function UpdateLGPEPolicies
 {
-	if (-not (Get-WindowsEdition -Online | Where-Object -FilterScript {
-		($_.Edition -eq "Professional") -or ($_.Edition -like "Enterprise*") -or ($_.Edition -eq "Education")
-	}))
+	if (-not (Test-Path -Path "$env:SystemRoot\System32\gpedit.msc"))
 	{
 		return
 	}
@@ -12351,7 +12465,7 @@ function UpdateLGPEPolicies
 	# Local Machine policies paths to scan recursively
 	$LM_Paths = @(
 		"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
-		"HKLM:\SOFTWARE\Policies\Microsoft\Windows"
+		"HKLM:\SOFTWARE\Policies\Microsoft"
 	)
 	foreach ($Path in (@(Get-ChildItem -Path $LM_Paths -Recurse -Force)))
 	{
@@ -12365,11 +12479,10 @@ function UpdateLGPEPolicies
 				{
 					# Parse every ADMX template searching if it contains full path and registry key simultaneously
 					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
+					$config.SelectNodes("//@*") | ForEach-Object {$_.value = $_.value.ToLower()}
 					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "HKLM:") -NoQualifier
 
-					if ($config.policyDefinitions.policies.policy | Where-Object -FilterScript {
-						($_.key -eq $SplitPath) -and ($_.valueName -eq $Item) -or (($_.key -eq $SplitPath) -and ($_.Name -eq $Item))
-					})
+					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
 						try
 						{
@@ -12399,7 +12512,7 @@ function UpdateLGPEPolicies
 	# Current User policies paths to scan recursively
 	$CU_Paths = @(
 		"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
-		"HKCU:\SOFTWARE\Policies\Microsoft\Windows"
+		"HKCU:\SOFTWARE\Policies\Microsoft"
 	)
 	foreach ($Path in (@(Get-ChildItem -Path $CU_Paths -Recurse -Force)))
 	{
@@ -12413,11 +12526,10 @@ function UpdateLGPEPolicies
 				{
 					# Parse every ADMX template searching if it contains full path and registry key simultaneously
 					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
-					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_CURRENT_USER\", "HKCU:") -NoQualifier
+					$config.SelectNodes("//@*") | ForEach-Object {$_.value = $_.value.ToLower()}
+					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "HKLM:") -NoQualifier
 
-					if ($config.policyDefinitions.policies.policy | Where-Object -FilterScript {
-						($_.key -eq $SplitPath) -and ($_.valueName -eq $Item) -or (($_.key -eq $SplitPath) -and ($_.Name -eq $Item))
-					})
+					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
 						try
 						{
@@ -12463,6 +12575,27 @@ function UpdateLGPEPolicies
 	gpupdate.exe /force
 }
 #endregion Update Policies
+
+# Errors output
+function Errors
+{
+	if ($Global:Error)
+	{
+		($Global:Error | ForEach-Object -Process {
+			# Some errors may have the Windows nature and don't have a path to any of the module's files
+			$ErrorInFile = if ($_.InvocationInfo.PSCommandPath)
+			{
+				Split-Path -Path $_.InvocationInfo.PSCommandPath -Leaf
+			}
+
+			[PSCustomObject]@{
+				$Localization.ErrorsLine    = $_.InvocationInfo.ScriptLineNumber
+				$Localization.ErrorsFile    = $ErrorInFile
+				$Localization.ErrorsMessage = $_.Exception.Message
+			}
+		} | Sort-Object -Property Line | Format-Table -AutoSize -Wrap | Out-String).Trim()
+	}
+}
 
 #region Refresh Environment
 function RefreshEnvironment
@@ -12527,7 +12660,7 @@ public static void PostMessage()
 	Stop-Process -Name StartMenuExperienceHost -Force -ErrorAction Ignore
 
 	# Turn on Controlled folder access if it was turned off
-	if ($Script:DefenderState)
+	if ($Script:DefenderEnabled)
 	{
 		if ($Script:ControlledFolderAccess)
 		{
@@ -12541,43 +12674,19 @@ public static void PostMessage()
 		Set-WinHomeLocation -GeoId $Script:Region
 	}
 
-	# In order for the changes to take effect the File Explorer process has to be restarted
-	$Title = ""
-	$Message       = $Localization.FileExplorerRestartPrompt
-	$Yes           = $Localization.Yes
-	$No            = $Localization.No
-	$Options       = "&$No", "&$Yes"
-	$DefaultChoice = 1
-	$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-	switch ($Result)
-	{
-		"0"
-		{
-			continue
-		}
-		"1"
-		{
-			Stop-Process -Name explorer -Force
-
-			Start-Sleep -Seconds 3
-
-			# Restoring closed folders
-			foreach ($Script:OpenedFolder in $Script:OpenedFolders)
-			{
-				if (Test-Path -Path $Script:OpenedFolder)
-				{
-					Start-Process -FilePath explorer -ArgumentList $Script:OpenedFolder
-				}
-			}
-		}
-	}
-
 	Write-Information -MessageData "" -InformationAction Continue
 	Write-Warning -Message $Localization.RestartWarning
 
-	[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-	[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
+	<#
+		.NOTES
+		Load the WinRT.Runtime.dll and Microsoft.Windows.SDK.NET.dll assemblies in the current session in order to get localized UWP apps names
+
+		.LINK
+		https://github.com/microsoft/CsWinRT
+		https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref
+	#>
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
 
 	# Telegram group
 	[xml]$ToastTemplate = @"
@@ -12632,54 +12741,73 @@ public static void PostMessage()
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
 	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel").Show($ToastMessage)
+
+	# Discord group
+	[xml]$ToastTemplate = @"
+<toast duration="Long" scenario="reminder">
+	<visual>
+		<binding template="ToastGeneric">
+			<text>$($Localization.DiscordChannelTitle)</text>
+			<group>
+				<subgroup>
+					<text hint-style="body" hint-wrap="true">https://discord.gg/sSryhaEv79</text>
+				</subgroup>
+			</group>
+		</binding>
+	</visual>
+	<audio src="ms-winsoundevent:notification.default" />
+	<actions>
+		<action arguments="https://discord.gg/sSryhaEv79" content="$($Localization.Open)" activationType="protocol"/>
+		<action arguments="dismiss" content="" activationType="system"/>
+	</actions>
+</toast>
+"@
+
+	$ToastXml = [Windows.Data.Xml.Dom.XmlDocument]::New()
+	$ToastXml.LoadXml($ToastTemplate.OuterXml)
+
+	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel").Show($ToastMessage)
+
+	Stop-Process -Name explorer -Force
+
+	Start-Sleep -Seconds 3
+
+	# Restoring closed folders
+	foreach ($Script:OpenedFolder in $Script:OpenedFolders)
+	{
+		if (Test-Path -Path $Script:OpenedFolder)
+		{
+			Start-Process -FilePath explorer -ArgumentList $Script:OpenedFolder
+		}
+	}
 }
 #endregion Refresh Environment
 
-# Errors output
-function Errors
-{
-	if ($Global:Error)
-	{
-		($Global:Error | ForEach-Object -Process {
-			# Some errors may have the Windows nature and don't have a path to any of the module's files
-			$ErrorInFile = if ($_.InvocationInfo.PSCommandPath)
-			{
-				Split-Path -Path $_.InvocationInfo.PSCommandPath -Leaf
-			}
-
-			[PSCustomObject]@{
-				$Localization.ErrorsLine    = $_.InvocationInfo.ScriptLineNumber
-				$Localization.ErrorsFile    = $ErrorInFile
-				$Localization.ErrorsMessage = $_.Exception.Message
-			}
-		} | Sort-Object -Property Line | Format-Table -AutoSize -Wrap | Out-String).Trim()
-	}
-}
-
 # SIG # Begin signature block
-# MIIbvwYJKoZIhvcNAQcCoIIbsDCCG6wCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUf1jTmGGjSC+KdppJDHzCpj5i
-# 2r+gghY3MIIDAjCCAeqgAwIBAgIQbPiUYMntEr9PH9C5Mau3xTANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjA3MTYxNDM2MDda
-# Fw0yNDA3MTYxNDQ2MDdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtFM5b/hNUQPcNCKlWVisE5zIERdC
-# TZWdsnkliCg98qv0qkPH08AAuZ5LOgdctfaocVX4RbygcWCLyaphktSC29aMHmP/
-# T/JPBSYnLmWIJ6NbNVBn4BqqCZusjmYRj1LH+Ega9Kv4gFfF4lyCE8OnebDkWPu1
-# Y+5VAoZ6BaVvHEw5rtrHcH8/W15mE1Z+uuYIKNVPg3MMGNGQ5MiLUduuCu5l+J4K
-# yU/nLvx7tI3tIx8wJY2S2SYDNPf/bMOeeb0jlcD1/bVh5TNn3Z4wIXQ3r4yNxllO
-# dBPidPT3Ck4+aDTzP/Y8vrFeIMLKSCYGY+cOCankPZmUCVFJxABvW5EKDQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUApfKYVw+VwJF8x/AG1C0NCwu
+# BgKgghYNMIIDAjCCAeqgAwIBAgIQGyYSJOnKh6NBXohhEFuPwjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMDkyMTAwMDha
+# Fw0yNDEwMDkyMTA5MzJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxQKjGGyaH0/HmtOIziYDylTTylCP
+# nB4N/jkGUNXo+pOeoTWFYvRe9cwHyMxw2DlvOIU+YpHAo7J8vLq4kAPO+wf9h0bJ
+# qMD7vYdMvv6Y+F8q67rZQUoaXuA4KJDFStuogZ4ZuL4hSEwrtiOAmnHfQKXI7qOa
+# trIwbavT8DUTAvqcBB59ZLNx78e6uKBIr0kp0YgZiVEJLhl59C1fqflGkeKN7OJV
+# XXaoNQbd9ypIxzAZ4asGlgjlaXQzR4pUmf5SnR2jATyq8EAOfiUvsSQtakq3kB8s
+# 8B+GnaG98jVVox9iHhaH+hlB9gR0Li5UjIHETPzwCeDEog6jySTTC30/YQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFMJrBhADhZmuEvA18MvGfrBsUpDhMA0GCSqGSIb3DQEBCwUAA4IBAQCzuSeY
-# YdiLsJYFPUW21r2QjSbIi7oOAa58Y2C7KM+QvAm7R6W7l3y6Zz58mBZmSCt+u6au
-# HHYYxo71eCKcH6Lx/2BAeg3GBfZClCZ480nxH1+T4fobdWuT/f4Iw8ZalqcnqJQQ
-# xXhK2U8sMS6oIlb8VZhzosiP68gSZwNgcBbO8P1nAVa7WXyhdmo5CTpa1CihfOT2
-# a3x7runLfgPHmgDcTQpJYAl4xA1JgM+5adlGo33uDXNDgN+6MPZKCuD89wFIYbXw
-# WM6i+SHOBvqACWvM5goBCiVuIq2aI/6r6jeW8UiN51L0/IIniY+P0e7ZibjiadZR
-# DuMQLs5d3GLELtT3MIIFsTCCBJmgAwIBAgIQASQK+x44C4oW8UtxnfTTwDANBgkq
+# BBYEFAHwTO5NP7AzAlk3KFioMF9WyihDMA0GCSqGSIb3DQEBCwUAA4IBAQB/hQ9T
+# bCgUBNCeDwKxVEP/CfwoEUTv5/VA+ytYjbcSSXUsMtuk6N4agH/KOe3Xzdtx4IPX
+# 3FOO5HlpkrJccA7nvLEywpI15cOwzVwiiRAbhxQhLVNQ8N7e3xEpipikoC7ywuFP
+# BSRe71yGbEW5GhPhLa1qlfMx/f3wb93YeyheZXVV68cbp7pn/xgoN7e0QyRvi2C1
+# BwM2Yw97kiLVWKdFXMrgDI9g0VKqJy2ErghT9QsWOjlfqnx0vd77qkkzk63W1LkH
+# cLFmnbhOO45vWJ2LiRnL+Pl3hHMjwKPMihf94D5tDztT9AT/7XRG9HGRfSkbcOk5
+# Gc2EB2OtkqgbNxghMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
-# c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwNjA5MDAwMDAwWhcNMzExMTA5MjM1OTU5
+# c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
 # WjBiMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQL
 # ExB3d3cuZGlnaWNlcnQuY29tMSEwHwYDVQQDExhEaWdpQ2VydCBUcnVzdGVkIFJv
 # b3QgRzQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC/5pBzaN675F1K
@@ -12693,117 +12821,116 @@ function Errors
 # wJS00mFt6zPZxd9LBADMfRyVw4/3IbKyEbe7f/LVjHAsQWCqsWMYRJUadmJ+9oCw
 # ++hkpjPRiQfhvbfmQ6QYuKZ3AeEPlAwhHbJUKSWJbOUOUlFHdL4mrLZBdd56rF+N
 # P8m800ERElvlEFDrMcXKchYiCd98THU/Y+whX8QgUWtvsauGi0/C1kVfnSD8oR7F
-# wI+isX4KJpn15GkvmB0t9dmpsh3lGwIDAQABo4IBXjCCAVowDwYDVR0TAQH/BAUw
+# wI+isX4KJpn15GkvmB0t9dmpsh3lGwIDAQABo4IBOjCCATYwDwYDVR0TAQH/BAUw
 # AwEB/zAdBgNVHQ4EFgQU7NfjgtJxXWRM3y5nP+e6mK4cD08wHwYDVR0jBBgwFoAU
-# Reuir/SSy4IxLVGLp6chnfNtyA8wDgYDVR0PAQH/BAQDAgGGMBMGA1UdJQQMMAoG
-# CCsGAQUFBwMIMHkGCCsGAQUFBwEBBG0wazAkBggrBgEFBQcwAYYYaHR0cDovL29j
-# c3AuZGlnaWNlcnQuY29tMEMGCCsGAQUFBzAChjdodHRwOi8vY2FjZXJ0cy5kaWdp
-# Y2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURSb290Q0EuY3J0MEUGA1UdHwQ+MDww
-# OqA4oDaGNGh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRJ
-# RFJvb3RDQS5jcmwwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMA0G
-# CSqGSIb3DQEBDAUAA4IBAQCaFgKlAe+B+w20WLJ4ragjGdlzN9pgnlHXy/gvQLmj
-# H3xATjM+kDzniQF1hehiex1W4HG63l7GN7x5XGIATfhJelFNBjLzxdIAKicg6oku
-# FTngLD74dXwsgkFhNQ8j0O01ldKIlSlDy+CmWBB8U46fRckgNxTA7Rm6fnc50lSW
-# x6YR3zQz9nVSQkscnY2W1ZVsRxIUJF8mQfoaRr3esOWRRwOsGAjLy9tmiX8rnGW/
-# vjdOvi3znUrDzMxHXsiVla3Ry7sqBiD5P3LqNutFcpJ6KXsUAzz7TdZIcXoQEYoI
-# dM1sGwRc0oqVA3ZRUFPWLvdKRsOuECxxTLCHtic3RGBEMIIGrjCCBJagAwIBAgIQ
-# BzY3tyRUfNhHrP0oZipeWzANBgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEV
-# MBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29t
-# MSEwHwYDVQQDExhEaWdpQ2VydCBUcnVzdGVkIFJvb3QgRzQwHhcNMjIwMzIzMDAw
-# MDAwWhcNMzcwMzIyMjM1OTU5WjBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGln
-# aUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5
-# NiBTSEEyNTYgVGltZVN0YW1waW5nIENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8A
-# MIICCgKCAgEAxoY1BkmzwT1ySVFVxyUDxPKRN6mXUaHW0oPRnkyibaCwzIP5WvYR
-# oUQVQl+kiPNo+n3znIkLf50fng8zH1ATCyZzlm34V6gCff1DtITaEfFzsbPuK4CE
-# iiIY3+vaPcQXf6sZKz5C3GeO6lE98NZW1OcoLevTsbV15x8GZY2UKdPZ7Gnf2ZCH
-# RgB720RBidx8ald68Dd5n12sy+iEZLRS8nZH92GDGd1ftFQLIWhuNyG7QKxfst5K
-# fc71ORJn7w6lY2zkpsUdzTYNXNXmG6jBZHRAp8ByxbpOH7G1WE15/tePc5OsLDni
-# pUjW8LAxE6lXKZYnLvWHpo9OdhVVJnCYJn+gGkcgQ+NDY4B7dW4nJZCYOjgRs/b2
-# nuY7W+yB3iIU2YIqx5K/oN7jPqJz+ucfWmyU8lKVEStYdEAoq3NDzt9KoRxrOMUp
-# 88qqlnNCaJ+2RrOdOqPVA+C/8KI8ykLcGEh/FDTP0kyr75s9/g64ZCr6dSgkQe1C
-# vwWcZklSUPRR8zZJTYsg0ixXNXkrqPNFYLwjjVj33GHek/45wPmyMKVM1+mYSlg+
-# 0wOI/rOP015LdhJRk8mMDDtbiiKowSYI+RQQEgN9XyO7ZONj4KbhPvbCdLI/Hgl2
-# 7KtdRnXiYKNYCQEoAA6EVO7O6V3IXjASvUaetdN2udIOa5kM0jO0zbECAwEAAaOC
-# AV0wggFZMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLoW2W1NhS9zKXaa
-# L3WMaiCPnshvMB8GA1UdIwQYMBaAFOzX44LScV1kTN8uZz/nupiuHA9PMA4GA1Ud
-# DwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEFBQcDCDB3BggrBgEFBQcBAQRrMGkw
-# JAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcw
-# AoY1aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJv
-# b3RHNC5jcnQwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybDMuZGlnaWNlcnQu
-# Y29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcmwwIAYDVR0gBBkwFzAIBgZngQwB
-# BAIwCwYJYIZIAYb9bAcBMA0GCSqGSIb3DQEBCwUAA4ICAQB9WY7Ak7ZvmKlEIgF+
-# ZtbYIULhsBguEE0TzzBTzr8Y+8dQXeJLKftwig2qKWn8acHPHQfpPmDI2AvlXFvX
-# bYf6hCAlNDFnzbYSlm/EUExiHQwIgqgWvalWzxVzjQEiJc6VaT9Hd/tydBTX/6tP
-# iix6q4XNQ1/tYLaqT5Fmniye4Iqs5f2MvGQmh2ySvZ180HAKfO+ovHVPulr3qRCy
-# Xen/KFSJ8NWKcXZl2szwcqMj+sAngkSumScbqyQeJsG33irr9p6xeZmBo1aGqwpF
-# yd/EjaDnmPv7pp1yr8THwcFqcdnGE4AJxLafzYeHJLtPo0m5d2aR8XKc6UsCUqc3
-# fpNTrDsdCEkPlM05et3/JWOZJyw9P2un8WbDQc1PtkCbISFA0LcTJM3cHXg65J6t
-# 5TRxktcma+Q4c6umAU+9Pzt4rUyt+8SVe+0KXzM5h0F4ejjpnOHdI/0dKNPH+ejx
-# mF/7K9h+8kaddSweJywm228Vex4Ziza4k9Tm8heZWcpw8De/mADfIBZPJ/tgZxah
-# ZrrdVcA6KYawmKAr7ZVBtzrVFZgxtGIJDwq9gdkT/r+k0fNX2bwE+oLeMt8EifAA
-# zV3C+dAjfwAL5HYCJtnwZXZCpimHCUcr5n8apIUP/JiW9lVUKx+A+sDyDivl1vup
-# L0QVSucTDh3bNzgaoSv27dZ8/DCCBsYwggSuoAMCAQICEAp6SoieyZlCkAZjOE2G
-# l50wDQYJKoZIhvcNAQELBQAwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lD
-# ZXJ0LCBJbmMuMTswOQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYg
-# U0hBMjU2IFRpbWVTdGFtcGluZyBDQTAeFw0yMjAzMjkwMDAwMDBaFw0zMzAzMTQy
-# MzU5NTlaMEwxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjEk
-# MCIGA1UEAxMbRGlnaUNlcnQgVGltZXN0YW1wIDIwMjIgLSAyMIICIjANBgkqhkiG
-# 9w0BAQEFAAOCAg8AMIICCgKCAgEAuSqWI6ZcvF/WSfAVghj0M+7MXGzj4CUu0jHk
-# PECu+6vE43hdflw26vUljUOjges4Y/k8iGnePNIwUQ0xB7pGbumjS0joiUF/DbLW
-# +YTxmD4LvwqEEnFsoWImAdPOw2z9rDt+3Cocqb0wxhbY2rzrsvGD0Z/NCcW5QWpF
-# QiNBWvhg02UsPn5evZan8Pyx9PQoz0J5HzvHkwdoaOVENFJfD1De1FksRHTAMkcZ
-# W+KYLo/Qyj//xmfPPJOVToTpdhiYmREUxSsMoDPbTSSF6IKU4S8D7n+FAsmG4dUY
-# FLcERfPgOL2ivXpxmOwV5/0u7NKbAIqsHY07gGj+0FmYJs7g7a5/KC7CnuALS8gI
-# 0TK7g/ojPNn/0oy790Mj3+fDWgVifnAs5SuyPWPqyK6BIGtDich+X7Aa3Rm9n3RB
-# Cq+5jgnTdKEvsFR2wZBPlOyGYf/bES+SAzDOMLeLD11Es0MdI1DNkdcvnfv8zbHB
-# p8QOxO9APhk6AtQxqWmgSfl14ZvoaORqDI/r5LEhe4ZnWH5/H+gr5BSyFtaBocra
-# MJBr7m91wLA2JrIIO/+9vn9sExjfxm2keUmti39hhwVo99Rw40KV6J67m0uy4rZB
-# Peevpxooya1hsKBBGBlO7UebYZXtPgthWuo+epiSUc0/yUTngIspQnL3ebLdhOon
-# 7v59emsCAwEAAaOCAYswggGHMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAA
-# MBYGA1UdJQEB/wQMMAoGCCsGAQUFBwMIMCAGA1UdIAQZMBcwCAYGZ4EMAQQCMAsG
-# CWCGSAGG/WwHATAfBgNVHSMEGDAWgBS6FtltTYUvcyl2mi91jGogj57IbzAdBgNV
-# HQ4EFgQUjWS3iSH+VlhEhGGn6m8cNo/drw0wWgYDVR0fBFMwUTBPoE2gS4ZJaHR0
-# cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0UlNBNDA5NlNI
-# QTI1NlRpbWVTdGFtcGluZ0NBLmNybDCBkAYIKwYBBQUHAQEEgYMwgYAwJAYIKwYB
-# BQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBYBggrBgEFBQcwAoZMaHR0
-# cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0UlNBNDA5
-# NlNIQTI1NlRpbWVTdGFtcGluZ0NBLmNydDANBgkqhkiG9w0BAQsFAAOCAgEADS0j
-# dKbR9fjqS5k/AeT2DOSvFp3Zs4yXgimcQ28BLas4tXARv4QZiz9d5YZPvpM63io5
-# WjlO2IRZpbwbmKrobO/RSGkZOFvPiTkdcHDZTt8jImzV3/ZZy6HC6kx2yqHcoSuW
-# uJtVqRprfdH1AglPgtalc4jEmIDf7kmVt7PMxafuDuHvHjiKn+8RyTFKWLbfOHzL
-# +lz35FO/bgp8ftfemNUpZYkPopzAZfQBImXH6l50pls1klB89Bemh2RPPkaJFmMg
-# a8vye9A140pwSKm25x1gvQQiFSVwBnKpRDtpRxHT7unHoD5PELkwNuTzqmkJqIt+
-# ZKJllBH7bjLx9bs4rc3AkxHVMnhKSzcqTPNc3LaFwLtwMFV41pj+VG1/calIGnjd
-# RncuG3rAM4r4SiiMEqhzzy350yPynhngDZQooOvbGlGglYKOKGukzp123qlzqkhq
-# WUOuX+r4DwZCnd8GaJb+KqB0W2Nm3mssuHiqTXBt8CzxBxV+NbTmtQyimaXXFWs1
-# DoXW4CzM4AwkuHxSCx6ZfO/IyMWMWGmvqz3hz8x9Fa4Uv4px38qXsdhH6hyF4EVO
-# EhwUKVjMb9N/y77BDkpvIJyu2XMyWQjnLZKhGhH+MpimXSuX4IvTnMxttQ2uR2M4
-# RxdbbxPaahBuH0m3RFu0CAqHWlkEdhGhp3cCExwxggTyMIIE7gIBATAtMBkxFzAV
-# BgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBs+JRgye0Sv08f0Lkxq7fFMAkGBSsOAwIa
-# BQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
-# BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3
-# DQEJBDEWBBQL1uSSPwEQ3eKWisyh56mLW4iNuDANBgkqhkiG9w0BAQEFAASCAQBA
-# D2tYhaG9doHMa5VD/X2MHyJnf+Fd0JnYS0t58cMhsScONsbxlCK+fy7ktqhCEk4e
-# leL34XsbraUv0Bsg7JA6QX2y8oloVurgb+acl+Kj9hPuLxwSPAC2PPoTLjbHL2mN
-# R//qB5khNW3l7BEzySRHBwy7ftGjI4xBTwoJkyabV/vnrF1vai1gCh9++A/0gHzj
-# SO/mqCgQGJ7yzn/uL0YWtn6/CZCB84rsS9jdKsHMzcG1utA12ISQYvRmjmClMU44
-# mmOMsoiQygXI6xnitEDhwhuxqyKv+kSB9Olfizo3Ua/A2CCTmmbCozmiUM5UCi7R
-# yar7vCLrDyE1o3lsJQzAoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJAgEBMHcw
-# YzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQD
-# EzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGlu
-# ZyBDQQIQCnpKiJ7JmUKQBmM4TYaXnTANBglghkgBZQMEAgEFAKBpMBgGCSqGSIb3
-# DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcxNjE0NDYyMVow
-# LwYJKoZIhvcNAQkEMSIEIGUTNxvTh5CoUSsfNpw4NXpD3aSWlmQWLWGyzD/KFhg7
-# MA0GCSqGSIb3DQEBAQUABIICADNrnSyFO59nhGv0VRq/JhWUNKaKUhnZjXbdrMZh
-# DY+NLhqDqbkkJK+nwZw8g2jI+B/L0NAf3e1TkTbYuDSg0miPesUcnzUPUvY508Sq
-# R3U0C6vxF12GxJC8P9MjmIJLk08tIZHVlXGTiOFFg7ygXSNa9cBmP6J1C6tbWeoZ
-# iBBXIy+JRSyUENM2GhpvqMPVwociL6UW5vaMOJEje/LnYVGorsDcEzs0xzW/i2Zp
-# ZmLBSMvIJlVY9IMEVLkximjP0rR9WhV98OrAe8Aho89yFSbaHU4AMtxMumssQcd8
-# 1EhyqNeT4jv/J5Q9j4/3RA+T4fV66R3KQQOkke53fbXtv9R7eWW6YVNLsPI7B5HF
-# JIWdgClGmrz6dr7HUmaYlNoxpxBxvUnwKGMK9yh8raihRPl78AqIymUztLSwm/vc
-# re9mdMci086xqL406JQ4hu5DOVkAuynICIbPCnHIz19Egx3qOM4Htn1dGe/YeF/x
-# 5N/dHqLTPLiT2XoFfCH6b9jSBElhulUYFd7aQTOAbBUgHUiK2JFuxgfgSwcN7lqx
-# v5SMNX5H626XIFYKc4uyr4f+fuhhl9VPYAx0xMQwJwDBGmuqwqYKj6D3JGuKK2h+
-# TM7O7J5Vfzw9+YeQGDueSCD6hsK3TV5/enxa8v4zpPobj7jcSo+QpGilnUqmEM5V
-# CGZl
+# Reuir/SSy4IxLVGLp6chnfNtyA8wDgYDVR0PAQH/BAQDAgGGMHkGCCsGAQUFBwEB
+# BG0wazAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMEMGCCsG
+# AQUFBzAChjdodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1
+# cmVkSURSb290Q0EuY3J0MEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6Ly9jcmwzLmRp
+# Z2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRJRFJvb3RDQS5jcmwwEQYDVR0gBAow
+# CDAGBgRVHSAAMA0GCSqGSIb3DQEBDAUAA4IBAQBwoL9DXFXnOF+go3QbPbYW1/e/
+# Vwe9mqyhhyzshV6pGrsi+IcaaVQi7aSId229GhT0E0p6Ly23OO/0/4C5+KH38nLe
+# JLxSA8hO0Cre+i1Wz/n096wwepqLsl7Uz9FDRJtDIeuWcqFItJnLnU+nBgMTdydE
+# 1Od/6Fmo8L8vC6bp8jQ87PcDx4eo0kxAGTVGamlUsLihVo7spNU96LHc/RzY9Hda
+# XFSMb++hUD38dglohJ9vytsgjTVgHAIDyyCwrFigDkBjxZgiwbJZ9VVrzyerbHbO
+# byMt9H5xaiNrIv8SuFQtJ37YOtnwtoeW/VvRXKwYw02fc7cBqZ9Xql4o4rmUMIIG
+# rjCCBJagAwIBAgIQBzY3tyRUfNhHrP0oZipeWzANBgkqhkiG9w0BAQsFADBiMQsw
+# CQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cu
+# ZGlnaWNlcnQuY29tMSEwHwYDVQQDExhEaWdpQ2VydCBUcnVzdGVkIFJvb3QgRzQw
+# HhcNMjIwMzIzMDAwMDAwWhcNMzcwMzIyMjM1OTU5WjBjMQswCQYDVQQGEwJVUzEX
+# MBUGA1UEChMORGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0
+# ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBMIICIjANBgkqhkiG
+# 9w0BAQEFAAOCAg8AMIICCgKCAgEAxoY1BkmzwT1ySVFVxyUDxPKRN6mXUaHW0oPR
+# nkyibaCwzIP5WvYRoUQVQl+kiPNo+n3znIkLf50fng8zH1ATCyZzlm34V6gCff1D
+# tITaEfFzsbPuK4CEiiIY3+vaPcQXf6sZKz5C3GeO6lE98NZW1OcoLevTsbV15x8G
+# ZY2UKdPZ7Gnf2ZCHRgB720RBidx8ald68Dd5n12sy+iEZLRS8nZH92GDGd1ftFQL
+# IWhuNyG7QKxfst5Kfc71ORJn7w6lY2zkpsUdzTYNXNXmG6jBZHRAp8ByxbpOH7G1
+# WE15/tePc5OsLDnipUjW8LAxE6lXKZYnLvWHpo9OdhVVJnCYJn+gGkcgQ+NDY4B7
+# dW4nJZCYOjgRs/b2nuY7W+yB3iIU2YIqx5K/oN7jPqJz+ucfWmyU8lKVEStYdEAo
+# q3NDzt9KoRxrOMUp88qqlnNCaJ+2RrOdOqPVA+C/8KI8ykLcGEh/FDTP0kyr75s9
+# /g64ZCr6dSgkQe1CvwWcZklSUPRR8zZJTYsg0ixXNXkrqPNFYLwjjVj33GHek/45
+# wPmyMKVM1+mYSlg+0wOI/rOP015LdhJRk8mMDDtbiiKowSYI+RQQEgN9XyO7ZONj
+# 4KbhPvbCdLI/Hgl27KtdRnXiYKNYCQEoAA6EVO7O6V3IXjASvUaetdN2udIOa5kM
+# 0jO0zbECAwEAAaOCAV0wggFZMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYE
+# FLoW2W1NhS9zKXaaL3WMaiCPnshvMB8GA1UdIwQYMBaAFOzX44LScV1kTN8uZz/n
+# upiuHA9PMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEFBQcDCDB3Bggr
+# BgEFBQcBAQRrMGkwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNv
+# bTBBBggrBgEFBQcwAoY1aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lD
+# ZXJ0VHJ1c3RlZFJvb3RHNC5jcnQwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2Ny
+# bDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcmwwIAYDVR0g
+# BBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMA0GCSqGSIb3DQEBCwUAA4ICAQB9
+# WY7Ak7ZvmKlEIgF+ZtbYIULhsBguEE0TzzBTzr8Y+8dQXeJLKftwig2qKWn8acHP
+# HQfpPmDI2AvlXFvXbYf6hCAlNDFnzbYSlm/EUExiHQwIgqgWvalWzxVzjQEiJc6V
+# aT9Hd/tydBTX/6tPiix6q4XNQ1/tYLaqT5Fmniye4Iqs5f2MvGQmh2ySvZ180HAK
+# fO+ovHVPulr3qRCyXen/KFSJ8NWKcXZl2szwcqMj+sAngkSumScbqyQeJsG33irr
+# 9p6xeZmBo1aGqwpFyd/EjaDnmPv7pp1yr8THwcFqcdnGE4AJxLafzYeHJLtPo0m5
+# d2aR8XKc6UsCUqc3fpNTrDsdCEkPlM05et3/JWOZJyw9P2un8WbDQc1PtkCbISFA
+# 0LcTJM3cHXg65J6t5TRxktcma+Q4c6umAU+9Pzt4rUyt+8SVe+0KXzM5h0F4ejjp
+# nOHdI/0dKNPH+ejxmF/7K9h+8kaddSweJywm228Vex4Ziza4k9Tm8heZWcpw8De/
+# mADfIBZPJ/tgZxahZrrdVcA6KYawmKAr7ZVBtzrVFZgxtGIJDwq9gdkT/r+k0fNX
+# 2bwE+oLeMt8EifAAzV3C+dAjfwAL5HYCJtnwZXZCpimHCUcr5n8apIUP/JiW9lVU
+# Kx+A+sDyDivl1vupL0QVSucTDh3bNzgaoSv27dZ8/DCCBsAwggSooAMCAQICEAxN
+# aXJLlPo8Kko9KQeAPVowDQYJKoZIhvcNAQELBQAwYzELMAkGA1UEBhMCVVMxFzAV
+# BgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVk
+# IEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGluZyBDQTAeFw0yMjA5MjEwMDAw
+# MDBaFw0zMzExMjEyMzU5NTlaMEYxCzAJBgNVBAYTAlVTMREwDwYDVQQKEwhEaWdp
+# Q2VydDEkMCIGA1UEAxMbRGlnaUNlcnQgVGltZXN0YW1wIDIwMjIgLSAyMIICIjAN
+# BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAz+ylJjrGqfJru43BDZrboegUhXQz
+# Gias0BxVHh42bbySVQxh9J0Jdz0Vlggva2Sk/QaDFteRkjgcMQKW+3KxlzpVrzPs
+# YYrppijbkGNcvYlT4DotjIdCriak5Lt4eLl6FuFWxsC6ZFO7KhbnUEi7iGkMiMbx
+# vuAvfTuxylONQIMe58tySSgeTIAehVbnhe3yYbyqOgd99qtu5Wbd4lz1L+2N1E2V
+# hGjjgMtqedHSEJFGKes+JvK0jM1MuWbIu6pQOA3ljJRdGVq/9XtAbm8WqJqclUeG
+# hXk+DF5mjBoKJL6cqtKctvdPbnjEKD+jHA9QBje6CNk1prUe2nhYHTno+EyREJZ+
+# TeHdwq2lfvgtGx/sK0YYoxn2Off1wU9xLokDEaJLu5i/+k/kezbvBkTkVf826uV8
+# MefzwlLE5hZ7Wn6lJXPbwGqZIS1j5Vn1TS+QHye30qsU5Thmh1EIa/tTQznQZPpW
+# z+D0CuYUbWR4u5j9lMNzIfMvwi4g14Gs0/EH1OG92V1LbjGUKYvmQaRllMBY5eUu
+# KZCmt2Fk+tkgbBhRYLqmgQ8JJVPxvzvpqwcOagc5YhnJ1oV/E9mNec9ixezhe7nM
+# ZxMHmsF47caIyLBuMnnHC1mDjcbu9Sx8e47LZInxscS451NeX1XSfRkpWQNO+l3q
+# RXMchH7XzuLUOncCAwEAAaOCAYswggGHMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMB
+# Af8EAjAAMBYGA1UdJQEB/wQMMAoGCCsGAQUFBwMIMCAGA1UdIAQZMBcwCAYGZ4EM
+# AQQCMAsGCWCGSAGG/WwHATAfBgNVHSMEGDAWgBS6FtltTYUvcyl2mi91jGogj57I
+# bzAdBgNVHQ4EFgQUYore0GH8jzEU7ZcLzT0qlBTfUpwwWgYDVR0fBFMwUTBPoE2g
+# S4ZJaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0UlNB
+# NDA5NlNIQTI1NlRpbWVTdGFtcGluZ0NBLmNybDCBkAYIKwYBBQUHAQEEgYMwgYAw
+# JAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBYBggrBgEFBQcw
+# AoZMaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0
+# UlNBNDA5NlNIQTI1NlRpbWVTdGFtcGluZ0NBLmNydDANBgkqhkiG9w0BAQsFAAOC
+# AgEAVaoqGvNG83hXNzD8deNP1oUj8fz5lTmbJeb3coqYw3fUZPwV+zbCSVEseIhj
+# VQlGOQD8adTKmyn7oz/AyQCbEx2wmIncePLNfIXNU52vYuJhZqMUKkWHSphCK1D8
+# G7WeCDAJ+uQt1wmJefkJ5ojOfRu4aqKbwVNgCeijuJ3XrR8cuOyYQfD2DoD75P/f
+# nRCn6wC6X0qPGjpStOq/CUkVNTZZmg9U0rIbf35eCa12VIp0bcrSBWcrduv/mLIm
+# lTgZiEQU5QpZomvnIj5EIdI/HMCb7XxIstiSDJFPPGaUr10CU+ue4p7k0x+GAWSc
+# AMLpWnR1DT3heYi/HAGXyRkjgNc2Wl+WFrFjDMZGQDvOXTXUWT5Dmhiuw8nLw/ub
+# E19qtcfg8wXDWd8nYiveQclTuf80EGf2JjKYe/5cQpSBlIKdrAqLxksVStOYkEVg
+# M4DgI974A6T2RUflzrgDQkfoQTZxd639ouiXdE4u2h4djFrIHprVwvDGIqhPm73Y
+# HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
+# WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
+# 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAbJhIk6cqHo0FeiGEQW4/CMAkG
+# BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
+# AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
+# CSqGSIb3DQEJBDEWBBTw11XKkBwDeBZEISlBy7xXg/BhiTANBgkqhkiG9w0BAQEF
+# AASCAQCU91sZFvEPdD61WqidiWFNxPBWwRebsHAgpkpwiHITe46ZMK8f5exjFh6e
+# fzbwFL8gZCQq0ZHdNn/det5TpouqdGVi60NaAYElKLzHywpfQaiWweZnfBAr/kA1
+# KYUNdBZEBBPdaUx788qZml10h4rez5mDk80XhzJ2PRJDnV3s0kUHgWXFMBcDxybE
+# 0JHEeIJ5Fq7f3jwJKUABjAuiwgaWBUpRNYZ1arqRR33rEljMQRgP6QaSP1vlSsKy
+# Eq6sI4v/oYgx/nIw3T1TGIfd0hxmSLiR2msevDazNgQudbzXhkM1i2wBWTFrVTzN
+# 6FwUGcdSdkCGPlicey4NZuw80duCoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
+# OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
+# dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAwOTIx
+# MTAxOFowLwYJKoZIhvcNAQkEMSIEIH9RBEntCYNFg5gRp0zWLDMbY2gMuPjRYkfB
+# x9BHf/B+MA0GCSqGSIb3DQEBAQUABIICAHtTYNHjh8Dlki83PCNlItFwQlFCdKdj
+# bLVfgS5SKgnxo4nfQvIrhULbB4ExaOpqAFk1lxolywWAVLICvBo/w1UKuXj3JiQ9
+# C+O4v3hZZSpIvONyO/9xbvn+mOhfRr7XQszvXtPhufXnapDofPnfFIsT5t9DSePJ
+# 83P9+hW4HeZX0VZj2uou95eWIXrjQ+rIPBaLZ5CCQp/dmaEyAFpUfSLKb/4a1WnZ
+# poahUEjQfAc+j0hY+PcYiTgYVCADGxmCF04DaYh7k+LzG3QkhVs8D/EGKVyqpsKP
+# evbn1U7zpSMj8Ff/Cf/kxGS21L1xADjgw2Rv2mmnKVFT0MOuspNqT2dUjoxnMLNF
+# XdiGAVgcLJEmp+fetdHLPK+XeEB3NfEhiSKZO2cxB3ugbQ+AtzVCe3ENx9KbUDgm
+# 8QxJaKcArcGm8ZtUB3NcyfFzh1DuGt7jMzN7h71pjZbcSMmK0m9wNcgKtkuDrq3u
+# n9vyPfIZ9bU8CPLJ//TBmAhl5RH+t9Juzi/T5T24wbFS2ZOBbdA6a+iRx/NetoL2
+# uYVXaoi8uMLdj9K7YLOyK+LK7z2QV24nOoh2PbaZjKk3BjrBf8Xw+usWuXlnu+Ke
+# P6GPe4bfMxUipiIChlEvf3EgsYg2lAsK/kxXnK5pJ8Q5qDfTqWuxw6BPT1McGhwo
+# cihtQdk4VU2Y
 # SIG # End signature block

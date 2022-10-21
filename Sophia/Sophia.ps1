@@ -1,5 +1,5 @@
-﻿#Requires -RunAsAdministrator
-#Requires -Version 5.1
+#Requires -RunAsAdministrator
+#Requires -Version 7.2
 
 [CmdletBinding()]
 param
@@ -11,7 +11,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.1.2 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.1.5 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -22,7 +22,17 @@ Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
 Remove-Module -Name PolicyFileEditor -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\bin\PolicyFileEditor\PolicyFileEditor.psd1 -PassThru -Force
 
-Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -BaseDirectory $PSScriptRoot\Localizations
+# PowerShell 7 doesn't load en-us localization automatically if there is no localization folder in user's language which is determined by $PSUICulture
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/import-localizeddata?view=powershell-7.2
+try
+{
+	Import-LocalizedData -BindingVariable Global:Localization -UICulture $PSUICulture -BaseDirectory $PSScriptRoot\Localizations -FileName Sophia -ErrorAction Stop
+}
+catch
+{
+	Import-LocalizedData -BindingVariable Global:Localization -UICulture en-US -BaseDirectory $PSScriptRoot\Localizations -FileName Sophia
+}
+
 
 <#
 	.SYNOPSIS
@@ -38,7 +48,7 @@ Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -Base
 #>
 if ($Functions)
 {
-	Invoke-Command -ScriptBlock {Checkings}
+	Invoke-Command -ScriptBlock {Checks}
 
 	foreach ($Function in $Functions)
 	{
@@ -46,7 +56,7 @@ if ($Functions)
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
+	Invoke-Command -ScriptBlock {Errors; RefreshEnvironment}
 
 	exit
 }
@@ -54,7 +64,7 @@ if ($Functions)
 
 #region Protection
 
-Checkings -Warning
+Checks -Warning
 CreateRestorePoint
 
 #endregion Protection
@@ -92,7 +102,7 @@ OneDriveFileExplorerAd -Hide
 SnapAssistFlyout -Enable
 SnapAssist -Disable
 FileTransferDialog -Detailed
-RecycleBinDeleteConfirmation -Disable
+RecycleBinDeleteConfirmation -Enable
 QuickAccessRecentFiles -Hide
 QuickAccessFrequentFolders -Hide
 TaskbarAlignment -Center
@@ -100,12 +110,11 @@ TaskbarSearch -Hide
 TaskViewButton -Hide
 TaskbarWidgets -Hide
 TaskbarChat -Hide
-ControlPanelView -Category
+ControlPanelView -LargeIcons
 WindowsColorMode -Dark
 AppColorMode -Dark
 FirstLogonAnimation -Disable
 JPEGWallpapersQuality -Max
-TaskManagerWindow -Expanded
 RestartNotification -Show
 ShortcutsSuffix -Disable
 PrtScnSnippingTool -Disable
@@ -124,9 +133,9 @@ OneDrive -Uninstall
 #region System
 
 StorageSense -Disable
+StorageSenseFrequency -Month
 StorageSenseTempFiles -Disable
 Hibernation -Disable
-TempFolder -Default
 Win32LongPathLimit -Disable
 BSoDStopError -Enable
 AdminApprovalMode -Never
@@ -136,14 +145,14 @@ WaitNetworkStartup -Enable
 WindowsManageDefaultPrinter -Disable
 WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
-UpdateMicrosoftProducts -Enable
+UpdateMicrosoftProducts -Disable
 PowerPlan -Balanced
-LatestInstalled.NET -Disable
+LatestInstalled.NET -Enable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
 SetUserShellFolderLocation -Root
-WinPrtScrFolder -Default
+WinPrtScrFolder -Desktop
 RecommendedTroubleshooting -Automatically
 FoldersLaunchSeparateProcess -Enable
 ReservedStorage -Disable
@@ -152,10 +161,11 @@ StickyShift -Disable
 Autoplay -Disable
 ThumbnailCacheRemoval -Disable
 SaveRestartableApps -Enable
-NetworkDiscovery -Disable
+NetworkDiscovery -Enable
 ActiveHours -Automatically
 RestartDeviceAfterUpdate -Disable
 DefaultTerminalApp -WindowsTerminal
+RKNBypass -Enable
 
 #endregion System
 
@@ -166,7 +176,7 @@ DefaultTerminalApp -WindowsTerminal
 
 #region Start menu
 
-RunPowerShellShortcut -NonElevated
+RunPowerShellShortcut -Elevated
 StartLayout -ShowMorePins
 UnpinAllStartApps
 
@@ -224,11 +234,11 @@ CreateANewVideoContext -Hide
 PrintCMDContext -Hide
 IncludeInLibraryContext -Hide
 SendToContext -Hide
-BitLockerContext -Hide
 CompressedFolderNewContext -Hide
+MultipleInvokeContext -Disable
 UseStoreOpenWith -Hide
-OpenWindowsTerminalContext -Hide
-OpenWindowsTerminalAdminContext -Hide
+OpenWindowsTerminalContext -Show
+OpenWindowsTerminalAdminContext -Enable
 Windows10ContextMenu -Disable
 
 #endregion Context menu
