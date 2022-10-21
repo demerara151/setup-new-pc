@@ -9,11 +9,11 @@
 -   プライバシーとセキュリティを強化したい
 -   `PC` のスペックが低い、または回線速度に問題がある
 
-## 推奨環境
+## 実行環境
 
--   Windows 11 Home
--   Powershell 5.x （デフォルト）
--   [Sophia Script for Windows 11 v6.0.14](https://github.com/farag2/Sophia-Script-for-Windows)
+-   Windows 11 Home | Pro | EnterPrise | Insider
+-   Powershell 7.2.7
+-   [Sophia Script for Windows 11 v6.1.5 (PowerShell 7)](https://github.com/farag2/Sophia-Script-for-Windows)
 
 ## 事前準備
 
@@ -63,6 +63,8 @@
 
 -   `AutoHotkey` のバージョンを更新。以前のバージョンとの互換性はないため、再度スクリプトの配置及び実行ファイルを選択する必要あり。詳しくは、[AutoHokey](#autohotkey) の項目を参照のこと
 
+-   `Sophia Script` の更新。実行環境の `Powershell` のバージョンをデフォルトの 5.1 から 7.2.6 に変更。`scoop` の導入時に同時に `pwsh` もインストールするように。
+
 ---
 
 # 手順
@@ -97,11 +99,13 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 Invoke-RestMethod get.scoop.sh | Invoke-Expression
 
-scoop install 7zip mingit sudo
+scoop install 7zip mingit sudo pwsh
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
 ```
+
+一度ターミナルを終了し、再度起動して設定画面を開く（`Ctrl + ,`）。「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更して、ターミナルをもう一度再起動。
 
 ## Sophia Script の実行
 
@@ -111,6 +115,8 @@ git clone https://github.com/demerara151/setup-new-pc.git
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 sudo ~/setup-new-pc/Sophia/Sophia.ps1
 ```
+
+> 実行に失敗した場合、[1] `Windows Update` がまだ残っていないか確認。 [2] 「既定のプロファイル」が `Powershell` に変更されているか確認。 [3] `PC` または、ターミナルの再起動 [4] それでも実行できない場合は、`Issue` へ報告お願いします。
 
 ## メインスクリプトの実行
 
@@ -156,7 +162,7 @@ Start-Process -FilePath ~/setup-new-pc/WPD/wpd.exe
 
 ## ドットファイル用シンボリックリンクの作成
 
-ターミナルの「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更し、ターミナルを再起動したら次のスクリプトを走らせる
+ターミナルの「既定のプロファイル」が `Powershell`に変更されている事を確認し、次のスクリプトを走らせる
 
 ```powershell
 ~/setup-new-pc/symLinkCreator.ps1
