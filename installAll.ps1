@@ -11,7 +11,7 @@ foreach (
 # Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
 # More info: https://github.com/abbodi1406/vcredist
 sudo scoop install vcredist-aio windowsdesktop-runtime-lts
-Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe /y"
+Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe" /y
 # If you want to update all packages, use `/ai1` istead of `/y`.
 
 # Essentials
