@@ -27,29 +27,19 @@
 
 #### [installAll.ps1](/installAll.ps1)
 
--   自分用に必要なソフトをまとめています。各自の判断で事前に追加・除外してください
+-   自分用に必要なアプリをまとめています。各自の判断で事前に追加・除外してください
 
 ## 更新履歴
 
-### 05/07
-
--   `nu` の更新&変更が頻繁で追いつけないため一旦除外
-
--   `ungoogled-chrome` から `brave` へ乗り換え。カスタマイズする手間が掛かりすぎて面倒になった。なお、メインは変わらず `LibreWolf` なのでほとんど出番はない（主にストレコ用）
-
 ### 07/04
 
--   使用頻度が少ない `github` と `picard` を `installAll.ps1` から除外
-
--   `DNS` 管理ソフト の [Adguard Home](https://github.com/AdguardTeam/AdGuardHome) を導入し、`windowsspyblocker` のフィルターを適用（`spy` と `extra` の 2 種）
-
--   これにより `windowsspyblocker` も不要になったため、`installAll.ps1` から除外
+-   `DNS` 管理アプリ [Adguard Home](https://github.com/AdguardTeam/AdGuardHome) を導入し、`windowsspyblocker` のフィルターを適用（`spy` と `extra` の 2 種）
 
 ### 08/20
 
 -   `legendary` が、`extras bucket` に移動したため、`games bucket` が不要に。
 
--   `vscodium` の設定ファイルの設置プロセスを削除。(`vscode` の同期機能を利用し始めたため)
+-   `vscodium` の設定ファイルの配置プロセスを削除。(`vscode` の同期機能を利用し始めたため)
 
 ### 10/17
 
@@ -63,7 +53,7 @@
 
 -   `AutoHotkey` のバージョンを更新。以前のバージョンとの互換性はないため、再度スクリプトの配置及び実行ファイルを選択する必要あり。詳しくは、[AutoHokey](#autohotkey) の項目を参照のこと
 
--   `Sophia Script` の更新。実行環境の `Powershell` のバージョンをデフォルトの 5.1 から 7.2.6 に変更。`scoop` の導入時に同時に `pwsh` もインストールするように。
+-   `Sophia Script` の更新。実行環境の `Powershell` のバージョンをデフォルトの **5.1** から **7.2.6** に変更。`scoop` の導入時に同時に `pwsh` もインストールするように。
 
 ### 10/25
 
@@ -73,9 +63,9 @@
 
 # 手順
 
-## OS のインストール
+## Microsoft アカウントの作成を回避
 
-`Microsoft アカウント` の作成を回避
+`PC` の初期設定時
 
 -   インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd>
 
@@ -94,7 +84,7 @@
 
 起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
 
-## パッケージマネージャーとスクリプトの準備
+## パッケージマネージャーと必要なスクリプトの準備
 
 `Windowsキー` を押して、検索窓に`wt` と入力して<kbd>Enter</kbd> でターミナルを起動
 
@@ -120,9 +110,9 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 sudo ~/setup-new-pc/Sophia/Sophia.ps1
 ```
 
-> 実行に失敗した場合、[1] `Windows Update` がまだ残っていないか確認。 [2] 「既定のプロファイル」が `Powershell` に変更されているか確認。 [3] `PC` または、ターミナルの再起動 [4] それでも実行できない場合は、`Issue` へ報告お願いします。
+> 実行に失敗した場合、[1]: `Windows Update` がまだ残っていないか確認。 [2]: 「既定のプロファイル」が `Powershell` に変更されているか確認。 [3]: `PC` または、ターミナルの再起動。 [4] それでも実行できない場合は、`Issue` へ報告お願いします。
 
-## メインスクリプトの実行
+## アプリのインストールと不要なサービスの停止
 
 PC の再起動後、再度ターミナルを起動して次のスクリプトを実行
 
@@ -136,17 +126,17 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 ~/setup-new-pc/stopService.ps1
 ```
 
-## テレメトリーの無効化
+## プライバシーとセキュリティの強化
 
--   `WPD`
+### WPD
 
-    -   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般 以外の項目を全てオフに
-    -   ブロッカー : `Update` 以外を適用。`Firewall` はそのまま
-    -   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
+-   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般はそのままで、それ以外の項目を全てオフに
+-   ブロッカー : `Update` 以外を適用。`Firewall` の設定はそのまま
+-   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
 
--   `O&O ShutUp10`
+### O&O ShutUp10
 
-    -   `Actions` から `Recommended and somewhat recommended settings` を選択
+-   `Actions` から `Recommended and somewhat recommended settings` を選択
 
 # 追加設定
 
