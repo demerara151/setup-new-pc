@@ -1,11 +1,12 @@
-### PowerShell 7.2 or higher version is required ###
+#Requires -Version 7.2
+
 if ($PSVersionTable.PSVersion.Major -lt 6) {
     Write-Host "[Error]: Please use PowerShell 7.2 or higher version." -ForegroundColor DarkRed
 }
 else {
     $CONFIG = "$HOME/.config"
 
-    # autohotkey
+    # autohotkey2
     sudo New-Item -ItemType SymbolicLink -Path "$($env:APPDATA)/Microsoft/Windows/Start Menu/Programs/Startup/KeySwapV2.ahk" -Target $CONFIG/AutoHotkey/KeySwapV2.ahk
 
     # bat
@@ -20,6 +21,6 @@ else {
     # mpv
     sudo New-Item -ItemType SymbolicLink -Path $HOME/scoop/persist/mpv/portable_config/mpv.conf -Target $CONFIG/mpv.conf
 
-    # powershell
+    # pwsh
     sudo New-Item -ItemType SymbolicLink -Path $PROFILE -Force -Target $CONFIG/PowerShell/Microsoft.Powershell_profile.ps1
 }
