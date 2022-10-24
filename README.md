@@ -65,6 +65,10 @@
 
 -   `Sophia Script` の更新。実行環境の `Powershell` のバージョンをデフォルトの 5.1 から 7.2.6 に変更。`scoop` の導入時に同時に `pwsh` もインストールするように。
 
+### 10/25
+
+-   `extras bucket` に `wpd` が追加されたため、`scoop` でのインストールに変更
+
 ---
 
 # 手順
@@ -126,22 +130,10 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 ~/setup-new-pc/installAll.ps1
 ```
 
-アプリのインストールが不要な場合は、サービスの停止と `WPD` のインストールのみ実行
+アプリのインストールが不要な場合は、サービスの停止のみ実行
 
 ```powershell
-# Disable services
 ~/setup-new-pc/stopService.ps1
-
-# Install WPD
-New-Item -ItemType Directory -Path ~/setup-new-pc/WPD
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
-
-# Extract archive
-7z x wpd.zip
-Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
-
-# Run WPD
-Start-Process -FilePath ~/setup-new-pc/WPD/wpd.exe
 ```
 
 ## テレメトリーの無効化

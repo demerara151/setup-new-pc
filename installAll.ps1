@@ -15,7 +15,7 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 # If you want to update all packages, use `/ai1` istead of `/y`.
 
 # Essentials
-scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode yt-dlp zenhan zoxide
+scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
@@ -83,14 +83,6 @@ foreach ($service in $services) {
 # Setting up dot file
 Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 
-# Install WPD
-New-Item -ItemType Directory -Path ~/setup-new-pc/WPD
-Invoke-WebRequest -Uri "https://wpd.app/get/latest.zip" -OutFile ~/setup-new-pc/WPD/wpd.zip
-
-# Extract archive
-7z x WPD/wpd.zip -oWPD
-Remove-Item -Path ~/setup-new-pc/WPD/wpd.zip
-
 # Run WPD and shutup10
-Start-Process -FilePath ~/setup-new-pc/WPD/WPD.exe
+Start-Process -FilePath "$(scoop prefix wpd)\WPD.exe"
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
