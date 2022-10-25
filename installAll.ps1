@@ -8,11 +8,18 @@ foreach (
     )
 ) { scoop bucket add $bucket }
 
-# Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
-# More info: https://github.com/abbodi1406/vcredist
-sudo scoop install vcredist-aio windowsdesktop-runtime-lts
+<#
+    .DESCRIPTION
+    Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
+
+    .LINK
+    https://github.com/abbodi1406/vcredist
+#>
+sudo scoop install vcredist-aio
 Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe" /y
-# If you want to update all packages, use `/ai1` istead of `/y`.
+
+# Microsoft Windows Desktop Runtime
+sudo scoop install windowsdesktop-runtime-lts
 
 # Essentials
 scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
@@ -35,7 +42,7 @@ sudo scoop install icaros-np --global
 
 # --- Optional region ends here --- #
 
-# Check whether winget command is installed
+# Make usre winget is installed. If not exists install winget.
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
 # Install some requirements and softwares that you want to set system default with winget
@@ -57,31 +64,6 @@ $programs = @(
 foreach ($program in $programs) {
     winget install --id $program --source winget
 }
-
-# Stop and Disable Services
-$services = @(
-    "Fax", # Who use fax in 2022?
-
-    "lfsvc", # Geo location
-    "WSearch", # Windows search
-    "XboxGipSvc",
-
-    # Make sure you don't use these services. Remove `#` from each line to 'Stop and disable' services.
-    #"Spooler", # Printer
-    #"iphlpsvc", # IPv6
-    #"IpxlatCfgSvc", # IP 変換構成サービス
-
-    # Microsoft Edge Update
-    "edgeupdate",
-    "edgeupdatem",
-    "MicrosoftEdgeElevationService"
-)
-foreach ($service in $services) {
-    sudo Set-Service -Name $service -StartupType Disabled -Status Stopped
-}
-
-# Setting up dot file
-Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 
 # Run WPD and shutup10
 Start-Process -FilePath "$(scoop prefix wpd)\WPD.exe"

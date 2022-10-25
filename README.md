@@ -59,6 +59,10 @@
 
 -   `extras bucket` に `wpd` が追加されたため、`scoop` でのインストールに変更
 
+-   より汎用的にするため、アプリのインストールとサービスの停止、設定ファイルの配置の 3 つのプロセスを個々のプロセスに分割。アプリのインストールだけがしたい場合、[installAll.ps1](/installAll.ps1)のみを実行すれば済むように。
+
+-   不要なサービスの停止と設定ファイルの配置を、追加設定の項目に移動
+
 ---
 
 # 手順
@@ -91,7 +95,7 @@
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-Invoke-RestMethod get.scoop.sh | Invoke-Expression
+irm get.scoop.sh | iex
 
 scoop install 7zip mingit sudo pwsh
 scoop update
@@ -112,21 +116,17 @@ sudo ~/setup-new-pc/Sophia/Sophia.ps1
 
 > 実行に失敗した場合、[1]: `Windows Update` がまだ残っていないか確認。 [2]: 「既定のプロファイル」が `Powershell` に変更されているか確認。 [3]: `PC` または、ターミナルの再起動。 [4] それでも実行できない場合は、`Issue` へ報告お願いします。
 
-## アプリのインストールと不要なサービスの停止
+## 複数のアプリをまとめてインストール
 
-PC の再起動後、再度ターミナルを起動して次のスクリプトを実行
+`PC` の再起動後、再度ターミナルを起動して次のスクリプトを実行
 
 ```powershell
 ~/setup-new-pc/installAll.ps1
 ```
 
-アプリのインストールが不要な場合は、サービスの停止のみ実行
-
-```powershell
-~/setup-new-pc/stopService.ps1
-```
-
 ## プライバシーとセキュリティの強化
+
+アプリのインストール完了後、自動的に以下の 2 つのアプリが立ち上がるので、以下のようにそれぞれ設定。
 
 ### WPD
 
@@ -142,12 +142,42 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 
 以下は個人的な設定です。適用する場合は、必ずファイルの中身を**事前に確認**してください
 
-## ドットファイル用シンボリックリンクの作成
+## 各種設定ファイルの配置
+
+```powershell
+Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
+```
+
+## 上記のドットファイル用シンボリックリンクの作成
 
 ターミナルの「既定のプロファイル」が `Powershell`に変更されている事を確認し、次のスクリプトを走らせる
 
 ```powershell
 ~/setup-new-pc/symLinkCreator.ps1
+```
+
+## 不要なサービスの停止
+
+個人的に全く使わないサービス
+
+-   印刷
+-   ファックス
+-   IPv6
+-   Windows Search
+-   Microsoft Edge 自動アップデート
+-   Xbox gaming
+
+```powershell
+~/setup-new-pc/stopService.ps1
+```
+
+## アプリのインストールからサービスの停止までをまとめて実行したい時用
+
+```powershell
+~/setup-new-pc/installAll.ps1
+Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
+~/setup-new-pc/symLinkCreator.ps1
+~/setup-new-pc/stopService.ps1
 ```
 
 ## Hyper-V の有効化
@@ -163,6 +193,8 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 # Note
 
 -   `OneDrive` は、必ず `Sophia Script` で消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
+
+    > 10/25 追記：`privacy.sexy` のスクリプトでも綺麗に消すことに成功
 
 -   `Windows` の既定のアプリに設定したいプログラムは `scoop` ではなく、必ず `winget` でインストールする
 
