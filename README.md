@@ -11,6 +11,35 @@
 
 ---
 
+## Overview
+
+-   [Requirements](#requirements)
+-   [Getting started](#getting-started)
+    1. [`Microsoft アカウント`の作成を回避](#getting-started)
+    2. [Windows update](#getting-started)
+    3. [スクリプトの編集](#getting-started)
+    4. [パッケージマネージャーと必要なスクリプトの準備](#getting-started)
+-   [Run the script](#run-the-script)
+    -   [`Sophia Script for Windows 11` の実行](#sophia-script-for-windows-11-の実行)
+    -   [メインスクリプトの実行](#メインスクリプトの実行)
+    -   [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
+-   [Personal Settings](#personal-settings)
+    -   [各種設定ファイルの配置](#各種設定ファイルの配置)
+    -   [設定ファイル用シンボリックリンクの作成](#設定ファイル用シンボリックリンクの作成-symlinkcreatorps1)
+    -   [不要なサービスの停止](#不要なサービスの停止-stopserviceps1)
+    -   [コピペ用追加設定一括コマンド](#コピペ用追加設定一括コマンド)
+    -   [Hyper-V の有効化](#hyper-v-の有効化)
+-   [Note](#note)
+-   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+    -   [拡張機能の導入](#拡張機能の導入)
+    -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
+        -   [追加フィルタ](#追加フィルタ)
+    -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
+-   [[AutoHotkey](/.config/AutoHotkey/KeySwapV2.ahk)](#autohotkey)
+-   [日本語フォント](#日本語フォント)
+
+---
+
 ## Requirements
 
 -   Windows 11 Home | Pro | EnterPrise | Insider
@@ -160,7 +189,7 @@ Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ~/setup-new-pc/stopService.ps1
 ```
 
-#### コピペ用追加設定一括コマンド
+### コピペ用追加設定一括コマンド
 
 ```powershell
 ~/setup-new-pc/installAll.ps1
@@ -195,7 +224,9 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 正直そのままでも問題ないが、`Settings` -> `LibreWolf` -> `Fingerprinting` の `Enable letterboxing` にチェックを入れておくとよさげ
 
-### 拡張機能の導入（`uBlockOrigin` は、デフォルトで導入済み）
+### 拡張機能の導入
+
+`uBlockOrigin` は、デフォルトで導入済み
 
 -   DarkReader : 常にダークモード
 -   Bitwarden : パスワード管理
