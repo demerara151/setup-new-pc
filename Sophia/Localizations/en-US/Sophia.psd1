@@ -30,7 +30,7 @@ UserFolderSelect                          = Select a folder for the "{0}" folder
 UserDefaultFolder                         = Would you like to change the location of the "{0}" folder to the default value?
 ReservedStorageIsInUse                    = This operation is not supported when reserved storage is in use\nPlease re-run the "{0}" function again after PC restart
 ShortcutPinning                           = The "{0}" shortcut is being pinned to Start...
-SSDRequired                               = To use Windows Subsystem for Android� on your device, your PC needs to have Solid State Drive (SSD) installed
+SSDRequired                               = To use Windows Subsystem for Android™ on your device, your PC needs to have Solid State Drive (SSD) installed
 UninstallUWPForAll                        = For all users
 UWPAppsTitle                              = UWP apps
 HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer... ~2,8 MB
@@ -86,24 +86,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUIlL9zVfm1KrIyv/CknaJAaUC
-# hKagghYNMIIDAjCCAeqgAwIBAgIQGyYSJOnKh6NBXohhEFuPwjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMDkyMTAwMDha
-# Fw0yNDEwMDkyMTA5MzJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxQKjGGyaH0/HmtOIziYDylTTylCP
-# nB4N/jkGUNXo+pOeoTWFYvRe9cwHyMxw2DlvOIU+YpHAo7J8vLq4kAPO+wf9h0bJ
-# qMD7vYdMvv6Y+F8q67rZQUoaXuA4KJDFStuogZ4ZuL4hSEwrtiOAmnHfQKXI7qOa
-# trIwbavT8DUTAvqcBB59ZLNx78e6uKBIr0kp0YgZiVEJLhl59C1fqflGkeKN7OJV
-# XXaoNQbd9ypIxzAZ4asGlgjlaXQzR4pUmf5SnR2jATyq8EAOfiUvsSQtakq3kB8s
-# 8B+GnaG98jVVox9iHhaH+hlB9gR0Li5UjIHETPzwCeDEog6jySTTC30/YQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZvGT5ZNnWHxW64nuCSZ5+dub
+# O1KgghYNMIIDAjCCAeqgAwIBAgIQF7fWSqoKJZxPNQKUtiDjYjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMjMxMDI0Mjha
+# Fw0yNDEwMjMxMDM0MTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZi8saRLD7r+S9Zn9lfzXFOwsTke
+# 0ZBwPrtApClfvZgbPrkL+U1MVm6xhWgefoa9vcvdpmEcGtHykp+NYm4UJcZkWuzM
+# tvh1lWxNkKufV+xC95qlywrjKnuGuEQNZ/wKMAU78tZprieJk0hAUxbvxjKh8LrD
+# YzaqQ/HWdR2HgyBAj2+HR1R4GKlP+fyYTZ55HbZZ5xQ6hO/d/KaWyuqCkNNQNbv6
+# g5r4wTEVi/mAfnRTnLBFAmfrOiQzr+Wgo7JS4LCNFjh3LYTgsrZURdAMqkK+RjqR
+# ikCVGNsXzwCyq0QA1H9M72mGaj3pWvGAQgwHg7MpLX59owlz8ER7GIHz9QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFAHwTO5NP7AzAlk3KFioMF9WyihDMA0GCSqGSIb3DQEBCwUAA4IBAQB/hQ9T
-# bCgUBNCeDwKxVEP/CfwoEUTv5/VA+ytYjbcSSXUsMtuk6N4agH/KOe3Xzdtx4IPX
-# 3FOO5HlpkrJccA7nvLEywpI15cOwzVwiiRAbhxQhLVNQ8N7e3xEpipikoC7ywuFP
-# BSRe71yGbEW5GhPhLa1qlfMx/f3wb93YeyheZXVV68cbp7pn/xgoN7e0QyRvi2C1
-# BwM2Yw97kiLVWKdFXMrgDI9g0VKqJy2ErghT9QsWOjlfqnx0vd77qkkzk63W1LkH
-# cLFmnbhOO45vWJ2LiRnL+Pl3hHMjwKPMihf94D5tDztT9AT/7XRG9HGRfSkbcOk5
-# Gc2EB2OtkqgbNxghMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFG96xYnbMCFPX30aUZ/cnVryzkIgMA0GCSqGSIb3DQEBCwUAA4IBAQAn5FXS
+# oznFfU3xXD+a/jxplg7gAZfHR8ucrIn+43wJFj5zXh/LDe1MBl466W+TrSdOPSbX
+# 0gh1saMwgsmrK/3ABHMlWP6HWFfs3uM5jwZnL5tfN203eqvXc7QHEW5H2R/ZSoc/
+# lQIRDwQ+jqS8BvOQ6Wq+bLIsWEtTqN4kx1ULW4hfbU4fXfL3FPSzWMRCkKAqKH2A
+# +NSPR8Cm0Si5ojUhS5QR+EIlY8mp/ndSjBwcabzOzBSgrEMk6kx4dRnBBUAu1OaB
+# QpkSFn+EsSsCyN9BpKuDZBCY6N5LF82LJKHONSwxStX/2qEejW2UApQf4GtM5oTo
+# gkYsALlvFbdpySg8MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -205,31 +205,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAbJhIk6cqHo0FeiGEQW4/CMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAXt9ZKqgolnE81ApS2IONiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBQd3kB8i62ePdpcAFjhCwkt+TkcgTANBgkqhkiG9w0BAQEF
-# AASCAQCHEm2ozDK83hI+L/bZFTsM+4t+XTsuqObR3DDYcI1Poy2Q8p8QAxbrT5P0
-# kR6f2UmbIW2HXMzEHt3O2EqY+CHXcrDtMFHl9nqUx9FC/qA9GWNFMXDmzvWaG6jb
-# MdhCkgABzBIgSgrnHWJPFXATFZEDmsgoW0mcPObc0Ekr7qwmlTfqaCc5+jDGEeJ1
-# 4eFdVW/EXPdz2qOhPAVmojBjKCEEy+EzGgQcKgSaig/I9tmsgv7ehQDdR/mF8lBc
-# IcSOW3iVamipcq1ckKVIOxEWrlPuwW/9V7TE6FlX4zhFF0PghgMaYGUvuzUjDwW0
-# 8ndhWkT8dvU0cN1/mlPvsF2fCT/noYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSn8VQGFcy2+gsgULRgOc5IqFHrITANBgkqhkiG9w0BAQEF
+# AASCAQCITlVwUwsIIoTOCC6gfMZzft9lMRu1ftlIQEXz4F/IlI0nVKkfY1U3PIgg
+# 5+84hHpYrAe+WGs4vF7NFEewQmQ9j/Eqjs1C+iWNRhzgEzCtAyNzVPGYIkqCsVlY
+# oQkJ940PAMGh9Et31us8pCKAJ1FKxrgCKRmpdn3TKdwlUQsvQBSCx6r8E4onAabF
+# rqImDRmLNS5TndYys1w4EqxvipQenrENO5jexfPILB06FYHAoVWQniQoHId8CkeC
+# /4D5gOqjncWpeg5ukyCMIUMFyPMsvWRwPI2OOjxnOyum2DDg51RRgoHlq6cObW3o
+# PCxiYlMqjp7wyxWDxdP1WMv8KycVoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAwOTIx
-# MTAxN1owLwYJKoZIhvcNAQkEMSIEILZCJRt7XgW9ELMfnW2bXzy6ST1b3wh/ib3x
-# 5BI2A8iwMA0GCSqGSIb3DQEBAQUABIICAEz+efQuXF2+f4TPTtozebg5QNlDyXmk
-# +s+/3U5WI8XVREwp61My8P/iv/acD7bKfm0z28x7LKrUGSQK7nptq95tgGssDvc8
-# wf2yM+FuKoifQSTGUQH1NvIQ8nk2ew28OSsck7z+mc6K+K+ZxVFfFhMYeHQlWzoN
-# QJFZtO6RuGCTcD3NkNDKZMcCQQLE/p90W3i8zBA0/XO/w5j8XH66TA9okKh10KoF
-# dqwvkTQ3UgzmY56f/4s4QSgBADLmiYR5mICH9pIyhz9M2rYqY02bHTyw4y75I8zl
-# w2pt1ceuQi6aSRTkaxO31U3MUAY0xanxuZNJVh8jmM5Qk5JsFcUuc0/uzFXZnrOb
-# U6anhhIAbmJkrMvBUhYYxGIh1Au7MdPFW+O4iNKMu/iI00wlkj1PseiAKcm+E0ur
-# jxC2Ew3FlWGtYbCv2KBjmilV4SsROjaEFsBpMTPTASt7Xdtsg9lIOjRqgC19Km1Z
-# 9qtFjt8yfYDZiaJcTa0ib5cvxdc8pzP2D6GxntAgq64mzBEzIb8U3i31OjbTBkx+
-# pz1mtoz0ZfUmg55d+T6Adfs7pq94BO4XrQWm+efPpWlU1YLhtDoQGJa6RZkrivMt
-# yPZByCoGAzPFi0mCAZHXfAaW2Pv6pZ8QSqzUvtty5sv7u3h6yQ/ubAcQ6AVOn3zP
-# xgaAvsJpLYhW
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAyMzEw
+# MzQzNlowLwYJKoZIhvcNAQkEMSIEIHqLKrwYQ3HaaFdtufK2K6lIjDB0ZlN2s6AC
+# c3tclXpXMA0GCSqGSIb3DQEBAQUABIICAICYEkZezZLS1TbwzvBEMuWKfznJTK6v
+# 3rFBWHujBZP5SvtXyymOnUXkdPCkUBr65Cn9uXCIzkaFLqnfJeyZG5gZwARDghnX
+# vSzpdqWMOd5Lx4QybrfBxNvgRHhrRsPqS04NfBzZ5kKuodguCAUz5DlPtRut4j5q
+# QcS5HDNCtz4wo/rdn/pgq7NEzxaGSZePHTVK33XHASjm3GpfLOp1W9YUeWfQgovr
+# PSMtCb42OVATDNZ7wWq/6g7g8+HGk6nx9OVqVDA/seIZIGTZ708Jw9+DrEemMK/m
+# r62GFisq5ZSPxCBeFOC9pOWuZe7Eb5bQxTzfB8CSeczSSSBRonhD52VaFrTuSHo8
+# 8IV42n9aC+weADltThIonh9zpOp1+cc4ucissw/NFy6qf30dfEC2i5ByPXOhlci2
+# +YlqyhgY7iYQl8jmNSoqbS+5qXrK3AFr/C8rWYQoYH6EzLdAiUW47EYw+we9UUO1
+# Qyj7g6VG7L8c2hoVt7s6zHHUbfdOiXLHEACtmFyc1t0aCcwiwlsirfZhUQfSOS3r
+# hX4TOEghtUh59a5+bUzpf7uCncHPX/I9XVT3nJeq9IN7Kkt3zs4Vap1qg7Mj6m5f
+# UwFSEIZUuSCTag5zaKQn6gLuhlduW7GSsU6Ty4BSYY6/lBtF4hF3Xbq2S4uwOA+x
+# 4dg/5l+e1mKN
 # SIG # End signature block

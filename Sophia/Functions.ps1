@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	The TAB completion for functions and their arguments
 
-	Version: v6.1.5
-	Date: 09.10.2022
+	Version: v6.2.0
+	Date: 22.10.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -49,20 +49,15 @@ function Sophia
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {Errors; RefreshEnvironment}
+	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
 }
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.1.5 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.0 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
-
-# Import module for modifying registry.pol files (Administrative Templates) of local GPOs
-# https://www.powershellgallery.com/packages/PolicyFileEditor
-Remove-Module -Name PolicyFileEditor -Force -ErrorAction Ignore
-Import-Module -Name $PSScriptRoot\bin\PolicyFileEditor\PolicyFileEditor.psd1 -PassThru -Force
 
 Import-LocalizedData -BindingVariable Global:Localization -FileName Sophia -BaseDirectory $PSScriptRoot\Localizations
 
@@ -178,24 +173,24 @@ Write-Verbose -Message "`"Set-Association -ProgramPath ```"%ProgramFiles%\Notepa
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUs8lsyf+ktVdb+SsH7TpguIHq
-# srCgghYNMIIDAjCCAeqgAwIBAgIQGyYSJOnKh6NBXohhEFuPwjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMDkyMTAwMDha
-# Fw0yNDEwMDkyMTA5MzJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxQKjGGyaH0/HmtOIziYDylTTylCP
-# nB4N/jkGUNXo+pOeoTWFYvRe9cwHyMxw2DlvOIU+YpHAo7J8vLq4kAPO+wf9h0bJ
-# qMD7vYdMvv6Y+F8q67rZQUoaXuA4KJDFStuogZ4ZuL4hSEwrtiOAmnHfQKXI7qOa
-# trIwbavT8DUTAvqcBB59ZLNx78e6uKBIr0kp0YgZiVEJLhl59C1fqflGkeKN7OJV
-# XXaoNQbd9ypIxzAZ4asGlgjlaXQzR4pUmf5SnR2jATyq8EAOfiUvsSQtakq3kB8s
-# 8B+GnaG98jVVox9iHhaH+hlB9gR0Li5UjIHETPzwCeDEog6jySTTC30/YQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUd94Af6/vfespfGix5ZRhUVGH
+# sTGgghYNMIIDAjCCAeqgAwIBAgIQF7fWSqoKJZxPNQKUtiDjYjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMjMxMDI0Mjha
+# Fw0yNDEwMjMxMDM0MTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZi8saRLD7r+S9Zn9lfzXFOwsTke
+# 0ZBwPrtApClfvZgbPrkL+U1MVm6xhWgefoa9vcvdpmEcGtHykp+NYm4UJcZkWuzM
+# tvh1lWxNkKufV+xC95qlywrjKnuGuEQNZ/wKMAU78tZprieJk0hAUxbvxjKh8LrD
+# YzaqQ/HWdR2HgyBAj2+HR1R4GKlP+fyYTZ55HbZZ5xQ6hO/d/KaWyuqCkNNQNbv6
+# g5r4wTEVi/mAfnRTnLBFAmfrOiQzr+Wgo7JS4LCNFjh3LYTgsrZURdAMqkK+RjqR
+# ikCVGNsXzwCyq0QA1H9M72mGaj3pWvGAQgwHg7MpLX59owlz8ER7GIHz9QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFAHwTO5NP7AzAlk3KFioMF9WyihDMA0GCSqGSIb3DQEBCwUAA4IBAQB/hQ9T
-# bCgUBNCeDwKxVEP/CfwoEUTv5/VA+ytYjbcSSXUsMtuk6N4agH/KOe3Xzdtx4IPX
-# 3FOO5HlpkrJccA7nvLEywpI15cOwzVwiiRAbhxQhLVNQ8N7e3xEpipikoC7ywuFP
-# BSRe71yGbEW5GhPhLa1qlfMx/f3wb93YeyheZXVV68cbp7pn/xgoN7e0QyRvi2C1
-# BwM2Yw97kiLVWKdFXMrgDI9g0VKqJy2ErghT9QsWOjlfqnx0vd77qkkzk63W1LkH
-# cLFmnbhOO45vWJ2LiRnL+Pl3hHMjwKPMihf94D5tDztT9AT/7XRG9HGRfSkbcOk5
-# Gc2EB2OtkqgbNxghMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFG96xYnbMCFPX30aUZ/cnVryzkIgMA0GCSqGSIb3DQEBCwUAA4IBAQAn5FXS
+# oznFfU3xXD+a/jxplg7gAZfHR8ucrIn+43wJFj5zXh/LDe1MBl466W+TrSdOPSbX
+# 0gh1saMwgsmrK/3ABHMlWP6HWFfs3uM5jwZnL5tfN203eqvXc7QHEW5H2R/ZSoc/
+# lQIRDwQ+jqS8BvOQ6Wq+bLIsWEtTqN4kx1ULW4hfbU4fXfL3FPSzWMRCkKAqKH2A
+# +NSPR8Cm0Si5ojUhS5QR+EIlY8mp/ndSjBwcabzOzBSgrEMk6kx4dRnBBUAu1OaB
+# QpkSFn+EsSsCyN9BpKuDZBCY6N5LF82LJKHONSwxStX/2qEejW2UApQf4GtM5oTo
+# gkYsALlvFbdpySg8MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -297,31 +292,31 @@ Write-Verbose -Message "`"Set-Association -ProgramPath ```"%ProgramFiles%\Notepa
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAbJhIk6cqHo0FeiGEQW4/CMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAXt9ZKqgolnE81ApS2IONiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRc7rqyZdy2Vt7rVxxHWcJkZwpobzANBgkqhkiG9w0BAQEF
-# AASCAQBXwOHE8wdb5+ZuO+f508rOgwU5QMizXiDuSNPOLkI7mkmtr/odIwaaA70Z
-# 8O7m3dm11u/zGxJtXkC51yXPoChM+11loydxNvmJxz8/wjKrsxUJam0mMVo3GODk
-# XzZPblcdy6Ag3hKou6c6LIoy+aQIMryS59W/uXZiJX9eUD4iZpIjB8l9hxT0Sqng
-# 3J6jW6ItWtqeln7JyNNqy2737tzK0at+39XP/xZGYoTLaqkQROnu9TELENF1idip
-# NorIYhk2ACX1CorcgE+nc2s8ZsDe187hQiOiSr7zw+Y/u/iin4u1chbnIXxf0Z40
-# jh0S+fjslLmTqL19HfwnP2HocqgxoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSjkGLFNBVpx63r4bpHkofA9KfdeTANBgkqhkiG9w0BAQEF
+# AASCAQCWtxtZ0zTK+AFDMUpd4vw0NNqdL+ndrE2c3rigcxnS/k3/GqBnIk8emyxW
+# N3xuKaJJAW6rm/pbrZn61CSQp5kLIGb99MbLdJ3BiUaZ9q5CU5CPyNJ68+rSdZmL
+# oR8D5upGjrGnVP005B83Tb049tevEh9m2OYUOdXdzZlBovAWJDbTxoyGguvH+fMP
+# MgJGFEcaMByeWCQAbNpuBj9s8yvXPQfXEaVkOJyVrnGTZiOLKajOOCDWKIouQtFM
+# ZWYJkdKNmz3qpNVlcOl5Frtj1Zn080VInB6OGlbEyzhMVbFDJ7CErFUrJ3s+0SRh
+# MY44oEEe+gzZH4DFOXq9YxRIr16doYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAwOTIx
-# MTAxN1owLwYJKoZIhvcNAQkEMSIEID5rgXCgadmwxb7/Gam95lpxzvx3Ik0iomb2
-# SJjJ5Eo4MA0GCSqGSIb3DQEBAQUABIICAFkYp1fvOnEwZ6iWczP6C+nQxCjKC7ED
-# f+VLLCt2tOHSdmRA7QKwwIHPZx4J1MsWs6SnUOtns9DR0717v7PPx66/g+cS2jZd
-# OAWVAWQognVk1BdyOrhnqyLwdTih8mzSHFqlAXlp1H53mRovn8eRQzlU12y1iJiN
-# b/9trAuugI4EAMxQpI5Fm20ZIGVZBx2dMcDxIFTGfTI5E7JioBEm1x9NurT379zw
-# QBrtdL+WYzdbFefyBaMar2fJgAQA2MTQcbiSxV3Ajhy/qCRaGaFX0oI8yYOX5vs8
-# BzLGzeoV9CZ6S6iQgwTh2iW8qW1ZsScO1ooIawOJPYf6L2F2HLXACRzemZuyuLOd
-# v4BY/S+3mPIXUzPMEp1M5Tc7wvOeF1YqylCFolxX4OmGU+E3Gubmvo19QNZbmJqT
-# 0Skd2fyi+BtwNHop/33qb1VWPJXqVVDQm5RJnNRd3q6/J24LOQeLbeZnnBrcHyo/
-# DQnZPRky33Ww3ctMW1U6fuV4oAI4jzItONmq7l7fLZIiL9wid1KncM3ginViqvPC
-# BQfWyKJz3YXEUFhY6MtTnOfq9Cv+sC5QtZjYe0xFNYU0yxnryRL51ykQGJOD1/GO
-# PfZjZWT4g2jYnQGjBNxZa4PLT2nznuUtHaBH/F8Q/F9V2XwzsyAj+0KIYudMQ88w
-# ZigKBCPgHU2C
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAyMzEw
+# MzQzNlowLwYJKoZIhvcNAQkEMSIEIL3IXpaHpnf8cagvA14EH32MnZTVhWhsM3Fo
+# VGgJUk3uMA0GCSqGSIb3DQEBAQUABIICAF0/q9cGitnJqzTNQXw9vAB6fyK7AQEl
+# /cMWoE0HRxBD8KglN7I2E0S3bynE2enWpvWiD0/BK/L2y85IrU1FCjPGm4JQTRKd
+# 0RsuEy8PtnUxd0FMW68CoG4b56kmOMwz/dTxgZiNf42XJtFyskeVaLyS/S6aA0Vy
+# 4ftGH4pDGXK3JxZkYe2+Tm7CTKZ3T6L41ShktI9TEcvPJ0baxI64cbeTRcpdJD+b
+# GQz/HleXJ1wZmbKxxGuYXqeMK4cqR9oLha9KKU8igykhcVuDKRwuNfc7Z3SInz1z
+# dhQ4HSaxWmZH7MYuSqoqi5oh5evlKEGORNIVFi4ZdMxoynvgZdj6WlDqBkDek0Vy
+# wat2hkQoGyh48T/RtuJSQNZaQ0OZArbfZFDoGjDXlldFab3hWSyB5oAkW6fG1Sf2
+# eiUuwg2Yk20NNx2e+P6FQDi2jwaiqyPjZ4wllBRjPEF2NS3QZMbbPZKcJW0Krfvo
+# Y6FVXDPORVb6ZLqKBLtGM3ynBK4upPwhebq379Tp4ZXrbaLCyAzs3qxDgds9Adjf
+# 8uGJm3NbrhUyljoKynJb5b3IE4AYHvChBROibhqj5q64/JRuBal6lZC3A7T9Jba0
+# kGsk9OoNSCFiz3aV8NAPixkGH+dYPb/+DqIE/pGDrXEULZCEbM1cw5drO1AuAUbC
+# VXGF27qZOlOn
 # SIG # End signature block

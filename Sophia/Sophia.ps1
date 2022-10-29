@@ -11,16 +11,10 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.1.5 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.0 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
-
-# Import module for modifying registry.pol files (Administrative Templates) of local GPOs
-# Used for UpdateLGPEPolicies function
-# https://www.powershellgallery.com/packages/PolicyFileEditor
-Remove-Module -Name PolicyFileEditor -Force -ErrorAction Ignore
-Import-Module -Name $PSScriptRoot\bin\PolicyFileEditor\PolicyFileEditor.psd1 -PassThru -Force
 
 # PowerShell 7 doesn't load en-us localization automatically if there is no localization folder in user's language which is determined by $PSUICulture
 # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/import-localizeddata?view=powershell-7.2
@@ -56,7 +50,7 @@ if ($Functions)
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {Errors; RefreshEnvironment}
+	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
 
 	exit
 }
@@ -91,7 +85,7 @@ BingSearch -Disable
 
 #region UI & Personalization
 
-ThisPC -Hide
+ThisPC -Show
 CheckBoxes -Disable
 HiddenItems -Enable
 FileExtensions -Show
@@ -102,7 +96,7 @@ OneDriveFileExplorerAd -Hide
 SnapAssistFlyout -Enable
 SnapAssist -Disable
 FileTransferDialog -Detailed
-RecycleBinDeleteConfirmation -Enable
+RecycleBinDeleteConfirmation -Disable
 QuickAccessRecentFiles -Hide
 QuickAccessFrequentFolders -Hide
 TaskbarAlignment -Center
@@ -110,16 +104,16 @@ TaskbarSearch -Hide
 TaskViewButton -Hide
 TaskbarWidgets -Hide
 TaskbarChat -Hide
-ControlPanelView -LargeIcons
+ControlPanelView -Category
 WindowsColorMode -Dark
 AppColorMode -Dark
 FirstLogonAnimation -Disable
 JPEGWallpapersQuality -Max
 RestartNotification -Show
 ShortcutsSuffix -Disable
-PrtScnSnippingTool -Disable
 AppsLanguageSwitch -Enable
 AeroShaking -Enable
+Cursors -Dark
 UnpinTaskbarShortcuts -Shortcuts Edge, Store
 
 #endregion UI & Personalization
@@ -132,9 +126,9 @@ OneDrive -Uninstall
 
 #region System
 
-StorageSense -Disable
+StorageSense -Enable
 StorageSenseFrequency -Month
-StorageSenseTempFiles -Disable
+StorageSenseTempFiles -Enable
 Hibernation -Disable
 Win32LongPathLimit -Disable
 BSoDStopError -Enable
@@ -145,9 +139,8 @@ WaitNetworkStartup -Enable
 WindowsManageDefaultPrinter -Disable
 WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
-UpdateMicrosoftProducts -Disable
+UpdateMicrosoftProducts -Enable
 PowerPlan -Balanced
-LatestInstalled.NET -Enable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
@@ -163,7 +156,7 @@ ThumbnailCacheRemoval -Disable
 SaveRestartableApps -Enable
 NetworkDiscovery -Enable
 ActiveHours -Automatically
-RestartDeviceAfterUpdate -Disable
+RestartDeviceAfterUpdate -Enable
 DefaultTerminalApp -WindowsTerminal
 RKNBypass -Enable
 
@@ -176,7 +169,7 @@ RKNBypass -Enable
 
 #region Start menu
 
-RunPowerShellShortcut -Elevated
+RunPowerShellShortcut -NonElevated
 StartLayout -ShowMorePins
 UnpinAllStartApps
 
@@ -184,6 +177,7 @@ UnpinAllStartApps
 
 #region UWP apps
 
+HEIF -Install
 CortanaAutostart -Disable
 TeamsAutostart -Disable
 UninstallUWPApps -ForAllUsers
@@ -202,6 +196,9 @@ SetAppGraphicsPerformance
 
 #region Scheduled tasks
 
+CleanupTask -Register
+SoftwareDistributionTask -Register
+TempTask -Register
 
 #endregion Scheduled tasks
 
@@ -219,6 +216,7 @@ SaveZoneInformation -Disable
 WindowsScriptHost -Disable
 DismissMSAccount
 DismissSmartScreenFilter
+DNSoverHTTPS -Enable -PrimaryDNS 149.112.112.112 -SecondaryDNS 149.112.112.112
 
 #endregion Microsoft Defender & Security
 
@@ -235,17 +233,16 @@ PrintCMDContext -Hide
 IncludeInLibraryContext -Hide
 SendToContext -Hide
 CompressedFolderNewContext -Hide
-MultipleInvokeContext -Disable
+MultipleInvokeContext -Enable
 UseStoreOpenWith -Hide
 OpenWindowsTerminalContext -Show
-OpenWindowsTerminalAdminContext -Enable
+OpenWindowsTerminalAdminContext -Disable
 Windows10ContextMenu -Disable
 
 #endregion Context menu
 
 #region Update Policies
 
-UpdateLGPEPolicies
 
 #endregion Update Policies
 

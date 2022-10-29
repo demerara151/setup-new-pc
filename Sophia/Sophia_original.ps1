@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11 (PowerShell 7)"
 
-	Version: v6.1.5
-	Date: 09.10.2022
+	Version: v6.2.0
+	Date: 22.10.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -39,12 +39,15 @@
 		. .\Function.ps1 (with a dot at the beginning)
 	Read more in the Functions.ps1 file
 
-	.LINK GitHub link
+	.LINK GitHub
 	https://github.com/farag2/Sophia-Script-for-Windows
 
-	.LINK Telegram channel & group
+	.LINK Telegram
 	https://t.me/sophianews
 	https://t.me/sophia_chat
+
+	.LINK Discord
+	https://discord.gg/sSryhaEv79
 
 	.NOTES
 	https://forum.ru-board.com/topic.cgi?forum=62&topic=30617#15
@@ -70,16 +73,10 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.1.5 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.0 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
-
-# Import module for modifying registry.pol files (Administrative Templates) of local GPOs
-# Used for UpdateLGPEPolicies function
-# https://www.powershellgallery.com/packages/PolicyFileEditor
-Remove-Module -Name PolicyFileEditor -Force -ErrorAction Ignore
-Import-Module -Name $PSScriptRoot\bin\PolicyFileEditor\PolicyFileEditor.psd1 -PassThru -Force
 
 # PowerShell 7 doesn't load en-us localization automatically if there is no localization folder in user's language which is determined by $PSUICulture
 # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/import-localizeddata?view=powershell-7.2
@@ -115,7 +112,7 @@ if ($Functions)
 	}
 
 	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {Errors; RefreshEnvironment}
+	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
 
 	exit
 }
@@ -296,11 +293,11 @@ HiddenItems -Enable
 # Не показывать скрытые файлы, папки и диски (значение по умолчанию)
 # HiddenItems -Disable
 
-# Show the file name extensions
+# Show file name extensions
 # Отобразить расширения имён файлов
 FileExtensions -Show
 
-# Hide the file name extensions (default value)
+# Hide file name extensions (default value)
 # Скрывать расширения имён файлов файлов (значение по умолчанию)
 # FileExtensions -Hide
 
@@ -472,24 +469,6 @@ JPEGWallpapersQuality -Max
 # Установить коэффициент качества обоев рабочего стола в формате JPEG по умолчанию
 # JPEGWallpapersQuality -Default
 
-<#
-	Start Task Manager in the expanded mode
-	Function works only on 22000 build due to Windows 11 22H2 has a new Task Manager with the new UI
-
-	Запускать Диспетчера задач в развернутом виде
-	Функция работает только на 22000 билде, так как Windows 11 22H2 идет с обновленным диспетчером задач
-#>
-TaskManagerWindow -Expanded
-
-<#
-	Start Task Manager in the compact mode (default value)
-	Function works only on 22000 build due to Windows 11 22H2 has a new Task Manager with the new UI
-
-	Запускать Диспетчера задач в свернутом виде (значение по умолчанию)
-	Функция работает только на 22000 билде, так как Windows 11 22H2 идет с обновленным диспетчером задач
-#>
-# TaskManagerWindow -Compact
-
 # Notify me when a restart is required to finish updating
 # Уведомлять меня о необходимости перезагрузки для завершения обновления
 RestartNotification -Show
@@ -529,6 +508,18 @@ AeroShaking -Enable
 # When I grab a windows's title bar and shake it, don't minimize all other windows (default value)
 # При захвате заголовка окна и встряхивании не сворачиваются все остальные окна (значение по умолчанию)
 # AeroShaking -Disable
+
+# Download and install free dark "Windows 11 Cursors Concept v2" cursors from Jepri Creations
+# Скачать и установить бесплатные темные курсоры "Windows 11 Cursors Concept v2" от Jepri Creations
+Cursors -Dark
+
+# Download and install free light "Windows 11 Cursors Concept v2" cursors from Jepri Creations
+# Скачать и установить бесплатные светлые курсоры "Windows 11 Cursors Concept v2" от Jepri Creations
+# Cursors -Light
+
+# Set default cursors (default value)
+# Установить курсоры по умолчанию (значение по умолчанию)
+# Cursors -Default
 #endregion UI & Personalization
 
 #region OneDrive
@@ -592,12 +583,12 @@ Win32LongPathLimit -Disable
 # Включить ограничение Windows на 260 символов в пути (значение по умолчанию)
 # Win32LongPathLimit -Enable
 
-# Display the Stop error information on the BSoD
-# Отображать Stop-ошибку при появлении BSoD
+# Display Stop error code when BSoD occurs
+# Отображать код Stop-ошибки при появлении BSoD
 BSoDStopError -Enable
 
-# Do not display the Stop error information on the BSoD (default value)
-# Не отображать Stop-ошибку при появлении BSoD (значение по умолчанию)
+# Do not Stop error code when BSoD occurs (default value)
+# Не отображать код Stop-ошибки при появлении BSoD (значение по умолчанию)
 # BSoDStopError -Disable
 
 # Choose when to be notified about changes to your computer: never notify
@@ -909,12 +900,12 @@ DefaultTerminalApp -WindowsTerminal
 # DefaultTerminalApp -ConsoleHost
 
 <#
-	Install the latest Microsoft Visual C++ Redistributable Packages 2015–2022 x64
-	Установить последнюю версию распространяемых пакетов Microsoft Visual C++ 2015–2022 x64
+	Install the latest Microsoft Visual C++ Redistributable Packages 2015–2022 (x86/x64)
+	Установить последнюю версию распространяемых пакетов Microsoft Visual C++ 2015–2022 (x86/x64)
 
 	https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
 #>
-InstallVCRedistx64
+InstallVCRedist
 
 <#
 	Install the latest .NET Desktop Runtime 6 (x86/x64)
@@ -924,8 +915,8 @@ InstallVCRedistx64
 #>
 InstallDotNetRuntime6
 
-# Enable proxying only blocked sites from the unified registry of Roskomnadzor. The function will be applied only if the region in Windows is set to "Russia"
-# Включить проксирование только заблокированных сайтов из единого реестра Роскомнадзора. Функция будет применена, только если в Windows установлен регион "Россия"
+# Enable proxying only blocked sites from the unified registry of Roskomnadzor. The function is applicable for Russia only
+# Включить проксирование только заблокированных сайтов из единого реестра Роскомнадзора. Функция применима только для России
 # https://antizapret.prostovpn.org
 RKNBypass -Enable
 
@@ -968,16 +959,16 @@ RunPowerShellShortcut -Elevated
 # RunPowerShellShortcut -NonElevated
 
 # Show default Start layout (for 22621+ build only) (default value)
-# Отображать стандартный макет начального экрана (только для сборки 22621+) (значение по умолчанию)
+# Отображать стандартный макет начального экрана (только для сборок 22621+) (значение по умолчанию)
 # StartLayout -Default
 
 # Show more pins on Start (for 22621+ build only)
-# Отображать больше закреплений на начальном экране (только для сборки 22621+)
+# Отображать больше закреплений на начальном экране (только для сборок 22621+)
 StartLayout -ShowMorePins
 
 # Show more recommendations on Start (for 22621+ build only)
-# Отображать больше рекомендаций на начальном экране (только для сборки 22621+)
-StartLayout -ShowMoreRecommendations
+# Отображать больше рекомендаций на начальном экране (только для сборок 22621+)
+# StartLayout -ShowMoreRecommendations
 #endregion Start menu
 
 #region UWP apps
@@ -1380,17 +1371,8 @@ Windows10ContextMenu -Disable
 #region Update Policies
 # Update Local Group Policy Editor (gpedit.msc) to make all manually created policy keys in the registry visible in the snap-in
 # Обновить Редактор локальной групповой политики (gpedit.msc) так, чтобы оснастка отображала все созданные вручную политики в реестре
-UpdateLGPEPolicies
+# UpdateLGPEPolicies
 #endregion Update Policies
-
-<#
-	Errors output
-	Please, do not comment out this function
-
-	Вывод ошибок
-	Пожалуйста, не комментируйте данную функцию
-#>
-Errors
 
 <#
 	Simulate pressing F5 to refresh the desktop
@@ -1405,27 +1387,36 @@ Errors
 #>
 RefreshEnvironment
 
+<#
+	Errors output
+	Please, do not comment out this function
+
+	Вывод ошибок
+	Пожалуйста, не комментируйте данную функцию
+#>
+Errors
+
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULV3L3apPkO4d7f78MogaN+nO
-# USmgghYNMIIDAjCCAeqgAwIBAgIQGyYSJOnKh6NBXohhEFuPwjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMDkyMTAwMDha
-# Fw0yNDEwMDkyMTA5MzJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxQKjGGyaH0/HmtOIziYDylTTylCP
-# nB4N/jkGUNXo+pOeoTWFYvRe9cwHyMxw2DlvOIU+YpHAo7J8vLq4kAPO+wf9h0bJ
-# qMD7vYdMvv6Y+F8q67rZQUoaXuA4KJDFStuogZ4ZuL4hSEwrtiOAmnHfQKXI7qOa
-# trIwbavT8DUTAvqcBB59ZLNx78e6uKBIr0kp0YgZiVEJLhl59C1fqflGkeKN7OJV
-# XXaoNQbd9ypIxzAZ4asGlgjlaXQzR4pUmf5SnR2jATyq8EAOfiUvsSQtakq3kB8s
-# 8B+GnaG98jVVox9iHhaH+hlB9gR0Li5UjIHETPzwCeDEog6jySTTC30/YQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUB1o3NNgUAfdhpZAudiweTgGu
+# JS+gghYNMIIDAjCCAeqgAwIBAgIQF7fWSqoKJZxPNQKUtiDjYjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMjMxMDI0Mjha
+# Fw0yNDEwMjMxMDM0MTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZi8saRLD7r+S9Zn9lfzXFOwsTke
+# 0ZBwPrtApClfvZgbPrkL+U1MVm6xhWgefoa9vcvdpmEcGtHykp+NYm4UJcZkWuzM
+# tvh1lWxNkKufV+xC95qlywrjKnuGuEQNZ/wKMAU78tZprieJk0hAUxbvxjKh8LrD
+# YzaqQ/HWdR2HgyBAj2+HR1R4GKlP+fyYTZ55HbZZ5xQ6hO/d/KaWyuqCkNNQNbv6
+# g5r4wTEVi/mAfnRTnLBFAmfrOiQzr+Wgo7JS4LCNFjh3LYTgsrZURdAMqkK+RjqR
+# ikCVGNsXzwCyq0QA1H9M72mGaj3pWvGAQgwHg7MpLX59owlz8ER7GIHz9QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFAHwTO5NP7AzAlk3KFioMF9WyihDMA0GCSqGSIb3DQEBCwUAA4IBAQB/hQ9T
-# bCgUBNCeDwKxVEP/CfwoEUTv5/VA+ytYjbcSSXUsMtuk6N4agH/KOe3Xzdtx4IPX
-# 3FOO5HlpkrJccA7nvLEywpI15cOwzVwiiRAbhxQhLVNQ8N7e3xEpipikoC7ywuFP
-# BSRe71yGbEW5GhPhLa1qlfMx/f3wb93YeyheZXVV68cbp7pn/xgoN7e0QyRvi2C1
-# BwM2Yw97kiLVWKdFXMrgDI9g0VKqJy2ErghT9QsWOjlfqnx0vd77qkkzk63W1LkH
-# cLFmnbhOO45vWJ2LiRnL+Pl3hHMjwKPMihf94D5tDztT9AT/7XRG9HGRfSkbcOk5
-# Gc2EB2OtkqgbNxghMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFG96xYnbMCFPX30aUZ/cnVryzkIgMA0GCSqGSIb3DQEBCwUAA4IBAQAn5FXS
+# oznFfU3xXD+a/jxplg7gAZfHR8ucrIn+43wJFj5zXh/LDe1MBl466W+TrSdOPSbX
+# 0gh1saMwgsmrK/3ABHMlWP6HWFfs3uM5jwZnL5tfN203eqvXc7QHEW5H2R/ZSoc/
+# lQIRDwQ+jqS8BvOQ6Wq+bLIsWEtTqN4kx1ULW4hfbU4fXfL3FPSzWMRCkKAqKH2A
+# +NSPR8Cm0Si5ojUhS5QR+EIlY8mp/ndSjBwcabzOzBSgrEMk6kx4dRnBBUAu1OaB
+# QpkSFn+EsSsCyN9BpKuDZBCY6N5LF82LJKHONSwxStX/2qEejW2UApQf4GtM5oTo
+# gkYsALlvFbdpySg8MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -1527,31 +1518,31 @@ RefreshEnvironment
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAbJhIk6cqHo0FeiGEQW4/CMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAXt9ZKqgolnE81ApS2IONiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRaWp2ehN46D2/ynlCivU3/vfiwdjANBgkqhkiG9w0BAQEF
-# AASCAQCKcJCX9NC9KE//aXKjKnXlTaw1CRAxjFaw1YaC+/FOPrBmveowzu7fOqqp
-# 7d82Jg1XExNu22txFL0DmJeh7R1ekhHltmyn4Y3MILNLK8ErvcNt51yjD+nbI0ZW
-# 30ec6iRBKTtnB+Br8HyPga5ISaOETejPCuvJhquc3JyQxe/OhK7RnBND2mq79n/y
-# y0l4m/CTwGDo6C/mR+6OJjXDDvZbNZPaJjyOfU+uct92aw7E27ODZuW9zs1oiZVs
-# cKGuYSg436pEuPb+ogZcpVW7kEyR9DwCSO85xbo4pXvfEgVrG2kUze2mT5JIv1Gr
-# ZlVJaCxV0ECK7hAfNE8uucHN/IAhoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBRXRstarYPBbcFBBY6j6u2gEB4mxTANBgkqhkiG9w0BAQEF
+# AASCAQCHe/Y1gQg81yMYjZZP53SZHb9HGmp9VXZkaUAHvKya0ILoqqnSKy15Bi75
+# 4NXwTInovlR6kSZbqIEHiZbOPVI4jahSCHfczdGeORRAwfXh9pkN66TUaqwl0AfA
+# RO/0YV4/lEzIw66LntSSleUS/gjbI8g5MnuRTvmK/+6acxvv+OckNDuIBkznUQb/
+# bZyHY3buEIb+6chUZ1Z2FjS4ohAaweXQ/Ehl2j5AzgLwWrW2D6Ixd41sq5CjwbI1
+# aSK9Y6NCkv8ytEiUNjFpRsZAf/FGj9lQShm7bTnAz/MrkMxJpvUud4HjHhYpDPXb
+# 2IILdExh4PF3ahK7TE4rGqD979CLoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAwOTIx
-# MTAxN1owLwYJKoZIhvcNAQkEMSIEIFCumPAuacAjZcQ7QpK2e7X7iM9Pn4IfWMW4
-# 9NqkqHsXMA0GCSqGSIb3DQEBAQUABIICAALZDkbcSDC+q3gxjx5H/AHTaqKcxSYL
-# UMu6PlitixMKBy/NJNqee4Em2eW02v5oXbtGrpLQjbTibrhuGwiMQn9ZBrF65hVx
-# gxxHCoZPVRTzmY//wifrlmGlLo7sPKTHXqHYy/U92pz9fhAblXZ2Wj70LLnz1axR
-# iZP3E6pWGxOPB3vss4XAnwDIRiLowZ62QLlMbTbtD1i0pILXBX7HKRpFtrKq8SIv
-# BPDe6Vr/jTIdublMKPh4otdLALFNG4xmlQJaP9Vp9n1D7P/ZJ8F75dgDO6Tm28fE
-# 0KjfWCeDCZeoS73s0SJoubiL0ilqZ1zOJOvbn9fcQAcHHx4vqlnjQgjrBi2FrTGt
-# PhseKWBQzKnnaZ0Ot3teI8M1GpDEYoKJdbEY2O6CQ19bOnkPhwYx0yVB0IdEm+U6
-# WlbeleknouukbAyyK50lloY+zrbXklfjRIvJkNpRWuzOE6DJqPdf3fM4C3GKBc8l
-# ZMabaX39piafAXVxz7i+md+bBqGWbM96CrHaYzRdsY33bWCh+v/HhnhxpU0j9sai
-# 181O6xcjGOV6BWc6tWDnzjj7MXnvb9IQbuc7vbcUowr0xrtjDhx7vNHvqpnnn3D+
-# lZPZ3GO1OoteJJJEyeE268ozpb10Nib2GlrYpHbnKP7l4lx14W5dlJaP7HFfxzUT
-# eovw3YJa0sS6
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAyMzEw
+# MzQzNlowLwYJKoZIhvcNAQkEMSIEIFL4Kbx6gx5Isb9glx1+kzgiOxjzEZJPzeeV
+# 7i281FDVMA0GCSqGSIb3DQEBAQUABIICACwPMTHx/E4UAPIzmnPAZ6/JUq/O2d1y
+# 3M6E36fbjKiaIEOzAS3ssrStTkytz0rGx6x0CfmwuM08vNVsZDXgNOa9K4ZLHqUh
+# QP+zTNV5RHp+FOpVCsvn26iKVRu/gkJ4QJI/bKv7fafJs1tJ2MDotOBDLgE2gz1J
+# gZ3eQKVgWfMLDcBm8au6YFxEepd9rSd6EYiQSvKCrCaKdKBrfxdEFWc/X/UeH1OO
+# 7MxhvhruN1Jib6mN2V1U+/1PDV/hJp7XR5Cw6wdr13KYL4PtaLRcfj+Rtj7mmb8J
+# bTKmK7B1C0hVgJ59H72hmrYIoVMAVE7A3uFwUYeIZqcGbl3ibabTWVcnm1XH8l3I
+# vccDzjkPQKG4UjM31ei3+CaHOyJK+35t2JANECIK7spCjx/BtsHmJ5Tctk4+ySC/
+# 3x8X+1WypayNxe893qiZQO1Skt5YdfBaPZrIYwgolDcDrVxKpo4Qbkn1/KPQeehg
+# kjrnj7ONTIp7NYLDl8zyx/b3piioF4grzCKHsUwH7tYKT2Y5Ky80LgZYHtnCmTyv
+# 2Dx/RMmpWSOygQUZfagscpgKqhNG8KJWhQVdMoCSYeSJ//xhjCl/9p2Q+DpQF2Ux
+# M9nDl6zJ5AGg+/5w1oathy3JKF7kstj/LT1EgHJiixLbAPWYA7JcRNSyVC7IdC6A
+# SElYcE/6+p2B
 # SIG # End signature block
