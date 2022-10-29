@@ -2,153 +2,140 @@
 
 **`Windows` を快適に使うための `PC` セットアップ手順**
 
-## こんな人におすすめ
+### こんな人におすすめ
 
 -   余計なプログラムやファイルは出来るだけ排除したい
 -   `Microsoft` 製品は一部を除いて基本的に使わない
 -   プライバシーとセキュリティを強化したい
 -   `PC` のスペックが低い、または回線速度に問題がある
 
-## 実行環境
+---
+
+## Requirements
 
 -   Windows 11 Home | Pro | EnterPrise | Insider
 -   Powershell 7.2.7
--   [Sophia Script for Windows 11 v6.1.5 (PowerShell 7)](https://github.com/farag2/Sophia-Script-for-Windows)
-
-## 事前準備
-
-リポジトリをクローンしたら、スクリプトを走らせる前に編集すべき点
-
-#### [Sophia Script](/Sophia/Sophia.ps1)
-
--   デフォルトのまま使ってもいいし、直接中身を編集してもいいけど、上記のリンクから最新バージョンを各自ダウンロードして編集したほうが間違いがなくてよい
-
--   編集したものを既存の `Sophia` フォルダーの中身と入れ替える
-
-#### [installAll.ps1](/installAll.ps1)
-
--   自分用に必要なアプリをまとめています。各自の判断で事前に追加・除外してください
-
-## 更新履歴
-
-### 07/04
-
--   `DNS` 管理アプリ [Adguard Home](https://github.com/AdguardTeam/AdGuardHome) を導入し、`windowsspyblocker` のフィルターを適用（`spy` と `extra` の 2 種）
-
-### 08/20
-
--   `legendary` が、`extras bucket` に移動したため、`games bucket` が不要に。
-
--   `vscodium` の設定ファイルの配置プロセスを削除。(`vscode` の同期機能を利用し始めたため)
-
-### 10/17
-
--   `legendary` が、バケットを移動していたのは間違いだったようで、元の `games bucket` に戻っていたため修正。
-
--   加えて、`Heroic launcher` が、`scoop` でもインストールできるようになったので、`winget` から移動。
-
--   [`privacy.sexy`](https://privacy.sexy) の導入を検討中。
-
-### 10/21
-
--   `AutoHotkey` のバージョンを更新。以前のバージョンとの互換性はないため、再度スクリプトの配置及び実行ファイルを選択する必要あり。詳しくは、[AutoHokey](#autohotkey) の項目を参照のこと
-
--   `Sophia Script` の更新。実行環境の `Powershell` のバージョンをデフォルトの **5.1** から **7.2.6** に変更。`scoop` の導入時に同時に `pwsh` もインストールするように。
-
-### 10/25
-
--   `extras bucket` に `wpd` が追加されたため、`scoop` でのインストールに変更
-
--   より汎用的にするため、アプリのインストールとサービスの停止、設定ファイルの配置の 3 つのプロセスを個々のプロセスに分割。アプリのインストールだけがしたい場合、[installAll.ps1](/installAll.ps1)のみを実行すれば済むように。
-
--   不要なサービスの停止と設定ファイルの配置を、追加設定の項目に移動
+-   [Sophia Script for Windows 11](https://github.com/farag2/Sophia-Script-for-Windows)
 
 ---
 
-# 手順
+## Getting started
 
-## Microsoft アカウントの作成を回避
+1. `Microsoft アカウント`の作成を回避
 
-`PC` の初期設定時
+    PC の初期設定時（既に OS をインストール済み、もしくはアカウント作成済みの場合は次へスキップ）
 
--   インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd>
+    - インターネット設定画面で、<kbd>Alt</kbd> + <kbd>F4</kbd> を押して設定プロセス自体を終了させてしまう
 
--   または、`Microsoft アカウント` 設定画面で、<kbd>Shift</kbd> + <kbd>F10</kbd>
+    - 上記の方法でインターネット接続を回避できなかった場合、`Microsoft アカウント` 設定画面で、<kbd>Shift</kbd> + <kbd>F10</kbd> を押してコマンドプロンプトを立ち上げ、以下のコマンドを入力しインターネット接続を一時的に切断する（Wi-Fi の場合）
 
-    ```CMD
-    X:\Sources> netsh wlan disconnect
-    X:\Sources> exit
+        ```CMD
+        X:\Sources> netsh wlan disconnect
+        X:\Sources> exit
+        ```
+
+    - コマンドプロンプトが閉じたら左上の戻る矢印をクリック
+
+    > 有線の場合はケーブルを抜くか、ルーターの電源を一回落とす。また、<kbd>Windows</kbd> + <kbd>R</kbd> で「ファイル名を指定して実行」を起動し、`taskmgr` と入力してタスクマネージャーを起動。ネットワークに関連するプロセスを探してタスクを終了させてもいい。
+
+2. Windows update
+
+    起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
+
+    > バージョンが古いと `Sophia script` が実行できないため
+
+3. スクリプトの編集
+
+    - [`Sophia Script for Windows 11`](/Sophia/Sophia.ps1)
+
+        メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
+
+    - [`installAll.ps1`](/installAll.ps1)
+
+        メモ帳で開き、不要なアプリが含まれていないか確認する。不要なアプリ名を削除、もしくは、各行のコマンドの先頭に # を付けることでコマンドの実行を防ぐ
+
+4. パッケージマネージャーと必要なスクリプトの準備
+
+    `Windowsキー` を押して、検索窓に`wt` と入力して <kbd>Enter</kbd> でターミナルを起動
+
+    以下のコマンドをコピーして張り付け
+
+    ```powershell
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+    irm get.scoop.sh | iex
+
+    scoop install 7zip mingit sudo pwsh
+    scoop update
+
+    git clone https://github.com/demerara151/setup-new-pc.git
     ```
 
--   プロンプトが閉じたら左上の戻る矢印をクリック
+    一度ターミナルを終了し、再度起動して <kbd>Ctrl</kbd> + <kbd>,</kbd> で設定画面を開く。「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更、設定を保存して終了
 
-> 有線の場合はケーブルを抜くか、ルーターの電源を一回落とす。また、<kbd>Windows</kbd> + <kbd>R</kbd> で「ファイル名を指定して実行」を起動し、`taskmgr` と入力してタスクマネージャーを起動。ネットワークに関連するプロセスを探してタスクを終了させてもいい。
+---
 
-## Windows update
+## Run the script
 
-起動したら `Windows Update` を実行して再起動。更新内容がなくなるまで `Windows Update` と再起動を繰り返す
+### `Sophia Script for Windows 11` の実行
 
-## パッケージマネージャーと必要なスクリプトの準備
+> OS のインストール直後に実行するのがベストのため、既に PC を普段使いしているなら以下のスクリプトは使用せず、[`Sophiapp`](https://github.com/Sophia-Community/SophiApp/) を利用してください
 
-`Windowsキー` を押して、検索窓に`wt` と入力して<kbd>Enter</kbd> でターミナルを起動
-
-```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-irm get.scoop.sh | iex
-
-scoop install 7zip mingit sudo pwsh
-scoop update
-
-git clone https://github.com/demerara151/setup-new-pc.git
-```
-
-一度ターミナルを終了し、再度起動して設定画面を開く（`Ctrl + ,`）。「既定のプロファイル」を `Windows Powershell` から `Powershell`に変更して、ターミナルをもう一度再起動。
-
-## Sophia Script の実行
-
-事前にスクリプトを<u>編集・準備</u>した上で
+事前にスクリプトを編集した上で、以下のコマンドをコピーしてターミナルに張り付け
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 sudo ~/setup-new-pc/Sophia/Sophia.ps1
 ```
 
-> 実行に失敗した場合、[1]: `Windows Update` がまだ残っていないか確認。 [2]: 「既定のプロファイル」が `Powershell` に変更されているか確認。 [3]: `PC` または、ターミナルの再起動。 [4] それでも実行できない場合は、`Issue` へ報告お願いします。
+プログラムが終了し、PC を再起動するようメッセージが表示されたら、PC を再起動
 
-## 複数のアプリをまとめてインストール
+-   実行に失敗した場合、
 
-`PC` の再起動後、再度ターミナルを起動して次のスクリプトを実行
+    -   (1) `Windows Update` がまだ残っていないか確認。
+    -   (2) 「既定のプロファイル」が `Powershell` に変更されているか確認。
+    -   (3) `PC` または、ターミナルの再起動。
+    -   (4) それでも実行できない場合は、`Issue` へ報告お願いします。
+
+### メインスクリプトの実行
+
+PC の再起動後、再度ターミナルを起動して次のスクリプトを実行
 
 ```powershell
 ~/setup-new-pc/installAll.ps1
 ```
 
-## プライバシーとセキュリティの強化
+必要なアプリがまとめてインストールされます
 
-アプリのインストール完了後、自動的に以下の 2 つのアプリが立ち上がるので、以下のようにそれぞれ設定。
+### プライバシーとセキュリティの強化
 
-### WPD
+アプリのインストール完了後、自動的に以下の 2 つのアプリが立ち上がるので、以下のようにそれぞれ設定
 
--   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般はそのままで、それ以外の項目を全てオフに
--   ブロッカー : `Update` 以外を適用。`Firewall` の設定はそのまま
--   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
+-   `WPD`
 
-### O&O ShutUp10
+    -   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般はそのままで、それ以外の項目を全てオフに
+    -   ブロッカー : `Update` 以外を適用。`Firewall` の設定はそのまま
+    -   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
 
--   `Actions` から `Recommended and somewhat recommended settings` を選択
+-   `shutup10`
 
-# 追加設定
+    -   `Actions` から `Recommended and somewhat recommended settings` を選択
+
+## Personal Settings
 
 以下は個人的な設定です。適用する場合は、必ずファイルの中身を**事前に確認**してください
 
-## 各種設定ファイルの配置
+> 既に、設定している個人的な設定も上書きされる可能性があります。各自バックアップを取り、自己責任でお願いします
+
+### 各種設定ファイルの配置
+
+ユーザーフォルダ直下に、`.config` の名前で配置します。既に存在している場合は、全て上書きされるので注意してください
 
 ```powershell
 Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ```
 
-## 上記のドットファイル用シンボリックリンクの作成
+### 設定ファイル用シンボリックリンクの作成 [`symLinkCreator.ps1`](symLinkCreator.ps1)
 
 ターミナルの「既定のプロファイル」が `Powershell`に変更されている事を確認し、次のスクリプトを走らせる
 
@@ -156,9 +143,11 @@ Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ~/setup-new-pc/symLinkCreator.ps1
 ```
 
-## 不要なサービスの停止
+本来、`%APPDATA%` や `%LOCALAPPDATA%` 等に保存される設定ファイルへのシンボリックリンクが `/.config` 内に作成されます。以降、このスクリプトで設定した全ての設定ファイルはこの `/.config` 内からアクセスできるようになります
 
-個人的に全く使わないサービス
+### 不要なサービスの停止 [`stopService.ps1`](/stopService.ps1)
+
+個人的に全く使わない以下のようなサービスを停止します。メモリの使用量をわずかに減らせます
 
 -   印刷
 -   ファックス
@@ -171,7 +160,7 @@ Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ~/setup-new-pc/stopService.ps1
 ```
 
-## アプリのインストールからサービスの停止までをまとめて実行したい時用
+#### コピペ用追加設定一括コマンド
 
 ```powershell
 ~/setup-new-pc/installAll.ps1
@@ -180,7 +169,7 @@ Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ~/setup-new-pc/stopService.ps1
 ```
 
-## Hyper-V の有効化
+### Hyper-V の有効化
 
 `BIOS` でハイパーバイザーが有効になっている前提
 
@@ -190,7 +179,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 > もし、`Windows Insider Program` への参加が条件で実行できない場合は、`scoop` で `offlineinsiderenroll` をインストールし、`Microsoft アカウント` を作成せずに `Windows Insider Program` へ参加する
 
-# Note
+## Note
 
 -   `OneDrive` は、必ず `Sophia Script` で消しておくこと。ここで正確に消さないと中途半端に残ったりアップデートで復活する
 
@@ -202,19 +191,17 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 ---
 
-# ブラウザ設定（LibreWolf）
+## ブラウザ設定（LibreWolf）
 
 正直そのままでも問題ないが、`Settings` -> `LibreWolf` -> `Fingerprinting` の `Enable letterboxing` にチェックを入れておくとよさげ
 
-## 拡張機能の導入（uBlockOrigin は、デフォルトで導入済み）
+### 拡張機能の導入（`uBlockOrigin` は、デフォルトで導入済み）
 
 -   DarkReader : 常にダークモード
-
 -   Bitwarden : パスワード管理
-
 -   libredirect : プライバシーを尊重するサイトへ自動リダイレクト
 
-## uBlockOrigin の上級者設定
+### `uBlockOrigin` の上級者設定
 
 1. 設定画面の `I am an advance user` にチェック
 
@@ -227,7 +214,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
     * * 3p-script block
     ```
 
-### 追加フィルタ
+#### 追加フィルタ
 
 -   AdGuard Social Media
 -   [oisd](https://oisd.nl/)
@@ -235,7 +222,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 -   [Energized Ultimate Protection](https://filterlists.com/lists/energized-ultimate-protection)
 -   [Energized Xtreme Extension](https://filterlists.com/lists/energized-xtreme-extension)
 
-## about:config で変更したい箇所
+### about:config で変更したい箇所
 
 | key                                                | default | new  | description                        |
 | :------------------------------------------------- | :-----: | :--: | :--------------------------------- |
@@ -244,7 +231,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 ---
 
-# [AutoHotkey](/.config/AutoHotkey/KeySwapV2.ahk)
+## [AutoHotkey](/.config/AutoHotkey/KeySwapV2.ahk)
 
 -   10/21 更新: _AutoHotkey のバージョンを `Version 1.1.34.04` から `Version 2.0-beta.12` へアップグレード。_ 既存のバージョンとの互換性はないため、以前のスクリプトを削除。スクリプトファイル、及び実行ファイルのパスも変わっているため注意。
 
@@ -260,7 +247,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 > または、Windows の設定 > アプリ > 既定のアプリで、ファイルの種類の既定値を設定する。上部の窓に、`.ahk`と入力して上記のプログラムをエクスプローラーから探して選択
 
-# 日本語フォント
+## 日本語フォント
 
 必要に応じて手動でインストール
 
