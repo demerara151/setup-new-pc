@@ -42,7 +42,7 @@ sudo scoop install icaros-np --global
 
 # --- Optional region ends here --- #
 
-# Make usre winget is installed. If not exists install winget.
+# Make sure winget is installed. If not exists install winget via scoop.
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
 # Install some requirements and softwares that you want to set system default with winget
