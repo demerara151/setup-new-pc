@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
--   update Sophia script v6.2.0
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中。
+
+## 2022-10-30
+
+### Changed
+
+-   update Sophia script v6.2.0
+
+### Added
+
+-   [display-driver.md](/docs/display-driver.md): Guide to uninstall and install Display Driver cleanly.
 
 ## 2022-10-29
 
