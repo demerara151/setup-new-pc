@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中。
 
+## 2022-11-03
+
+### Changed
+
+-   Remove FiraCode and add JetBrainsMono and Hack font in [installAll.ps1](/installAll.ps1).
+
 ## 2022-10-30
 
 ### Changed
@@ -35,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 -   `extras bucket` に `wpd` が追加されたため、`scoop` でのインストールに変更
+
 -   より汎用的にするため、アプリのインストールとサービスの停止、設定ファイルの配置の 3 つのプロセスを個々のプロセスに分割。アプリのインストールだけがしたい場合、[installAll.ps1](/installAll.ps1)のみを実行すれば済むように
 
 -   不要なサービスの停止と設定ファイルの配置を、追加設定の項目に移動

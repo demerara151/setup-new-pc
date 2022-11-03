@@ -14,6 +14,7 @@
 ## Overview
 
 -   [Requirements](#requirements)
+-   [Dependencies](#dependencies)
 -   [Getting started](#getting-started)
     1. [`Microsoft アカウント`の作成を回避](#getting-started)
     2. [Windows update](#getting-started)
@@ -43,8 +44,13 @@
 ## Requirements
 
 -   Windows 11 Home | Pro | EnterPrise | Insider
--   Powershell 7.2.7
--   [Sophia Script for Windows 11](https://github.com/farag2/Sophia-Script-for-Windows)
+-   Powershell 7.2
+
+## Dependencies
+
+-   [scoop](https://scoop.sh)
+-   [Sophia Script](https://github.com/farag2/Sophia-Script-for-Windows)
+-   [WPD](https://wpd.app)
 
 ---
 
@@ -266,7 +272,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 -   10/21 更新: _AutoHotkey のバージョンを `Version 1.1.34.04` から `Version 2.0-beta.12` へアップグレード。_ 既存のバージョンとの互換性はないため、以前のスクリプトを削除。スクリプトファイル、及び実行ファイルのパスも変わっているため注意。
 
-> 参照: [AutoHotkey V2](https://lexikos.github.io/v2/docs/AutoHotkey.htm) `https://lexikos.github.io/v2/docs/AutoHotkey.htm`
+> 参照: <https://lexikos.github.io/v2/docs/AutoHotkey.htm>
 
 英語配列キーボード向けのキーの挙動変更。入れ替えるキーは以下の 2 つ
 
