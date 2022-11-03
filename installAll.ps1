@@ -35,7 +35,7 @@ scoop install legendary playnite heroic-games-launcher
 scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
 
 # Nerd Fonts
-sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono FiraCode-NF-Mono Mononoki-NF-Mono --global
+sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Hack-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
 sudo scoop install icaros-np --global
