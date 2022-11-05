@@ -11,7 +11,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.0 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.3 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -26,7 +26,6 @@ catch
 {
 	Import-LocalizedData -BindingVariable Global:Localization -UICulture en-US -BaseDirectory $PSScriptRoot\Localizations -FileName Sophia
 }
-
 
 <#
 	.SYNOPSIS
@@ -85,7 +84,7 @@ BingSearch -Disable
 
 #region UI & Personalization
 
-ThisPC -Show
+ThisPC -Hide
 CheckBoxes -Disable
 HiddenItems -Enable
 FileExtensions -Show
@@ -96,7 +95,7 @@ OneDriveFileExplorerAd -Hide
 SnapAssistFlyout -Enable
 SnapAssist -Disable
 FileTransferDialog -Detailed
-RecycleBinDeleteConfirmation -Disable
+RecycleBinDeleteConfirmation -Enable
 QuickAccessRecentFiles -Hide
 QuickAccessFrequentFolders -Hide
 TaskbarAlignment -Center
@@ -104,16 +103,17 @@ TaskbarSearch -Hide
 TaskViewButton -Hide
 TaskbarWidgets -Hide
 TaskbarChat -Hide
-ControlPanelView -Category
+ControlPanelView -LargeIcons
 WindowsColorMode -Dark
 AppColorMode -Dark
 FirstLogonAnimation -Disable
 JPEGWallpapersQuality -Max
 RestartNotification -Show
 ShortcutsSuffix -Disable
+PrtScnSnippingTool -Disable
 AppsLanguageSwitch -Enable
 AeroShaking -Enable
-Cursors -Dark
+Cursors -Light
 UnpinTaskbarShortcuts -Shortcuts Edge, Store
 
 #endregion UI & Personalization
@@ -139,8 +139,9 @@ WaitNetworkStartup -Enable
 WindowsManageDefaultPrinter -Disable
 WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
-UpdateMicrosoftProducts -Enable
+UpdateMicrosoftProducts -Disable
 PowerPlan -Balanced
+LatestInstalled.NET -Enable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
@@ -156,7 +157,6 @@ ThumbnailCacheRemoval -Disable
 SaveRestartableApps -Enable
 NetworkDiscovery -Enable
 ActiveHours -Automatically
-RestartDeviceAfterUpdate -Enable
 DefaultTerminalApp -WindowsTerminal
 RKNBypass -Enable
 
@@ -177,7 +177,6 @@ UnpinAllStartApps
 
 #region UWP apps
 
-HEIF -Install
 CortanaAutostart -Disable
 TeamsAutostart -Disable
 UninstallUWPApps -ForAllUsers
@@ -216,7 +215,6 @@ SaveZoneInformation -Disable
 WindowsScriptHost -Disable
 DismissMSAccount
 DismissSmartScreenFilter
-DNSoverHTTPS -Enable -PrimaryDNS 149.112.112.112 -SecondaryDNS 149.112.112.112
 
 #endregion Microsoft Defender & Security
 

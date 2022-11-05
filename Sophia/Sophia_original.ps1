@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11 (PowerShell 7)"
 
-	Version: v6.2.0
-	Date: 22.10.2022
+	Version: v6.2.3
+	Date: 04.11.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -29,10 +29,6 @@
 	Versions: 21H2/22H2
 	Builds: 22000.739+, 22621+
 	Editions: Home/Pro/Enterprise
-
-	.NOTES
-	Set execution policy to be able to run scripts only in the current PowerShell session:
-		Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 	.NOTES
 	To use the TAB completion for functions and their arguments dot source the Function.ps1 script first:
@@ -73,7 +69,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.0 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.3 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2022"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -88,7 +84,6 @@ catch
 {
 	Import-LocalizedData -BindingVariable Global:Localization -UICulture en-US -BaseDirectory $PSScriptRoot\Localizations -FileName Sophia
 }
-
 
 <#
 	.SYNOPSIS
@@ -243,12 +238,12 @@ AppsSilentInstalling -Disable
 # Включить автоматическую установку рекомендованных приложений (значение по умолчанию)
 # AppsSilentInstalling -Enable
 
-# Disable suggestions on how I can set up my device
-# Не показывать предложения по настройке устройства
+# Do not suggest ways to get the most out of Windows and finish setting up this device
+# Не предлагать способы завершения настройки этого устройства для наиболее эффективного использования Windows
 WhatsNewInWindows -Disable
 
-# Let Microsoft offer you tailored expereinces based on the diagnostic data setting you have chosen (default value)
-# Разрешите корпорации Майкософт использовать ваши диагностические данные для улучшения вашей работы со службами Майкрософт с помощью персонализированных советов, рекламы и рекомендаций (значение по умолчанию)
+# Suggest ways to get the most out of Windows and finish setting up this device
+# Предложить способы завершения настройки этого устройства для наиболее эффективного использования Windows
 # WhatsNewInWindows -Enable
 
 # Don't let Microsoft use your diagnostic data for personalized tips, ads, and recommendations
@@ -422,7 +417,7 @@ TaskbarChat -Hide
 # TaskbarChat -Show
 
 # Unpin the "Microsoft Edge", "Microsoft Store" shortcuts from the taskbar
-# Открепить ярлыки "Microsoft Edge", "Microsoft Store" или "Почта" от панели задач
+# Открепить ярлыки "Microsoft Edge", "Microsoft Store" от панели задач
 UnpinTaskbarShortcuts -Shortcuts Edge, Store
 
 # View the Control Panel icons by large icons
@@ -1399,24 +1394,24 @@ Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUB1o3NNgUAfdhpZAudiweTgGu
-# JS+gghYNMIIDAjCCAeqgAwIBAgIQF7fWSqoKJZxPNQKUtiDjYjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMjMxMDI0Mjha
-# Fw0yNDEwMjMxMDM0MTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZi8saRLD7r+S9Zn9lfzXFOwsTke
-# 0ZBwPrtApClfvZgbPrkL+U1MVm6xhWgefoa9vcvdpmEcGtHykp+NYm4UJcZkWuzM
-# tvh1lWxNkKufV+xC95qlywrjKnuGuEQNZ/wKMAU78tZprieJk0hAUxbvxjKh8LrD
-# YzaqQ/HWdR2HgyBAj2+HR1R4GKlP+fyYTZ55HbZZ5xQ6hO/d/KaWyuqCkNNQNbv6
-# g5r4wTEVi/mAfnRTnLBFAmfrOiQzr+Wgo7JS4LCNFjh3LYTgsrZURdAMqkK+RjqR
-# ikCVGNsXzwCyq0QA1H9M72mGaj3pWvGAQgwHg7MpLX59owlz8ER7GIHz9QIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUq2kJXNVjJcUBECDkPQ3zOWHb
+# BLqgghYNMIIDAjCCAeqgAwIBAgIQHRoCABCYKZ9GjEvb4foaqzANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjExMDQxMzAyMzFa
+# Fw0yNDExMDQxMzEyMDJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvEYSlIZuEnlML66Koz/xyqF+hGO6
+# tVw2P57M2yFo4+n48zNRryFEphdAzca/iOWV29iMLBXq6iKcv+3O5Y9OYq+9bppf
+# eUxtvDFWhWd/I2PU/qDcvyH22Av1XDO4xIwFMv0OT4+QgNHuDF/r3xo5+WF6xNPO
+# aOH71uPqFCMn/pGJK58QNLgPXZBfeDYTebJ0/9pd5ti3TCZ0QIQU04vHbwRJp+3K
+# +/msWyOGklpT01o2BzvEPpwEldWKl+j9hd8mCMpeQWypBzHHHsSD/DYuZb+sxTXs
+# W3NZq5ssjKqPh7cCCdd7pYakHCNw7K3m+ZXY/dqP3eLgU6NiTx2fy1MzAQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFG96xYnbMCFPX30aUZ/cnVryzkIgMA0GCSqGSIb3DQEBCwUAA4IBAQAn5FXS
-# oznFfU3xXD+a/jxplg7gAZfHR8ucrIn+43wJFj5zXh/LDe1MBl466W+TrSdOPSbX
-# 0gh1saMwgsmrK/3ABHMlWP6HWFfs3uM5jwZnL5tfN203eqvXc7QHEW5H2R/ZSoc/
-# lQIRDwQ+jqS8BvOQ6Wq+bLIsWEtTqN4kx1ULW4hfbU4fXfL3FPSzWMRCkKAqKH2A
-# +NSPR8Cm0Si5ojUhS5QR+EIlY8mp/ndSjBwcabzOzBSgrEMk6kx4dRnBBUAu1OaB
-# QpkSFn+EsSsCyN9BpKuDZBCY6N5LF82LJKHONSwxStX/2qEejW2UApQf4GtM5oTo
-# gkYsALlvFbdpySg8MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFDLXf9rcBeOooe30uo1CHzoiiQgbMA0GCSqGSIb3DQEBCwUAA4IBAQBjlJmz
+# HcNHbnDD/9ZaJREssistkQ53n+nteztSNne2xIKKjmfwN0lTiRH08agl9BwG92RB
+# woHrL9m1a6HFdkek22LChzhyQpKXE8m4eq2ywSAJ0qBEuVKmTOX5bI2Nten8GLOM
+# uyrTxRAhQhHQeimfwoMLjf5KbvPIKSgpHDTz/hlfJZ2jw19v97NTyWim0ooO0UoQ
+# RC/JJJMZ8JEbH1NUwyzGWSckRG/JAnR5zHiVgINrsqEG3I13+YXNgJyJsFMbTqd8
+# K6bh6ZwjnhOmtM+mkLpZ6oeKx7Gfs3b3dIkXU77RSoGK6vetIWc1+3teLCrdJM6E
+# xFYAAWKH6qRSuoSMMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -1518,31 +1513,31 @@ Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAXt9ZKqgolnE81ApS2IONiMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAdGgIAEJgpn0aMS9vh+hqrMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRXRstarYPBbcFBBY6j6u2gEB4mxTANBgkqhkiG9w0BAQEF
-# AASCAQCHe/Y1gQg81yMYjZZP53SZHb9HGmp9VXZkaUAHvKya0ILoqqnSKy15Bi75
-# 4NXwTInovlR6kSZbqIEHiZbOPVI4jahSCHfczdGeORRAwfXh9pkN66TUaqwl0AfA
-# RO/0YV4/lEzIw66LntSSleUS/gjbI8g5MnuRTvmK/+6acxvv+OckNDuIBkznUQb/
-# bZyHY3buEIb+6chUZ1Z2FjS4ohAaweXQ/Ehl2j5AzgLwWrW2D6Ixd41sq5CjwbI1
-# aSK9Y6NCkv8ytEiUNjFpRsZAf/FGj9lQShm7bTnAz/MrkMxJpvUud4HjHhYpDPXb
-# 2IILdExh4PF3ahK7TE4rGqD979CLoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBReSFWnJCOd6IT1pLwLpGCq7VdNcDANBgkqhkiG9w0BAQEF
+# AASCAQCx0eB3MNWnW+Vinb1m8Ijr8DZLk/XqhZHjUQAwv8MMUSz6rq7qcQzcPtSC
+# 600WI8KKiSrkr1qYpnhSXlE7h32xFls5Ijpz3ZUdJxmPblRMhdXZD4Xl9rYLLgoN
+# HAC4KidWtZ2FpTVqNWaJmmr52DooIWHc8CCQ24EBCHLqNy3vmIl1juL8JQfQizua
+# o3a6W+Zq6wN+9f5hIP2MC2jdz6Jb7UGywFy8HOoQJb52gETKVSpy4qUWghWhAF4I
+# vfo3BKZGsVc3uP294IuF+PqHpNBj7HWmT/1EpCjKdKynv1xywQgDIRSJw+W8ZlJz
+# 5H/1PCg4jtlLKQTiWfNcMYLsiaHioYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAyMzEw
-# MzQzNlowLwYJKoZIhvcNAQkEMSIEIFL4Kbx6gx5Isb9glx1+kzgiOxjzEZJPzeeV
-# 7i281FDVMA0GCSqGSIb3DQEBAQUABIICACwPMTHx/E4UAPIzmnPAZ6/JUq/O2d1y
-# 3M6E36fbjKiaIEOzAS3ssrStTkytz0rGx6x0CfmwuM08vNVsZDXgNOa9K4ZLHqUh
-# QP+zTNV5RHp+FOpVCsvn26iKVRu/gkJ4QJI/bKv7fafJs1tJ2MDotOBDLgE2gz1J
-# gZ3eQKVgWfMLDcBm8au6YFxEepd9rSd6EYiQSvKCrCaKdKBrfxdEFWc/X/UeH1OO
-# 7MxhvhruN1Jib6mN2V1U+/1PDV/hJp7XR5Cw6wdr13KYL4PtaLRcfj+Rtj7mmb8J
-# bTKmK7B1C0hVgJ59H72hmrYIoVMAVE7A3uFwUYeIZqcGbl3ibabTWVcnm1XH8l3I
-# vccDzjkPQKG4UjM31ei3+CaHOyJK+35t2JANECIK7spCjx/BtsHmJ5Tctk4+ySC/
-# 3x8X+1WypayNxe893qiZQO1Skt5YdfBaPZrIYwgolDcDrVxKpo4Qbkn1/KPQeehg
-# kjrnj7ONTIp7NYLDl8zyx/b3piioF4grzCKHsUwH7tYKT2Y5Ky80LgZYHtnCmTyv
-# 2Dx/RMmpWSOygQUZfagscpgKqhNG8KJWhQVdMoCSYeSJ//xhjCl/9p2Q+DpQF2Ux
-# M9nDl6zJ5AGg+/5w1oathy3JKF7kstj/LT1EgHJiixLbAPWYA7JcRNSyVC7IdC6A
-# SElYcE/6+p2B
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEwNDEz
+# MTI0MVowLwYJKoZIhvcNAQkEMSIEINa4m5zVEIUpNWi3RhPi7HdpRXgZHrAw82XE
+# uHKD9WVOMA0GCSqGSIb3DQEBAQUABIICAMcDQpxVZTj8Ye3ndyLb539oOOMzJHE2
+# jqwexRQX/2C8/TKRCZei7kVy6ZH5ofQZWMgSeQeC5XKyRmjh13ugY8ma/fMcTMXz
+# kqT1L1YRXbz/cC96OrzL6gWbzyyD1Jzwjy6ZzrhlyyLQGMPXNLRW3cjn8EK8ngaX
+# UbRYZErNlMXO4ONvLenYsrgvWtOM3I/cXRoOeh2b0Ar0Zu6csnjv1Wr9qelgbTs1
+# 50XX4iWK2RcpxBKwtA3vFHBhSqSSxJyvfCYHzfaGOSPTqlcWK22CgSrbcJbbLoK7
+# UxWqqvdPkxXzHPsHSYdWXq/Xqafjzi/2oHTr6Bt4N9dBlrZbVnqo1kONmcvfDuYx
+# yLkkUvKE6PAfPrLNQxyZIaWOvx+T/E3t8n/ffTCya5RQuqtaqai1L1JFT5c1aptZ
+# z/egWBqBGvYhZRDsCIb2fVv7Us09IEBe4rkZLr6yrFUwx12UoFGhu2NzpB684Ama
+# NkU2TSNoq+N8ZhZnl1VHnQIdxlPdT2CpY2RnZetDi6KauymISgMoJStNEqsEju3K
+# yLD2f+NWQR48C+G2hl/Ft0PTHUr21nDSddwAanQIV7TSKDBjJA0wNEwnSpE9f8jf
+# /8xAI0FgqvH/nwb/msWGwQ8nmiWR+0PcsLfC31ZaH8JZroGCZJfm7zN//MP/i3kS
+# LHYqrFLwCdpx
 # SIG # End signature block

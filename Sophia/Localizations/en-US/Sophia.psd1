@@ -11,7 +11,7 @@ bin                                       = There are no files in the bin folder
 RebootPending                             = The PC is waiting to be restarted
 UnsupportedRelease                        = A new version found
 CustomizationWarning                      = \nHave you customized every function in the {0} preset file before running Sophia Script?
-WindowsBroken                             = \nSome Windows components may have been broken
+WindowsBroken                             = Some Windows components may have been broken
 ControlledFolderAccessDisabled            = Controlled folder access disabled
 ScheduledTasks                            = Scheduled tasks
 OneDriveUninstalling                      = Uninstalling OneDrive...
@@ -77,6 +77,7 @@ Restore                                   = Restore
 Run                                       = Run
 SelectAll                                 = Select all
 Skipped                                   = Skipped
+GPOUpdate                                 = Updating GPO...
 TelegramGroupTitle                        = Join our official Telegram group
 TelegramChannelTitle                      = Join our official Telegram channel
 DiscordChannelTitle                       = Join our official Discord channel
@@ -86,24 +87,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZvGT5ZNnWHxW64nuCSZ5+dub
-# O1KgghYNMIIDAjCCAeqgAwIBAgIQF7fWSqoKJZxPNQKUtiDjYjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEwMjMxMDI0Mjha
-# Fw0yNDEwMjMxMDM0MTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZi8saRLD7r+S9Zn9lfzXFOwsTke
-# 0ZBwPrtApClfvZgbPrkL+U1MVm6xhWgefoa9vcvdpmEcGtHykp+NYm4UJcZkWuzM
-# tvh1lWxNkKufV+xC95qlywrjKnuGuEQNZ/wKMAU78tZprieJk0hAUxbvxjKh8LrD
-# YzaqQ/HWdR2HgyBAj2+HR1R4GKlP+fyYTZ55HbZZ5xQ6hO/d/KaWyuqCkNNQNbv6
-# g5r4wTEVi/mAfnRTnLBFAmfrOiQzr+Wgo7JS4LCNFjh3LYTgsrZURdAMqkK+RjqR
-# ikCVGNsXzwCyq0QA1H9M72mGaj3pWvGAQgwHg7MpLX59owlz8ER7GIHz9QIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUKj7xkvWwcH02cIuZKXOYU+H/
+# oQygghYNMIIDAjCCAeqgAwIBAgIQHRoCABCYKZ9GjEvb4foaqzANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjExMDQxMzAyMzFa
+# Fw0yNDExMDQxMzEyMDJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvEYSlIZuEnlML66Koz/xyqF+hGO6
+# tVw2P57M2yFo4+n48zNRryFEphdAzca/iOWV29iMLBXq6iKcv+3O5Y9OYq+9bppf
+# eUxtvDFWhWd/I2PU/qDcvyH22Av1XDO4xIwFMv0OT4+QgNHuDF/r3xo5+WF6xNPO
+# aOH71uPqFCMn/pGJK58QNLgPXZBfeDYTebJ0/9pd5ti3TCZ0QIQU04vHbwRJp+3K
+# +/msWyOGklpT01o2BzvEPpwEldWKl+j9hd8mCMpeQWypBzHHHsSD/DYuZb+sxTXs
+# W3NZq5ssjKqPh7cCCdd7pYakHCNw7K3m+ZXY/dqP3eLgU6NiTx2fy1MzAQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFG96xYnbMCFPX30aUZ/cnVryzkIgMA0GCSqGSIb3DQEBCwUAA4IBAQAn5FXS
-# oznFfU3xXD+a/jxplg7gAZfHR8ucrIn+43wJFj5zXh/LDe1MBl466W+TrSdOPSbX
-# 0gh1saMwgsmrK/3ABHMlWP6HWFfs3uM5jwZnL5tfN203eqvXc7QHEW5H2R/ZSoc/
-# lQIRDwQ+jqS8BvOQ6Wq+bLIsWEtTqN4kx1ULW4hfbU4fXfL3FPSzWMRCkKAqKH2A
-# +NSPR8Cm0Si5ojUhS5QR+EIlY8mp/ndSjBwcabzOzBSgrEMk6kx4dRnBBUAu1OaB
-# QpkSFn+EsSsCyN9BpKuDZBCY6N5LF82LJKHONSwxStX/2qEejW2UApQf4GtM5oTo
-# gkYsALlvFbdpySg8MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFDLXf9rcBeOooe30uo1CHzoiiQgbMA0GCSqGSIb3DQEBCwUAA4IBAQBjlJmz
+# HcNHbnDD/9ZaJREssistkQ53n+nteztSNne2xIKKjmfwN0lTiRH08agl9BwG92RB
+# woHrL9m1a6HFdkek22LChzhyQpKXE8m4eq2ywSAJ0qBEuVKmTOX5bI2Nten8GLOM
+# uyrTxRAhQhHQeimfwoMLjf5KbvPIKSgpHDTz/hlfJZ2jw19v97NTyWim0ooO0UoQ
+# RC/JJJMZ8JEbH1NUwyzGWSckRG/JAnR5zHiVgINrsqEG3I13+YXNgJyJsFMbTqd8
+# K6bh6ZwjnhOmtM+mkLpZ6oeKx7Gfs3b3dIkXU77RSoGK6vetIWc1+3teLCrdJM6E
+# xFYAAWKH6qRSuoSMMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -205,31 +206,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAXt9ZKqgolnE81ApS2IONiMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAdGgIAEJgpn0aMS9vh+hqrMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBSn8VQGFcy2+gsgULRgOc5IqFHrITANBgkqhkiG9w0BAQEF
-# AASCAQCITlVwUwsIIoTOCC6gfMZzft9lMRu1ftlIQEXz4F/IlI0nVKkfY1U3PIgg
-# 5+84hHpYrAe+WGs4vF7NFEewQmQ9j/Eqjs1C+iWNRhzgEzCtAyNzVPGYIkqCsVlY
-# oQkJ940PAMGh9Et31us8pCKAJ1FKxrgCKRmpdn3TKdwlUQsvQBSCx6r8E4onAabF
-# rqImDRmLNS5TndYys1w4EqxvipQenrENO5jexfPILB06FYHAoVWQniQoHId8CkeC
-# /4D5gOqjncWpeg5ukyCMIUMFyPMsvWRwPI2OOjxnOyum2DDg51RRgoHlq6cObW3o
-# PCxiYlMqjp7wyxWDxdP1WMv8KycVoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBRkqzQds1tMY4Hz3I1+CuIPoPY+gDANBgkqhkiG9w0BAQEF
+# AASCAQAxPKCAtAxF8ilmOVCWpVY7NUcPS4SNUrXo9fX0hCDHT7+HQ10nKcKO3dDI
+# n+z0T/5v9dsVnLUQjFtR2isYpO3V9vhcYHtZKw0KtRdulHToAzo4MFBAWGtFdXcz
+# DX3u1TqHFAD04kWsV7scELivXxUJs/zD1J7zhTihua8OAIDWf6S8Bmx/zMYLqpb+
+# PMjGqPIIatJjfkGxovzsM3LRKVrrdU7wikSSAp5WRCbOEijH0OoRpIXfLOkJyP+r
+# 0qkdBMpAvrEFD0kq8b8sDqky3GcaopC13zw5ZUDj+tHGEmCEnKzoYbUsJ2kmcyx0
+# DgJhCnTpFhVW74/VRQssBqYPjqVmoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTAyMzEw
-# MzQzNlowLwYJKoZIhvcNAQkEMSIEIHqLKrwYQ3HaaFdtufK2K6lIjDB0ZlN2s6AC
-# c3tclXpXMA0GCSqGSIb3DQEBAQUABIICAICYEkZezZLS1TbwzvBEMuWKfznJTK6v
-# 3rFBWHujBZP5SvtXyymOnUXkdPCkUBr65Cn9uXCIzkaFLqnfJeyZG5gZwARDghnX
-# vSzpdqWMOd5Lx4QybrfBxNvgRHhrRsPqS04NfBzZ5kKuodguCAUz5DlPtRut4j5q
-# QcS5HDNCtz4wo/rdn/pgq7NEzxaGSZePHTVK33XHASjm3GpfLOp1W9YUeWfQgovr
-# PSMtCb42OVATDNZ7wWq/6g7g8+HGk6nx9OVqVDA/seIZIGTZ708Jw9+DrEemMK/m
-# r62GFisq5ZSPxCBeFOC9pOWuZe7Eb5bQxTzfB8CSeczSSSBRonhD52VaFrTuSHo8
-# 8IV42n9aC+weADltThIonh9zpOp1+cc4ucissw/NFy6qf30dfEC2i5ByPXOhlci2
-# +YlqyhgY7iYQl8jmNSoqbS+5qXrK3AFr/C8rWYQoYH6EzLdAiUW47EYw+we9UUO1
-# Qyj7g6VG7L8c2hoVt7s6zHHUbfdOiXLHEACtmFyc1t0aCcwiwlsirfZhUQfSOS3r
-# hX4TOEghtUh59a5+bUzpf7uCncHPX/I9XVT3nJeq9IN7Kkt3zs4Vap1qg7Mj6m5f
-# UwFSEIZUuSCTag5zaKQn6gLuhlduW7GSsU6Ty4BSYY6/lBtF4hF3Xbq2S4uwOA+x
-# 4dg/5l+e1mKN
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEwNDEz
+# MTI0MVowLwYJKoZIhvcNAQkEMSIEIAjwASikvgG0XCrsz1+koOEiEaQdbEdpAfSW
+# flwoVsOUMA0GCSqGSIb3DQEBAQUABIICAFzyo9FwvSSvBuneBPr/2Wm1TS69yUB/
+# VI6vrfKCE8Kr1c+lOVCeGYEf1KdLmsacm2+ntRr3k5DVHyi9ygZdnIPBXOvn/U6Z
+# qxHBMiDEOTeTtnlSF62HWE22XSFyAfHHaiwxKnHy4ka23dOItqmD6HBYJ4+WwpCz
+# +TY+PUWitKGwG65Ie1kkr53TUQujVE1nilCmLLvoIgQA0ZZ9qpF4ld6zn2TpddiF
+# VCT52lCqvc4fNsR6k7Xf834dnK6FqWSJnLMQjsnIaQsQgYtIoX8eVyNplb0NYRb3
+# PXtjqLzrVV9Wkn+kiI1hqmalxk5lu74qY/2I5oPs5bN4WRcFpfdjRcmZ0dxOYUPl
+# EpQHZd1M1YbVZNntoNbH/ixRJeqwIaW/B5qSJvf/fGjfzTUU0SXIAxdGqTkZ+MBg
+# hR6Cy41p+rWUxtNt+hSfO/3AnRzXQAt+s0NzJhTH8XqW8IFkYlq9JypS8Hux7yed
+# 3K/3VdiITZtmQQ4l48n/cMbc8YlM0FSUUnWAqOLIsTkCgCo3ckKwbotdiw2iWGJQ
+# oovZTHIk5sC+6Z2+bSocpyzQZ9qYn2QQj2UvEhUUo0Er5pGUdueZpzCP/DmcmSAW
+# k/z9tPQ7bB+BqDaE4UjYW8sFfoHo8A1Q1QkRNby6yHhesXJfkA7vgntJ0MmJUfn6
+# IRMg48ewG4cV
 # SIG # End signature block
