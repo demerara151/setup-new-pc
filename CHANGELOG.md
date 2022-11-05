@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中
 
+## 2022-11-05
+
+### Changed
+
+-   Stop using winget because of broken source issue. See [Issue#2666](https://github.com/microsoft/winget-cli/issues/2666)
+
 ## 2022-11-04
 
 ### Added

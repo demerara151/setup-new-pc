@@ -42,6 +42,16 @@ sudo scoop install icaros-np --global
 
 # --- Optional region ends here --- #
 
+<#
+
+    .NOTES
+    winget source is broken rn. so comment out this function for now.
+    also winget stops working when privacy.sexy strict rules applied.
+    winget has a lot of problem in my recent use case. so I will ditch this in the future.
+
+    .LINK
+    https://github.com/microsoft/winget-cli/issues/2666
+
 # Make sure winget is installed. If not exists install winget via scoop.
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
@@ -65,6 +75,14 @@ foreach ($program in $programs) {
     winget install --id $program --source winget
 }
 
+#>
+
+# Install above apps via scoop instead of winget
+scoop install librewolf discord gsudo
+
 # Run WPD and shutup10
 Start-Process -FilePath "$(scoop prefix wpd)\WPD.exe"
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
+
+# TODO: How to install Steam and MSVC toolchain? Have to install manually?
+# TODO:FIXME: How to set LibreWolf as system default app if we install that via scoop?

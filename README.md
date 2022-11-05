@@ -13,30 +13,30 @@
 
 ## Table of Contents
 
-- [Requirements](#requirements)
-- [Dependencies](#dependencies)
-- [Before Get Started](#before-get-started)
-  - [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
-- [Installation](#installation)
-  - [スクリプトの編集](#スクリプトの編集)
-- [Usage](#usage)
-  - [Sophia Script for Windows 11](#sophia-script-for-windows-11)
-  - [メインスクリプトの実行](#メインスクリプトの実行)
-  - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
-- [Personal Settings](#personal-settings)
-  - [各種設定ファイルの配置](#各種設定ファイルの配置)
-  - [設定ファイル用シンボリックリンクの作成 `symLinkCreator.ps1`](#設定ファイル用シンボリックリンクの作成-symlinkcreatorps1)
-  - [不要なサービスの停止 `stopService.ps1`](#不要なサービスの停止-stopserviceps1)
-  - [コピペ用追加設定一括コマンド](#コピペ用追加設定一括コマンド)
-  - [Hyper-V の有効化](#hyper-v-の有効化)
-- [Note](#note)
-- [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
-  - [拡張機能の導入](#拡張機能の導入)
-  - [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
-    - [追加フィルタ（Optional）](#追加フィルタoptional)
-  - [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
-- [AutoHotkey](#autohotkey)
-- [日本語フォント](#日本語フォント)
+-   [Requirements](#requirements)
+-   [Dependencies](#dependencies)
+-   [Before Get Started](#before-get-started)
+    -   [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
+-   [Installation](#installation)
+    -   [スクリプトの編集](#スクリプトの編集)
+-   [Usage](#usage)
+    -   [Sophia Script for Windows 11](#sophia-script-for-windows-11)
+    -   [メインスクリプトの実行](#メインスクリプトの実行)
+    -   [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
+-   [Personal Settings](#personal-settings)
+    -   [各種設定ファイルの配置](#各種設定ファイルの配置)
+    -   [設定ファイル用シンボリックリンクの作成 `symLinkCreator.ps1`](#設定ファイル用シンボリックリンクの作成-symlinkcreatorps1)
+    -   [不要なサービスの停止 `stopService.ps1`](#不要なサービスの停止-stopserviceps1)
+    -   [コピペ用追加設定一括コマンド](#コピペ用追加設定一括コマンド)
+    -   [Hyper-V の有効化](#hyper-v-の有効化)
+-   [Note](#note)
+-   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+    -   [拡張機能の導入](#拡張機能の導入)
+    -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
+        -   [追加フィルタ（Optional）](#追加フィルタoptional)
+    -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
+-   [AutoHotkey](#autohotkey)
+-   [日本語フォント](#日本語フォント)
 
 ---
 
@@ -211,6 +211,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 ## Note
 
 -   Windows の既定のアプリに設定したいプログラムは [Scoop] ではなく、必ず [winget] でインストールする
+<!-- TODO: winget を使うのをやめた場合、ブラウザをどうやって既定のアプリにするか考える  -->
 
 -   Microsoft Edge をアンインストールすると、ログイン時にフリーズして PC が使用できなくなる不具合に遭遇。開発環境だけの問題かもしれないけど、怖いのでそのままにしておくことにする
 
