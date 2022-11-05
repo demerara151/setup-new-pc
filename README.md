@@ -219,7 +219,20 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 ## ブラウザ設定（LibreWolf）
 
-正直そのままでも問題ないが、<about:preferences#librewolf> の `Fingerprinting` > `Enable letterboxing` にチェックを入れておくとよさげ
+### Installation
+
+> ! winget の使用を中断しているため、手動でのインストールになります
+
+まず、ポータブル版を今まで通りインストールします。
+
+```powershell
+scoop install librewolf
+librewolf.exe
+```
+
+そのポータブル版で <https://librewolf.net/installation/windows> を開いて、最新版のインストーラーをダウンロードします
+
+インストールが終わったら Windows の設定を開き、アプリ > 既定のアプリ で LibreWolf を選択し、一番上にある「既定値に設定」をクリックして LibreWolf を既定のアプリに設定します
 
 ### 拡張機能の導入
 
