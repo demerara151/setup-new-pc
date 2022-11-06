@@ -13,6 +13,7 @@
 
 ## Table of Contents
 
+-   [Table of Contents](#table-of-contents)
 -   [Requirements](#requirements)
 -   [Dependencies](#dependencies)
 -   [Before Get Started](#before-get-started)
@@ -31,6 +32,8 @@
     -   [Hyper-V の有効化](#hyper-v-の有効化)
 -   [Note](#note)
 -   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+    -   [Installation](#installation-1)
+    -   [Update](#update)
     -   [拡張機能の導入](#拡張機能の導入)
     -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
         -   [追加フィルタ（Optional）](#追加フィルタoptional)
@@ -210,9 +213,6 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 
 ## Note
 
--   Windows の既定のアプリに設定したいプログラムは [Scoop] ではなく、必ず [winget] でインストールする
-<!-- TODO: winget を使うのをやめた場合、ブラウザをどうやって既定のアプリにするか考える  -->
-
 -   Microsoft Edge をアンインストールすると、ログイン時にフリーズして PC が使用できなくなる不具合に遭遇。開発環境だけの問題かもしれないけど、怖いのでそのままにしておくことにする
 
 ---
@@ -233,6 +233,14 @@ librewolf.exe
 そのポータブル版で <https://librewolf.net/installation/windows> を開いて、最新版のインストーラーをダウンロードします
 
 インストールが終わったら Windows の設定を開き、アプリ > 既定のアプリ で LibreWolf を選択し、一番上にある「既定値に設定」をクリックして LibreWolf を既定のアプリに設定します
+
+### Update
+
+LibreWolf 自身には自動アップデート機能は付いていません。アップデートする際は、毎回上記のページを開いて最新版をダウンロードし、インストーラーを実行する必要があります
+
+幸い、非公式ですが、アップデートがあったら知らせてくれる拡張機能 [LibreWolf Updater extension] があります。毎日ページを開いて確認するのが面倒な人は、こちらの拡張機能の利用を検討してください
+
+[librewolf updater extension]: https://addons.mozilla.org/en-US/firefox/addon/librewolf-updater/
 
 ### 拡張機能の導入
 
