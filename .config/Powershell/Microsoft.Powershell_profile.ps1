@@ -4,56 +4,50 @@ Import-Module Terminal-Icons
 # starship initialization
 Invoke-Expression (&starship init powershell)
 
+# Exact search in `zi` (zoxide + fzf) command.
+# $env:_ZO_FZF_OPTS = "--exact"
+
+# zoxide
+Invoke-Expression (& {
+        $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
+    (zoxide init --hook $hook powershell | Out-String)
+    })
+
+# Aliases
 Set-Alias -Name vim -Value nvim
 Set-Alias -Name br -Value broot
 Set-Alias -Name mt -Value marktext
 
-# Global variables
-$LIST = "$HOME/list.txt"
-$CONFIG = "$HOME/.config"
+# CONSTANTS
+$LIST = "$HOME\list.txt"
+$CONFIG = "$HOME\.config"
 
 # simple back command
 function .. () { Set-Location .. }
 function home () { Set-Location $HOME/home }
 
 # Program ShortCut
-function mail () { Start-Process "$env:LOCALAPPDATA\Mailspring\mailspring.exe" }
 function lw () { Start-Process "$env:ProgramFiles\LibreWolf\librewolf.exe" $args }
 function fo () { Start-Process "$(scoop prefix foobar2000)\foobar2000.exe" }
-function dis (
-    [string]$option = "--processStart Discord.exe"
-) {
-    Start-Process "$env:LOCALAPPDATA\Discord\Update.exe" $option
-}
 function manga () { Start-Process "$HOME\home\apps\NeeView39.3\NeeView.exe" }
 
 # Update All Programs
-function up () { winget upgrade --all; sudo scoop update *; sudo scoop update * --global }
-
-# Launch privacy apps
-function privacy () {
-    Start-Process "$env:USERPROFILE\home\apps\wpd\WPD.exe";
-    Start-Process "$(scoop prefix shutup10)\OOSU10.exe"
-}
+function up () { sudo scoop update *; sudo scoop update * --global }
 
 # Play music without video. uri will be video link or m3u8 playlist.
 function mnv ([string]$uri) {
-    mpv --no-video $args $uri
+    mpv --no-video --no-resume-playback $args $uri
 }
 
 # Shuffle playlist, then play music from playlist.
 function msfl () {
-    $pl = $(fd -t f . $HOME\home\music)
+    $pl = $(fd -t f . $HOME\home\music\m3u8)
     $file = "D:\.cache\YoutubeMusic\_playlist.m3u8"
     Get-Random $pl -Count $pl.Length > $file; mpv --no-video --playlist=$file
 }
 
 # Edit history data
-$history = @(
-    "$env:LOCALAPPDATA/nushell/history.txt"
-    "$env:APPDATA/Microsoft/Windows/Powershell/PSReadLine/ConsoleHost_history.txt"
-)
-function clh () { nvim $history }
+function clh () { nvim "$env:APPDATA/Microsoft/Windows/Powershell/PSReadLine/ConsoleHost_history.txt" }
 
 # Alias for lsd
 function ll () {
@@ -66,7 +60,7 @@ function fzfp () {
 }
 
 # monolith
-function mono ([string]$name) {
+function mono ([string]$name = "index") {
     monolith --no-js --no-frames --no-metadata --no-fonts --no-video --output D:/Downloads/$name.html $args
 }
 
@@ -76,7 +70,7 @@ function sym ([string]$path, [string]$target) {
 }
 
 # Downloaders
-function yt ([string]$case = "max") {
+function yt ([string]$case = "hls") {
     yt-dlp --config-location $CONFIG/yt-dlp/$case.conf
 }
 function gld () {
@@ -107,23 +101,6 @@ function psn () {
 # Check disk commands
 function dismexe () { sudo Dism.exe /Online /Cleanup-Image /RestoreHealth }
 function scannow () { sudo sfc /scannow }
-
-# zoxide
-Invoke-Expression (& {
-        $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
-    (zoxide init --hook $hook powershell | Out-String)
-    })
-
-# winget completion
-Register-ArgumentCompleter -Native -CommandName winget -ScriptBlock {
-    param($wordToComplete, $commandAst, $cursorPosition)
-    [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Utf8Encoding]::new()
-    $Local:word = $wordToComplete.Replace('"', '""')
-    $Local:ast = $commandAst.ToString().Replace('"', '""')
-    winget complete --word="$Local:word" --commandline "$Local:ast" --position $cursorPosition | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
-    }
-}
 
 # Using utf-8 encoding to write data with directors: ">" or ">>"
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
