@@ -128,7 +128,7 @@ function OnViModeChange {
 }
 Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $Function:OnViModeChange
 
-# Exclude Save-History settigs
+# Exclude Save-History settings
 Set-PSReadLineOption -AddToHistoryHandler {
     param ($command)
     switch -regex ($command) {
