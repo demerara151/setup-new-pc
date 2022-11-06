@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中
+-
+
+## 2022-11-06
+
+### Changed
+
+-   Changed installation of discord, gsudo, and librewolf.
+-   Removed Steam and MSVC Toolchain from auto installation script. They have to install manually from today.
 
 ## 2022-11-05
 

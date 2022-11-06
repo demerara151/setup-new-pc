@@ -22,14 +22,14 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 sudo scoop install windowsdesktop-runtime-lts
 
 # Essentials
-scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
+scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less librewolf lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
-scoop install gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
+scoop install gitui gsudo monolith poetry python rustup-msvc so sqlitebrowser tldr
 
-# Gaming
-scoop install legendary playnite heroic-games-launcher
+# Gaming # Steam have to install manually.
+scoop install discord legendary playnite heroic-games-launcher
 
 # Media
 scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
@@ -77,12 +77,6 @@ foreach ($program in $programs) {
 
 #>
 
-# Install above apps via scoop instead of winget
-scoop install librewolf discord gsudo
-
 # Run WPD and shutup10
 Start-Process -FilePath "$(scoop prefix wpd)\WPD.exe"
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
-
-# TODO: How to install Steam and MSVC toolchain? Have to install manually?
-# TODO:FIXME: How to set LibreWolf as system default app if we install that via scoop?
