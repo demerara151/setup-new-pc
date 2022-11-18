@@ -22,11 +22,11 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 sudo scoop install windowsdesktop-runtime-lts
 
 # Essentials
-scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less librewolf lightbulb lsd mailspring mpv neovim posh-git pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
+scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less librewolf lightbulb lsd mailspring mpv neovim pwsh ripgrep sd sharex starship shutup10 terminal-icons trilium vscode wpd yt-dlp zenhan zoxide
 
 # --- Optional from here. You can disable install by put `#` on top of each line. --- #
 # Programming
-scoop install gitui gsudo monolith poetry python rustup-msvc so sqlitebrowser tldr
+scoop install gitui monolith poetry python rustup-msvc so sqlitebrowser tldr
 
 # Gaming # Steam have to install manually.
 scoop install discord legendary playnite heroic-games-launcher
@@ -35,7 +35,7 @@ scoop install discord legendary playnite heroic-games-launcher
 scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut
 
 # Nerd Fonts
-sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Hack-NF-Mono Mononoki-NF-Mono --global
+sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
 sudo scoop install icaros-np --global
