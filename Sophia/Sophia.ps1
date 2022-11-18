@@ -268,7 +268,6 @@ SaveZoneInformation -Disable
 WindowsScriptHost -Disable
 DismissMSAccount
 DismissSmartScreenFilter
-DNSoverHTTPS -Enable -PrimaryDNS 94.140.14.14 -SecondaryDNS 94.140.15.15
 
 #endregion Microsoft Defender & Security
 
