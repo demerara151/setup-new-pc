@@ -86,7 +86,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 irm get.scoop.sh | iex
 
-scoop install 7zip mingit sudo pwsh
+scoop install 7zip mingit gsudo pwsh
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
