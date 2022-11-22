@@ -164,7 +164,7 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 ユーザーフォルダ直下に、`.config` の名前で配置します
 
 ```powershell
-Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
+Copy-Item -Path ~/setup-new-pc/.config -Recurse -Destination ~/ -Force
 ```
 
 ### 設定ファイル用シンボリックリンクの作成 [`symLinkCreator.ps1`](symLinkCreator.ps1)
