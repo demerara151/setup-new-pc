@@ -9,6 +9,10 @@
 -   プライバシーとセキュリティを強化したい
 -   PC のスペックが低い、または回線速度に問題がある
 
+### Screenshot
+
+![](assets/img/taskmgr.png)
+
 ---
 
 ## Table of Contents
@@ -307,14 +311,12 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 [wpd]: https://wpd.app
 [scoop]: https://scoop.sh
-[winget]: https://github.com/microsoft/winget-cli
 [o&o shutup10]: https://www.oo-software.com/en/shutup10
 [sophia script for windows]: https://github.com/farag2/Sophia-Script-for-Windows
 
 <!-- Optional Dependencies -->
 
 [sophiapp]: https://github.com/Sophia-Community/SophiApp/
-[privacy.sexy]: https://privacy.sexy
 [offlineinsiderenroll]: https://github.com/abbodi1406/offlineinsiderenroll
 
 <!-- Browser Addons -->
