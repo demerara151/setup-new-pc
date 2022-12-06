@@ -32,19 +32,16 @@ ReservedStorageIsInUse                    = This operation is not supported when
 ShortcutPinning                           = The "{0}" shortcut is being pinned to Start...
 SSDRequired                               = To use Windows Subsystem for Android™ on your device, your PC needs to have Solid State Drive (SSD) installed
 UninstallUWPForAll                        = For all users
-UWPAppsTitle                              = UWP apps
+UWPAppsTitle                              = UWP Apps
 HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer... ~2,8 MB
 GraphicsPerformanceTitle                  = Graphics performance preference
 GraphicsPerformanceRequest                = Would you like to set the graphics performance setting of an app of your choice to "High performance"?
-TaskNotificationTitle                     = Notification
-CleanupTaskNotificationTitle              = Important Information
+CleanupTaskNotificationTitle              = Windows clean up
+CleanupTaskNotificationEvent              = Run task to clean up Windows unused files and updates?
 CleanupTaskDescription                    = Cleaning up Windows unused files and updates using built-in Disk cleanup app
-CleanupTaskNotificationEventTitle         = Run task to clean up Windows unused files and updates?
-CleanupTaskNotificationEvent              = Windows cleanup won't take long. Next time this notification will appear in 30 days
-CleanupTaskNotificationSnoozeInterval     = Select a Reminder Interval
 CleanupNotificationTaskDescription        = Pop-up notification reminder about cleaning up Windows unused files and updates
-SoftwareDistributionTaskNotificationEvent = The Windows update cache successfully deleted
-TempTaskNotificationEvent                 = The temp files folder successfully cleaned up
+SoftwareDistributionTaskNotificationEvent = Windows update cache successfully deleted
+TempTaskNotificationEvent                 = Temporary files folder successfully cleaned up
 FolderTaskDescription                     = The {0} folder cleanup
 EventViewerCustomViewName                 = Process Creation
 EventViewerCustomViewDescription          = Process creation and command-line auditing events
@@ -61,10 +58,7 @@ Enable                                    = Enable
 EXEFilesFilter                            = *.exe|*.exe|All Files (*.*)|*.*
 FolderSelect                              = Select a folder
 FilesWontBeMoved                          = Files will not be moved
-FourHours                                 = 4 hours
-HalfHour                                  = 30 minutes
 Install                                   = Install
-Minute                                    = 1 minute
 NoData                                    = Nothing to display
 NoInternetConnection                      = No Internet connection
 RestartFunction                           = Please re-run the "{0}" function
@@ -87,24 +81,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUKj7xkvWwcH02cIuZKXOYU+H/
-# oQygghYNMIIDAjCCAeqgAwIBAgIQHRoCABCYKZ9GjEvb4foaqzANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjExMDQxMzAyMzFa
-# Fw0yNDExMDQxMzEyMDJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvEYSlIZuEnlML66Koz/xyqF+hGO6
-# tVw2P57M2yFo4+n48zNRryFEphdAzca/iOWV29iMLBXq6iKcv+3O5Y9OYq+9bppf
-# eUxtvDFWhWd/I2PU/qDcvyH22Av1XDO4xIwFMv0OT4+QgNHuDF/r3xo5+WF6xNPO
-# aOH71uPqFCMn/pGJK58QNLgPXZBfeDYTebJ0/9pd5ti3TCZ0QIQU04vHbwRJp+3K
-# +/msWyOGklpT01o2BzvEPpwEldWKl+j9hd8mCMpeQWypBzHHHsSD/DYuZb+sxTXs
-# W3NZq5ssjKqPh7cCCdd7pYakHCNw7K3m+ZXY/dqP3eLgU6NiTx2fy1MzAQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpI2TwIloOwnTgQhzqNxiQiFM
+# Of2gghYNMIIDAjCCAeqgAwIBAgIQecfrGhsNi7VEHWuRpLke9jANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMDQxNTA1NTla
+# Fw0yNDEyMDQxNTE1NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5SerjAkErXu1FSNeI7GabOfnQi2j
+# FbXeA6F4eGLh3f40oAyoXXNVXOjVd55lymMOAcfYzGUK1Ss6AnkzelIvbqUUU4ig
+# mHZg0GuS4u3PyOFTcIctM0atpHgpJqaWMixdPEw2QLv8TtLc65b34vZ1bZUNB/gu
+# E6KCejwio8Ivgzzie9oXiDzhiEBeeUwgQtYD5I9PpTvh5JOtMHMR6IHcXqT/QXtw
+# uKNPZG3bJSR+X1yaT2zPTZcM/tAHytew9IfDUZoIFahxBkh3pcfKWZFNxAg6WE4v
+# /dEVmraLqUOxtKPc1eT8Ynho2BlyohBSCk46P5ZHZ7/LKGL19t6nOeHIrQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFDLXf9rcBeOooe30uo1CHzoiiQgbMA0GCSqGSIb3DQEBCwUAA4IBAQBjlJmz
-# HcNHbnDD/9ZaJREssistkQ53n+nteztSNne2xIKKjmfwN0lTiRH08agl9BwG92RB
-# woHrL9m1a6HFdkek22LChzhyQpKXE8m4eq2ywSAJ0qBEuVKmTOX5bI2Nten8GLOM
-# uyrTxRAhQhHQeimfwoMLjf5KbvPIKSgpHDTz/hlfJZ2jw19v97NTyWim0ooO0UoQ
-# RC/JJJMZ8JEbH1NUwyzGWSckRG/JAnR5zHiVgINrsqEG3I13+YXNgJyJsFMbTqd8
-# K6bh6ZwjnhOmtM+mkLpZ6oeKx7Gfs3b3dIkXU77RSoGK6vetIWc1+3teLCrdJM6E
-# xFYAAWKH6qRSuoSMMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFPqjpH3sL+M7WsV2ZrOW/d4a6tbxMA0GCSqGSIb3DQEBCwUAA4IBAQBKpMDN
+# 5TVp8XVJOLa0bKNiKiEzko7D77dOMW9XmdcSlZWaGWn2q51I03RX8JhdZVaAV6ff
+# p5wBj1j67E1GRTUXESwW2o+2r9OC32O+EPb+Gc1myifV5fmfGkhBh17+S/7JBzBy
+# KqCgvQqaE0aRffSyf/tPa55IslDv63bpGHJu5r+v4rO/NBhObQ2hmzySTpbMBpi9
+# VdLJFrNQ99O0HSK7fm5PO9zbU9Rl4ERSEAjGceWJVv3sziS5Sa2cLX1ft01Lsl5v
+# Fu8LWgJGU3X1eOvzZn7bH30qBFbZUOLgYHs+VDNCYjK4zVmCZ1s77euZi6BV9rO+
+# drbKz3OdYQeGmAhfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -206,31 +200,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAdGgIAEJgpn0aMS9vh+hqrMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB5x+saGw2LtUQda5GkuR72MAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRkqzQds1tMY4Hz3I1+CuIPoPY+gDANBgkqhkiG9w0BAQEF
-# AASCAQAxPKCAtAxF8ilmOVCWpVY7NUcPS4SNUrXo9fX0hCDHT7+HQ10nKcKO3dDI
-# n+z0T/5v9dsVnLUQjFtR2isYpO3V9vhcYHtZKw0KtRdulHToAzo4MFBAWGtFdXcz
-# DX3u1TqHFAD04kWsV7scELivXxUJs/zD1J7zhTihua8OAIDWf6S8Bmx/zMYLqpb+
-# PMjGqPIIatJjfkGxovzsM3LRKVrrdU7wikSSAp5WRCbOEijH0OoRpIXfLOkJyP+r
-# 0qkdBMpAvrEFD0kq8b8sDqky3GcaopC13zw5ZUDj+tHGEmCEnKzoYbUsJ2kmcyx0
-# DgJhCnTpFhVW74/VRQssBqYPjqVmoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBR/snwb11dk0eniSeL3zNWm7DjmVDANBgkqhkiG9w0BAQEF
+# AASCAQB70YdPAkoCGCjJRFkAQ96orXeXJQcLk1ywNOV2sAKPoV18YlDkAhe+pJwc
+# dQV4c2Dyvga7NyCyUcab6IC2RuPPvkqKEfwoQ/zB2lGXmXMp55JBxOlluAZ+SLWz
+# w8tWE4rZg9udlj9dheRU7VpkYwI6Ilp+o2HoYf9HhBSpGso3Nlr6pUPAGQJJ2cyQ
+# Xn1ufkvwr6YeWWLOuCMt/s4supJwtB8ytm47Ai548Mud8vcwYC/IfWxJPcGYXcDz
+# 5EOg/hlemy+ELFdBrdMRAYomEm5rty/cOGb3ostX6dBfHXc1Gv2XfqpjuUo/onDW
+# 2BgeSqrnj+2EXewhanA5Nb0LFaANoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEwNDEz
-# MTI0MVowLwYJKoZIhvcNAQkEMSIEIAjwASikvgG0XCrsz1+koOEiEaQdbEdpAfSW
-# flwoVsOUMA0GCSqGSIb3DQEBAQUABIICAFzyo9FwvSSvBuneBPr/2Wm1TS69yUB/
-# VI6vrfKCE8Kr1c+lOVCeGYEf1KdLmsacm2+ntRr3k5DVHyi9ygZdnIPBXOvn/U6Z
-# qxHBMiDEOTeTtnlSF62HWE22XSFyAfHHaiwxKnHy4ka23dOItqmD6HBYJ4+WwpCz
-# +TY+PUWitKGwG65Ie1kkr53TUQujVE1nilCmLLvoIgQA0ZZ9qpF4ld6zn2TpddiF
-# VCT52lCqvc4fNsR6k7Xf834dnK6FqWSJnLMQjsnIaQsQgYtIoX8eVyNplb0NYRb3
-# PXtjqLzrVV9Wkn+kiI1hqmalxk5lu74qY/2I5oPs5bN4WRcFpfdjRcmZ0dxOYUPl
-# EpQHZd1M1YbVZNntoNbH/ixRJeqwIaW/B5qSJvf/fGjfzTUU0SXIAxdGqTkZ+MBg
-# hR6Cy41p+rWUxtNt+hSfO/3AnRzXQAt+s0NzJhTH8XqW8IFkYlq9JypS8Hux7yed
-# 3K/3VdiITZtmQQ4l48n/cMbc8YlM0FSUUnWAqOLIsTkCgCo3ckKwbotdiw2iWGJQ
-# oovZTHIk5sC+6Z2+bSocpyzQZ9qYn2QQj2UvEhUUo0Er5pGUdueZpzCP/DmcmSAW
-# k/z9tPQ7bB+BqDaE4UjYW8sFfoHo8A1Q1QkRNby6yHhesXJfkA7vgntJ0MmJUfn6
-# IRMg48ewG4cV
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIwNDE1
+# MTYwNVowLwYJKoZIhvcNAQkEMSIEII9y/DMKKMSrLuLHlMre2JCN/6nm4qY+ID/P
+# /csEnt7EMA0GCSqGSIb3DQEBAQUABIICACjC4PajNDcEcwPm7gqFTlltB+oM3zoD
+# h2m46SUGtQ2ZmGCB9tP2U+bvkfQUaZ84XrABZ/o7lZu6041RSuZsz4oIaxoAIEUo
+# wN1sEI4jvYBuJyl5yMkvWwVRAeUq3uKzI8frUQbjIR3516paUyjvQAGyuQWLAUDt
+# nd9SKIvKAex7Jh4UDiVzwbBMhzSKsaU94Xra2TzBJsr52KlUMyonE1SS9TFOv7n1
+# JiXX/7Mj18hYwlsl4nOY5O7kCGpbFSBi2CisS27tXnaQRdpJ5b+agSrhrewnFIrD
+# 6N5PjIFtnjLF++SQ1FdSgipfmgfkOWdu5f+xGnkkVXLToN2BLY1qUBMC+EwfctVm
+# J26tQx8Fq2paQAGZb/hXXMj0YdJJqg0RsbKm6ia9zvx46rFVqDpiV4OEvue4Hb0I
+# Gfweyw6wT288iOKBUTPCHmQ5eM3zyYiDzTu8V6bcm/se+s1tHhIrZpgeAdeKFLmW
+# YY2N8aNDyelTE8nvlMcTte9lNYug2Fniqg6yYTrxdGIMJ+cq6Onr0Vfb56gXXVch
+# Emnsv3rFqv6Jlh8nwhYpl8QUYnwvMucI7VqSIt5RFrSJjAKDJIiJJ1m1DvZtwS5A
+# pVzxGGs2u/bT+KGKu3lXOia2k1ecOho1SXIq1serqGI7QxMR2gp6x4sCvG/9un0d
+# RzGd6r0t+6FR
 # SIG # End signature block

@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.2.3
-	Date: 04.11.2022
+	Version: v6.2.4
+	Date: 04.12.2022
 
 	Copyright (c) 2014—2022 farag
 	Copyright (c) 2019—2022 farag & Inestic
@@ -56,7 +56,7 @@ function Checks
 	Get-ChildItem -Path $PSScriptRoot\..\ -File -Recurse -Force | Unblock-File
 
 	# Detect the OS build version
-	switch ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber)
+	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
 	{
 		{$_ -eq 22000}
 		{
@@ -451,7 +451,8 @@ function Checks
 		}
 	}
 
-	Remove-Item -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore
+	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+	Get-ChildItem -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
 
 	# Import PowerShell 5.1 modules
 	Import-Module -Name Microsoft.PowerShell.Management, PackageManagement, Appx -UseWindowsPowerShell
@@ -729,7 +730,7 @@ function DiagnosticDataLevel
 		"Default"
 		{
 			# Optional diagnostic data
-			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force
+			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force -ErrorAction Ignore
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type CLEAR
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
@@ -3751,9 +3752,7 @@ function OneDrive
 				Write-Information -MessageData "" -InformationAction Continue
 				Write-Verbose -Message $Localization.OneDriveUninstalling -Verbose
 
-				Stop-Process -Name OneDrive -Force -ErrorAction Ignore
-				Stop-Process -Name OneDriveSetup -Force -ErrorAction Ignore
-				Stop-Process -Name FileCoAuth -Force -ErrorAction Ignore
+				Stop-Process -Name OneDrive, OneDriveSetup, FileCoAuth -Force -ErrorAction Ignore
 
 				# Getting link to the OneDriveSetup.exe and its' argument(s)
 				[string[]]$OneDriveSetup = ($UninstallString -Replace("\s*/", ",/")).Split(",").Trim()
@@ -3822,10 +3821,7 @@ public static bool MarkFileDelete (string sourcefile)
 				}
 
 				Remove-ItemProperty -Path HKCU:\Environment -Name OneDrive, OneDriveConsumer -Force -ErrorAction Ignore
-				Remove-Item -Path HKCU:\Software\Microsoft\OneDrive -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\OneDrive -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path "$env:ProgramData\Microsoft OneDrive" -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path $env:SystemDrive\OneDriveTemp -Recurse -Force -ErrorAction Ignore
+				Remove-Item -Path HKCU:\Software\Microsoft\OneDrive, HKLM:\SOFTWARE\WOW6432Node\Microsoft\OneDrive, "$env:ProgramData\Microsoft OneDrive", $env:SystemDrive\OneDriveTemp -Recurse -Force -ErrorAction Ignore
 				Unregister-ScheduledTask -TaskName *OneDrive* -Confirm:$false -ErrorAction Ignore
 
 				# Getting the OneDrive folder path
@@ -3874,10 +3870,7 @@ public static bool MarkFileDelete (string sourcefile)
 					}
 				}
 
-				Remove-Item -Path $OneDriveFolder -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path $env:LOCALAPPDATA\OneDrive -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path $env:LOCALAPPDATA\Microsoft\OneDrive -Recurse -Force -ErrorAction Ignore
-				Remove-Item -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Force -ErrorAction Ignore
+				Remove-Item -Path $OneDriveFolder, $env:LOCALAPPDATA\OneDrive, $env:LOCALAPPDATA\Microsoft\OneDrive, "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Recurse -Force -ErrorAction Ignore
 			}
 		}
 		"Install"
@@ -3916,7 +3909,7 @@ public static bool MarkFileDelete (string sourcefile)
 						# Parse XML to get the URL
 						# https://go.microsoft.com/fwlink/p/?LinkID=844652
 						$Parameters = @{
-							Uri             = "https://g.live.com/1rewlive5skydrive/OneDriveProduction"
+							Uri             = "https://g.live.com/1rewlive5skydrive/OneDriveProductionV2"
 							SslProtocol     = "Tls13"
 							UseBasicParsing = $true
 							Verbose         = $true
@@ -4234,45 +4227,43 @@ function TempFolder
 	{
 		"SystemDrive"
 		{
-			if ($env:TEMP -ne "$env:SystemDrive\Temp")
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			if ((Get-Item -Path $env:TEMP).FullName -eq "$env:SystemDrive\Temp")
 			{
-				# Restart the Printer Spooler service (Spooler)
-				Restart-Service -Name Spooler -Force
+				return
+			}
 
-				# Stop OneDrive processes
-				Stop-Process -Name OneDrive -Force -ErrorAction Ignore
-				Stop-Process -Name FileCoAuth -Force -ErrorAction Ignore
+			# Restart the Printer Spooler service (Spooler)
+			Restart-Service -Name Spooler -Force
 
-				if (-not (Test-Path -Path $env:SystemDrive\Temp))
-				{
-					New-Item -Path $env:SystemDrive\Temp -ItemType Directory -Force
-				}
+			# Stop OneDrive processes
+			Stop-Process -Name OneDrive, FileCoAuth -Force -ErrorAction Ignore
 
-				# Copy all imported module folders to the new %TEMP% folder
-				Get-ChildItem -Path $env:TEMP -Force | Where-Object -FilterScript {$_.Name -like "*remoteIpMoProxy*"} | ForEach-Object -Process {
-					Copy-Item $_.FullName -Destination $env:SystemDrive\Temp -Recurse -Force
-				}
+			if (-not (Test-Path -Path $env:SystemDrive\Temp))
+			{
+				New-Item -Path $env:SystemDrive\Temp -ItemType Directory -Force
+			}
 
-				# Cleaning up folders
-				Remove-Item -Path $env:SystemRoot\Temp -Recurse -Force -ErrorAction Ignore
-				Get-Item -Path $env:TEMP -Force -ErrorAction Ignore | Where-Object -FilterScript {$_.LinkType -ne "SymbolicLink"} | Remove-Item -Recurse -Force -ErrorAction Ignore
+			# Cleaning up folders
+			Remove-Item -Path $env:SystemRoot\Temp -Recurse -Force -ErrorAction Ignore
+			Get-Item -Path $env:TEMP -Force | Where-Object -FilterScript {$_.LinkType -ne "SymbolicLink"} | Remove-Item -Recurse -Force -ErrorAction Ignore
 
-				if (-not (Test-Path -Path $env:LOCALAPPDATA\Temp))
-				{
-					New-Item -Path $env:LOCALAPPDATA\Temp -ItemType Directory -Force
-				}
+			if (-not (Test-Path -Path $env:LOCALAPPDATA\Temp))
+			{
+				New-Item -Path $env:LOCALAPPDATA\Temp -ItemType Directory -Force
+			}
 
-				# If there are some files or folders left in %LOCALAPPDATA\Temp%
-				if ((Get-ChildItem -Path $env:TEMP -Force -ErrorAction Ignore | Measure-Object).Count -ne 0)
-				{
-					# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
-					# The system does not move the file until the operating system is restarted
-					# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
-					$Signature = @{
-						Namespace        = "WinAPI"
-						Name             = "DeleteFiles"
-						Language         = "CSharp"
-						MemberDefinition = @"
+			# If there are some files or folders left in %LOCALAPPDATA\Temp%
+			if ((Get-ChildItem -Path $env:TEMP -Force -ErrorAction Ignore | Measure-Object).Count -ne 0)
+			{
+				# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
+				# The system does not move the file until the operating system is restarted
+				# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
+				$Signature = @{
+					Namespace        = "WinAPI"
+					Name             = "DeleteFiles"
+					Language         = "CSharp"
+					MemberDefinition = @"
 public enum MoveFileFlags
 {
 	MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
@@ -4286,24 +4277,24 @@ public static bool MarkFileDelete (string sourcefile)
 	return MoveFileEx(sourcefile, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);
 }
 "@
-					}
+				}
 
-					if (-not ("WinAPI.DeleteFiles" -as [type]))
-					{
-						Add-Type @Signature
-					}
+				if (-not ("WinAPI.DeleteFiles" -as [type]))
+				{
+					Add-Type @Signature
+				}
 
-					try
-					{
-						Get-ChildItem -Path $env:TEMP -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
-					}
-					catch
-					{
-						# If files are in use remove them at the next boot
-						Get-ChildItem -Path $env:TEMP -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
-					}
+				try
+				{
+					Get-ChildItem -Path $env:TEMP -Recurse -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Stop
+				}
+				catch
+				{
+					# If files are in use remove them at the next boot
+					Get-ChildItem -Path $env:TEMP -Recurse -Force -ErrorAction Ignore | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
+				}
 
-					$SymbolicLinkTask = @"
+				$SymbolicLinkTask = @"
 Get-ChildItem -Path `$env:LOCALAPPDATA\Temp -Recurse -Force | Remove-Item -Recurse -Force
 
 Get-Item -Path `$env:LOCALAPPDATA\Temp -Force | Where-Object -FilterScript {`$_.LinkType -ne """SymbolicLink"""} | Remove-Item -Recurse -Force
@@ -4312,88 +4303,83 @@ New-Item -Path `$env:LOCALAPPDATA\Temp -ItemType SymbolicLink -Value `$env:Syste
 Unregister-ScheduledTask -TaskName SymbolicLink -Confirm:`$false
 "@
 
-					# Create a temporary scheduled task to create a symbolic link to the %SystemDrive%\Temp folder
-					$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $SymbolicLinkTask"
-					$Trigger    = New-ScheduledTaskTrigger -AtLogon -User $env:USERNAME
-					$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8
-					$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-					$Parameters = @{
-						TaskName  = "SymbolicLink"
-						Principal = $Principal
-						Action    = $Action
-						Settings  = $Settings
-						Trigger   = $Trigger
-					}
-					Register-ScheduledTask @Parameters -Force
+				# Create a temporary scheduled task to create a symbolic link to the %SystemDrive%\Temp folder
+				$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $SymbolicLinkTask"
+				$Trigger    = New-ScheduledTaskTrigger -AtLogon -User $env:USERNAME
+				$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8
+				$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+				$Parameters = @{
+					TaskName  = "SymbolicLink"
+					Principal = $Principal
+					Action    = $Action
+					Settings  = $Settings
+					Trigger   = $Trigger
 				}
-				else
-				{
-					# Create a symbolic link to the %SystemDrive%\Temp folder
-					New-Item -Path $env:LOCALAPPDATA\Temp -ItemType SymbolicLink -Value $env:SystemDrive\Temp -Force
-				}
-
-				#region main
-				# Change the %TEMP% environment variable path to %LOCALAPPDATA%\Temp
-				# The additional registry key creating are needed to fix the property type of the keys: SetEnvironmentVariable creates them with the "String" type instead of "ExpandString" as by default
-				[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "User")
-				[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "Machine")
-				[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "Process")
-				New-ItemProperty -Path HKCU:\Environment -Name TMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
-
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "User")
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "Machine")
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "Process")
-				New-ItemProperty -Path HKCU:\Environment -Name TEMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
-
-				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
-				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TEMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
-				# endregion main
+				Register-ScheduledTask @Parameters -Force
 			}
+			else
+			{
+				# Create a symbolic link to the %SystemDrive%\Temp folder
+				New-Item -Path $env:LOCALAPPDATA\Temp -ItemType SymbolicLink -Value $env:SystemDrive\Temp -Force
+			}
+
+			# Change the %TEMP% environment variable path to %LOCALAPPDATA%\Temp
+			# The additional registry key creating are needed to fix the property type of the keys: SetEnvironmentVariable creates them with the "String" type instead of "ExpandString" as by default
+			[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "User")
+			[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "Machine")
+			[Environment]::SetEnvironmentVariable("TMP", "$env:SystemDrive\Temp", "Process")
+			New-ItemProperty -Path HKCU:\Environment -Name TMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
+
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "User")
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "Machine")
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemDrive\Temp", "Process")
+			New-ItemProperty -Path HKCU:\Environment -Name TEMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
+
+			New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TMP -PropertyType ExpandString -Value $env:SystemDrive\Temp -Force
 		}
 		"Default"
 		{
-			if ($env:TEMP -ne "$env:LOCALAPPDATA\Temp")
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			if ((Get-Item -Path $env:TEMP).FullName -eq "$env:LOCALAPPDATA\Temp")
 			{
-				# Restart the Printer Spooler service (Spooler)
-				Restart-Service -Name Spooler -Force
+				return
+			}
 
-				# Stop OneDrive processes
-				Stop-Process -Name OneDrive -Force -ErrorAction Ignore
-				Stop-Process -Name FileCoAuth -Force -ErrorAction Ignore
+			# Restart the Printer Spooler service (Spooler)
+			Restart-Service -Name Spooler -Force
 
-				# Remove a symbolic link to the %SystemDrive%\Temp folder
-				if (Get-Item -Path $env:LOCALAPPDATA\Temp -Force -ErrorAction Ignore | Where-Object -FilterScript {$_.LinkType -eq "SymbolicLink"})
-				{
-					(Get-Item -Path $env:LOCALAPPDATA\Temp -Force).Delete()
-				}
+			# Stop OneDrive processes
+			Stop-Process -Name OneDrive, FileCoAuth -Force -ErrorAction Ignore
 
-				if (-not (Test-Path -Path $env:SystemRoot\Temp))
-				{
-					New-Item -Path $env:SystemRoot\Temp -ItemType Directory -Force
-				}
-				if (-not (Test-Path -Path $env:LOCALAPPDATA\Temp))
-				{
-					New-Item -Path $env:LOCALAPPDATA\Temp -ItemType Directory -Force
-				}
+			# Remove a symbolic link to the %SystemDrive%\Temp folder
+			if (Get-Item -Path $env:LOCALAPPDATA\Temp -Force -ErrorAction Ignore | Where-Object -FilterScript {$_.LinkType -eq "SymbolicLink"})
+			{
+				(Get-Item -Path $env:LOCALAPPDATA\Temp -Force).Delete()
+			}
 
-				# Copy all imported module folders to the new %TEMP% folder
-				Get-ChildItem -Path $env:TEMP -Force | Where-Object -FilterScript {$_.Name -like "*remoteIpMoProxy*"} | ForEach-Object -Process {
-					Copy-Item $_.FullName -Destination $env:LOCALAPPDATA\Temp -Recurse -Force
-				}
+			if (-not (Test-Path -Path $env:SystemRoot\Temp))
+			{
+				New-Item -Path $env:SystemRoot\Temp -ItemType Directory -Force
+			}
+			if (-not (Test-Path -Path $env:LOCALAPPDATA\Temp))
+			{
+				New-Item -Path $env:LOCALAPPDATA\Temp -ItemType Directory -Force
+			}
 
-				# Removing folders
-				Remove-Item -Path $env:TEMP -Recurse -Force -ErrorAction Ignore
+			# Removing folders
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			Remove-Item -Path $((Get-Item -Path $env:TEMP).FullName) -Recurse -Force -ErrorAction Ignore
 
-				if ((Get-ChildItem -Path $env:TEMP -Force -ErrorAction Ignore | Measure-Object).Count -ne 0)
-				{
-					# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
-					# The system does not move the file until the operating system is restarted
-					# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
-					$Signature = @{
-						Namespace        = "WinAPI"
-						Name             = "DeleteFiles"
-						Language         = "CSharp"
-						MemberDefinition = @"
+			if ((Get-ChildItem -Path $env:TEMP -Force -ErrorAction Ignore | Measure-Object).Count -ne 0)
+			{
+				# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
+				# The system does not move the file until the operating system is restarted
+				# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
+				$Signature = @{
+					Namespace        = "WinAPI"
+					Name             = "DeleteFiles"
+					Language         = "CSharp"
+					MemberDefinition = @"
 public enum MoveFileFlags
 {
 	MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
@@ -4407,61 +4393,59 @@ public static bool MarkFileDelete (string sourcefile)
 	return MoveFileEx(sourcefile, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);
 }
 "@
-					}
+				}
 
-					if (-not ("WinAPI.DeleteFiles" -as [type]))
-					{
-						Add-Type @Signature
-					}
+				if (-not ("WinAPI.DeleteFiles" -as [type]))
+				{
+					Add-Type @Signature
+				}
 
-					try
-					{
-						Remove-Item -Path $env:TEMP -Recurse -Force -ErrorAction Stop
-					}
-					catch
-					{
-						# If files are in use remove them at the next boot
-						Get-ChildItem -Path $env:TEMP -Recurse -Force -ErrorAction Ignore | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
-					}
+				try
+				{
+					# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+					Remove-Item -Path $((Get-Item -Path $env:TEMP).FullName) -Recurse -Force -ErrorAction Stop
+				}
+				catch
+				{
+					# If files are in use remove them at the next boot
+					Get-ChildItem -Path $env:TEMP -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
+				}
 
-					$TempFolder = [System.Environment]::ExpandEnvironmentVariables($env:TEMP)
-					$TempFolderCleanupTask = @"
+				# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+				$TempFolder = (Get-Item -Path $env:TEMP).FullName
+				$TempFolderCleanupTask = @"
 Remove-Item -Path "$TempFolder" -Recurse -Force
-
 Unregister-ScheduledTask -TaskName TemporaryTask -Confirm:`$false
 "@
 
-					# Create a temporary scheduled task to clean up the temporary folder
-					$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $TempFolderCleanupTask"
-					$Trigger    = New-ScheduledTaskTrigger -AtLogon -User $env:USERNAME
-					$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8
-					$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-					$Parameters = @{
-						TaskName  = "TemporaryTask"
-						Principal = $Principal
-						Action    = $Action
-						Settings  = $Settings
-						Trigger   = $Trigger
-					}
-					Register-ScheduledTask @Parameters -Force
+				# Create a temporary scheduled task to clean up the temporary folder
+				$Action     = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $TempFolderCleanupTask"
+				$Trigger    = New-ScheduledTaskTrigger -AtLogon -User $env:USERNAME
+				$Settings   = New-ScheduledTaskSettingsSet -Compatibility Win8
+				$Principal  = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+				$Parameters = @{
+					TaskName  = "TemporaryTask"
+					Principal = $Principal
+					Action    = $Action
+					Settings  = $Settings
+					Trigger   = $Trigger
 				}
-
-				#region main
-				# Change the %TEMP% environment variable path to %LOCALAPPDATA%\Temp
-				[Environment]::SetEnvironmentVariable("TMP", "$env:LOCALAPPDATA\Temp", "User")
-				[Environment]::SetEnvironmentVariable("TMP", "$env:SystemRoot\TEMP", "Machine")
-				[Environment]::SetEnvironmentVariable("TMP", "$env:LOCALAPPDATA\Temp", "Process")
-				New-ItemProperty -Path HKCU:\Environment -Name TMP -PropertyType ExpandString -Value "%USERPROFILE%\AppData\Local\Temp" -Force
-
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:LOCALAPPDATA\Temp", "User")
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemRoot\TEMP", "Machine")
-				[Environment]::SetEnvironmentVariable("TEMP", "$env:LOCALAPPDATA\Temp", "Process")
-				New-ItemProperty -Path HKCU:\Environment -Name TEMP -PropertyType ExpandString -Value "%USERPROFILE%\AppData\Local\Temp" -Force
-
-				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TMP -PropertyType ExpandString -Value "%SystemRoot%\TEMP" -Force
-				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TEMP -PropertyType ExpandString -Value "%SystemRoot%\TEMP" -Force
-				# endregion main
+				Register-ScheduledTask @Parameters -Force
 			}
+
+			# Change the %TEMP% environment variable path to %LOCALAPPDATA%\Temp
+			[Environment]::SetEnvironmentVariable("TMP", "$env:LOCALAPPDATA\Temp", "User")
+			[Environment]::SetEnvironmentVariable("TMP", "$env:SystemRoot\TEMP", "Machine")
+			[Environment]::SetEnvironmentVariable("TMP", "$env:LOCALAPPDATA\Temp", "Process")
+			New-ItemProperty -Path HKCU:\Environment -Name TMP -PropertyType ExpandString -Value "%USERPROFILE%\AppData\Local\Temp" -Force
+
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:LOCALAPPDATA\Temp", "User")
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:SystemRoot\TEMP", "Machine")
+			[Environment]::SetEnvironmentVariable("TEMP", "$env:LOCALAPPDATA\Temp", "Process")
+			New-ItemProperty -Path HKCU:\Environment -Name TEMP -PropertyType ExpandString -Value "%USERPROFILE%\AppData\Local\Temp" -Force
+
+			New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TMP -PropertyType ExpandString -Value "%SystemRoot%\TEMP" -Force
+			New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name TEMP -PropertyType ExpandString -Value "%SystemRoot%\TEMP" -Force
 		}
 	}
 }
@@ -5747,8 +5731,6 @@ function NetworkAdaptersSavePower
 		$Enable
 	)
 
-	Write-Verbose -Message $Localization.Patient -Verbose
-
 	if (Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"})
 	{
 		$PhysicalAdaptersStatusUp = @((Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"}).Name)
@@ -5782,10 +5764,9 @@ function NetworkAdaptersSavePower
 	{
 		while
 		(
-			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | ForEach-Object -Process {$_.Status -eq "Disconnected"}
+			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | Where-Object -FilterScript {$_.Status -eq "Disconnected"}
 		)
 		{
-			Write-Information -MessageData "" -InformationAction Continue
 			Write-Verbose -Message $Localization.Patient -Verbose
 			Start-Sleep -Seconds 2
 		}
@@ -8633,15 +8614,7 @@ function InstallVCRedist
 
 			Start-Process -FilePath "$DownloadsFolder\VC_redist.x64.exe" -ArgumentList "/install /passive /norestart" -Wait
 
-			<#
-				PowerShell 5.1 (7.2 too) interprets the 8.3 file name literally, if an environment variable contains a non-latin word,
-				so you won't be able to remove "$env:TEMP\dd_vcredist_amd64_*.log" file explicitly
-
-				Another ways to get normal path to %TEMP%
-				[Environment]::GetEnvironmentVariable("TEMP", "User")
-				(Get-ItemProperty -Path HKCU:\Environment -Name TEMP).TEMP
-				[System.IO.Path]::GetTempPath()
-			#>
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
 			Get-ChildItem -Path "$DownloadsFolder\VC_redist.x86.exe", "$DownloadsFolder\VC_redist.x64.exe", "$env:TEMP\dd_vcredist_amdx86_*.log", "$env:TEMP\dd_vcredist_amd64_*.log" -Force | Remove-Item -Recurse -Force -ErrorAction Ignore
 		}
 	}
@@ -8722,15 +8695,7 @@ function InstallDotNetRuntime6
 
 			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe" -ArgumentList "/install /passive /norestart" -Wait
 
-			<#
-				PowerShell 5.1 (7.2 too) interprets the 8.3 file name literally, if an environment variable contains a non-latin word,
-				so you won't be able to remove "$env:TEMP\Microsoft_Windows_Desktop_Runtime*.log" file explicitly
-
-				Another ways to get normal path to %TEMP%
-				[Environment]::GetEnvironmentVariable("TEMP", "User")
-				(Get-ItemProperty -Path HKCU:\Environment -Name TEMP).TEMP
-				[System.IO.Path]::GetTempPath()
-			#>
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
 			$Paths = @(
 				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe",
 				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe",
@@ -9184,7 +9149,7 @@ BDEE24B1E5E4ED6CC9D5A337908BE5303E477736C8A75051A8FBD4E3CB6360D8F0A992A48F333434
 		$Bytes[$i/2] = [System.Convert]::ToByte($HexString.Substring($i, 2), 16)
 	}
 
-	Set-Content "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin" -Value $Bytes -Encoding Byte -Force
+	Set-Content "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin" -Value $Bytes -AsByteStream -Force
 }
 
 <#
@@ -9296,7 +9261,7 @@ function StartLayout
 		$ShowMoreRecommendations
 	)
 
-	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22621)
+	if ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber -ge 22621)
 	{
 		switch ($PSCmdlet.ParameterSetName)
 		{
@@ -10725,9 +10690,19 @@ function CleanupTask
 	{
 		"Register"
 		{
+			# Checking if notifications and Action Center are disabled
+			if
+			(
+				((Get-ItemProperty -Path HKCU:\Software\Policies\Microsoft\Windows\Explorer -Name DisableNotificationCenter -ErrorAction Ignore).DisableNotificationCenter -eq 1) -or
+				((Get-ItemProperty -Path HKLM:\Software\Policies\Microsoft\Windows\Explorer -Name DisableNotificationCenter -ErrorAction Ignore).DisableNotificationCenter -eq 1)
+			)
+			{
+				return
+			}
+
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -10767,10 +10742,36 @@ function CleanupTask
 				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\$VolumeCache" -Name StateFlags1337 -PropertyType DWord -Value 2 -Force
 			}
 
+			# Persist Sophia notifications to prevent to immediately disappear from Action Center
+			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
+			{
+				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
+			}
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+
+			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
+			{
+				New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
+			}
+			# Register app
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
+			# Determines whether the app can be seen in Settings where the user can turn notifications on or off
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
+
+			# Register the "WindowsCleanup" protocol to be able to run the scheduled task by clicking the "Run" button in a toast
+			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command))
+			{
+				New-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Force
+			}
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "(default)" -PropertyType String -Value "URL:WindowsCleanup" -Force
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "URL Protocol" -PropertyType String -Value "" -Force
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name EditFlags -PropertyType DWord -Value 2162688 -Force
+
+			# Start the "Windows Cleanup" task if the "Run" button clicked
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Name "(default)" -PropertyType String -Value 'powershell.exe -Command "& {Start-ScheduledTask -TaskPath ''\Sophia\'' -TaskName ''Windows Cleanup''}"' -Force
+
 			$CleanupTask = @"
-Get-Process -Name cleanmgr | Stop-Process -Force
-Get-Process -Name Dism | Stop-Process -Force
-Get-Process -Name DismHost | Stop-Process -Force
+Get-Process -Name cleanmgr, Dism, DismHost | Stop-Process -Force
 
 `$ProcessInfo = New-Object -TypeName System.Diagnostics.ProcessStartInfo
 `$ProcessInfo.FileName = """$env:SystemRoot\system32\cleanmgr.exe"""
@@ -10786,41 +10787,31 @@ Start-Sleep -Seconds 3
 
 [int]`$SourceMainWindowHandle = (Get-Process -Name cleanmgr | Where-Object -FilterScript {`$_.PriorityClass -eq """BelowNormal"""}).MainWindowHandle
 
-function MinimizeWindow
-{
-	[CmdletBinding()]
-	param
-	(
-		[Parameter(Mandatory = `$true)]
-		`$Process
-	)
-
-	`$ShowWindowAsync = @{
-		Namespace = """WinAPI"""
-		Name = """Win32ShowWindowAsync"""
-		Language = """CSharp"""
-		MemberDefinition = @'
-[DllImport("""user32.dll""")]
-public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-'@
-	}
-
-	if (-not ("""WinAPI.Win32ShowWindowAsync""" -as [type]))
-	{
-		Add-Type @ShowWindowAsync
-	}
-	`$MainWindowHandle = (Get-Process -Name `$Process | Where-Object -FilterScript {`$_.PriorityClass -eq """BelowNormal"""}).MainWindowHandle
-	[WinAPI.Win32ShowWindowAsync]::ShowWindowAsync(`$MainWindowHandle, 2)
-}
-
 while (`$true)
 {
 	[int]`$CurrentMainWindowHandle = (Get-Process -Name cleanmgr | Where-Object -FilterScript {`$_.PriorityClass -eq """BelowNormal"""}).MainWindowHandle
 	if (`$SourceMainWindowHandle -ne `$CurrentMainWindowHandle)
 	{
-		MinimizeWindow -Process cleanmgr
+		`$ShowWindowAsync = @{
+			Namespace = """WinAPI"""
+			Name = """Win32ShowWindowAsync"""
+			Language = """CSharp"""
+			MemberDefinition = @'
+[DllImport("""user32.dll""")]
+public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+'@
+	}
+
+		if (-not ("""WinAPI.Win32ShowWindowAsync""" -as [type]))
+		{
+			Add-Type @ShowWindowAsync
+		}
+		`$MainWindowHandle = (Get-Process -Name cleanmgr | Where-Object -FilterScript {`$_.PriorityClass -eq """BelowNormal"""}).MainWindowHandle
+		[WinAPI.Win32ShowWindowAsync]::ShowWindowAsync(`$MainWindowHandle, 2)
+
 		break
 	}
+
 	Start-Sleep -Milliseconds 5
 }
 
@@ -10849,39 +10840,15 @@ while (`$true)
 			}
 			Register-ScheduledTask @Parameters -Force
 
-			# Persist the Settings notifications to prevent to immediately disappear from Action Center
-			if (-not (Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
-			{
-				New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
-			}
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
-
-			# Register the "WindowsCleanup" protocol to be able to run the scheduled task by clicking the "Run" button in a toast
-			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command))
-			{
-				New-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Force
-			}
-			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "(default)" -PropertyType String -Value "URL:WindowsCleanup" -Force
-			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name "URL Protocol" -PropertyType String -Value "" -Force
-			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Name EditFlags -PropertyType DWord -Value 2162688 -Force
-
-			# Start the "Windows Cleanup" task if the "Run" button clicked
-			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup\shell\open\command -Name "(default)" -PropertyType String -Value 'powershell.exe -Command "& {Start-ScheduledTask -TaskPath ''\Sophia\'' -TaskName ''Windows Cleanup''}"' -Force
-
 			$ToastNotification = @"
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
 [xml]`$ToastTemplate = @"""
-<toast duration="""Long""" scenario="""reminder""">
+<toast duration="""Long""">
 	<visual>
 		<binding template="""ToastGeneric""">
 			<text>$($Localization.CleanupTaskNotificationTitle)</text>
-			<group>
-				<subgroup>
-					<text hint-style="""title""" hint-wrap="""true""">$($Localization.CleanupTaskNotificationEventTitle)</text>
-				</subgroup>
-			</group>
 			<group>
 				<subgroup>
 					<text hint-style="""body""" hint-wrap="""true""">$($Localization.CleanupTaskNotificationEvent)</text>
@@ -10891,14 +10858,8 @@ while (`$true)
 	</visual>
 	<audio src="""ms-winsoundevent:notification.default""" />
 	<actions>
-		<input id="""SnoozeTimer""" type="""selection""" title="""$($Localization.CleanupTaskNotificationSnoozeInterval)""" defaultInput="""1""">
-			<selection id="""1""" content="""$($Localization.Minute)""" />
-			<selection id="""30""" content="""$($Localization.HalfHour)""" />
-			<selection id="""240""" content="""$($Localization.FourHours)""" />
-		</input>
-		<action activationType="""system""" arguments="""snooze""" hint-inputId="""SnoozeTimer""" content="""""" id="""test-snooze"""/>
-		<action arguments="""WindowsCleanup:""" content="""$($Localization.Run)""" activationType="""protocol"""/>
-		<action arguments="""dismiss""" content="""""" activationType="""system"""/>
+		<action content="""$($Localization.Run)""" arguments="""WindowsCleanup:""" activationType="""protocol"""/>
+		<action content="""""" arguments="""dismiss""" activationType="""system"""/>
 	</actions>
 </toast>
 """@
@@ -10907,7 +10868,7 @@ while (`$true)
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
 "@
 
 			# Create the "Windows Cleanup Notification" task
@@ -10930,7 +10891,8 @@ while (`$true)
 		{
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+
+			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -10948,7 +10910,6 @@ while (`$true)
 			Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches | ForEach-Object -Process {
 				Remove-ItemProperty -Path $_.PsPath -Name StateFlags1337 -Force -ErrorAction Ignore
 			}
-			Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -Force -ErrorAction Ignore
 			Remove-Item -Path Registry::HKEY_CLASSES_ROOT\WindowsCleanup -Recurse -Force -ErrorAction Ignore
 
 			# Remove folder in Task Scheduler if there is no tasks left there
@@ -11010,7 +10971,8 @@ function SoftwareDistributionTask
 		{
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+
+			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -11022,12 +10984,21 @@ function SoftwareDistributionTask
 				$ScheduleService.GetFolder("\").DeleteFolder("SophiApp", $null)
 			}
 
-			# Persist the Settings notifications to prevent to immediately disappear from Action Center
-			if (-not (Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"))
+			# Persist Sophia notifications to prevent to immediately disappear from Action Center
+			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
 			{
-				New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Force
+				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
 			}
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel" -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+
+			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
+			{
+				New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
+			}
+			# Register app
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
+			# Determines whether the app can be seen in Settings where the user can turn notifications on or off
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
 			$SoftwareDistributionTask = @"
 (Get-Service -Name wuauserv).WaitForStatus('Stopped', '01:00:00')
@@ -11040,12 +11011,7 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 <toast duration="""Long""">
 	<visual>
 		<binding template="""ToastGeneric""">
-			<text>$($Localization.TaskNotificationTitle)</text>
-			<group>
-				<subgroup>
-					<text hint-style="""body""" hint-wrap="""true""">$($Localization.SoftwareDistributionTaskNotificationEvent)</text>
-				</subgroup>
-			</group>
+			<text>$($Localization.SoftwareDistributionTaskNotificationEvent)</text>
 		</binding>
 	</visual>
 	<audio src="""ms-winsoundevent:notification.default""" />
@@ -11056,7 +11022,7 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
 "@
 
 			# Create the "SoftwareDistribution" task
@@ -11079,7 +11045,8 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 		{
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+
+			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -11153,7 +11120,8 @@ function TempTask
 		{
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+
+			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -11165,6 +11133,22 @@ function TempTask
 				$ScheduleService.GetFolder("\").DeleteFolder("SophiApp", $null)
 			}
 
+			# Persist Sophia notifications to prevent to immediately disappear from Action Center
+			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
+			{
+				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
+			}
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+
+			if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
+			{
+				New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
+			}
+			# Register app
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
+			# Determines whether the app can be seen in Settings where the user can turn notifications on or off
+			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
+
 			$TempTask = @"
 Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
@@ -11175,12 +11159,7 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 <toast duration="""Long""">
 	<visual>
 		<binding template="""ToastGeneric""">
-			<text>$($Localization.TaskNotificationTitle)</text>
-			<group>
-				<subgroup>
-					<text hint-style="""body""" hint-wrap="""true""">$($Localization.TempTaskNotificationEvent)</text>
-				</subgroup>
-			</group>
+			<text>$($Localization.TempTaskNotificationEvent)</text>
 		</binding>
 	</visual>
 	<audio src="""ms-winsoundevent:notification.default""" />
@@ -11191,7 +11170,7 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
 "@
 
 			# Create the "Temp" task
@@ -11214,7 +11193,8 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 		{
 			# Remove all old tasks
 			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
-			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folder do not exist
+
+			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
 			if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Sophia Script")
@@ -12361,24 +12341,24 @@ function ShareContext
 
 <#
 	.SYNOPSIS
-	The "Edit with Photos" item in the media files context menu
+	The "Edit with Clipchamp" item in the media files context menu
 
 	.PARAMETER Hide
-	Hide the "Edit with Photos" item from the media files context menu
+	Hide the "Edit with Clipchamp" item from the media files context menu
 
 	.PARAMETER Show
-	Show the "Edit with Photos" item in the media files context menu
+	Show the "Edit with Clipchamp" item in the media files context menu
 
 	.EXAMPLE
-	EditWithPhotosContext -Hide
+	EditWithClipchampContext -Hide
 
 	.EXAMPLE
-	EditWithPhotosContext -Show
+	EditWithClipchampContext -Show
 
 	.NOTES
 	Current user
 #>
-function EditWithPhotosContext
+function EditWithClipchampContext
 {
 	param
 	(
@@ -12397,74 +12377,21 @@ function EditWithPhotosContext
 		$Show
 	)
 
-	if ((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -le 22623)
-	{
-		if (Get-AppxPackage -Name Microsoft.Windows.Photos)
-		{
-			switch ($PSCmdlet.ParameterSetName)
-			{
-				"Hide"
-				{
-					New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellEdit -Name ProgrammaticAccessOnly -PropertyType String -Value "" -Force
-				}
-				"Show"
-				{
-					Remove-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellEdit -Name ProgrammaticAccessOnly -Force -ErrorAction Ignore
-				}
-			}
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
-	The "Create a new video" item in the media files context menu
-
-	.PARAMETER Hide
-	Hide the "Create a new video" item from the media files context menu
-
-	.PARAMETER Show
-	Show the "Create a new video" item in the media files context menu
-
-	.EXAMPLE
-	CreateANewVideoContext -Hide
-
-	.EXAMPLE
-	CreateANewVideoContext -Show
-
-	.NOTES
-	Current user
-#>
-function CreateANewVideoContext
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Hide"
-		)]
-		[switch]
-		$Hide,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Show"
-		)]
-		[switch]
-		$Show
-	)
-
-	if (Get-AppxPackage -Name Microsoft.Windows.Photos)
+	if (((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22621) -and (Get-AppxPackage -Name Clipchamp.Clipchamp))
 	{
 		switch ($PSCmdlet.ParameterSetName)
 		{
 			"Hide"
 			{
-				New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellCreateVideo -Name ProgrammaticAccessOnly -PropertyType String -Value "" -Force
+				if (-not (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked"))
+				{
+					New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Force
+				}
+				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{8AB635F8-9A67-4698-AB99-784AD929F3B4}" -PropertyType String -Value "Play to menu" -Force
 			}
 			"Show"
 			{
-				Remove-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppX43hnxtbyyps62jhe9sqpdzxn1790zetc\Shell\ShellCreateVideo -Name ProgrammaticAccessOnly -Force -ErrorAction Ignore
+				Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked" -Name "{8AB635F8-9A67-4698-AB99-784AD929F3B4}" -Force -ErrorAction Ignore
 			}
 		}
 	}
@@ -13010,6 +12937,7 @@ function Windows10ContextMenu
 <#
 	.SYNOPSIS
 	Display all policy registry keys (even manually created ones) in the Local Group Policy Editor snap-in (gpedit.msc)
+	This can take up to 30 minutes, depending on on the number of policies created in the registry and your system resources
 
 	.EXAMPLE
 	UpdateLGPEPolicies
@@ -13049,12 +12977,12 @@ function UpdateLGPEPolicies
 				{
 					# Parse every ADMX template searching if it contains full path and registry key simultaneously
 					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
-					$config.SelectNodes("//@*") | ForEach-Object {$_.value = $_.value.ToLower()}
+					$config.SelectNodes("//@*") | ForEach-Object -Process {$_.value = $_.value.ToLower()}
 					$SplitPath = $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "")
 
 					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
-						Write-Verbose -Message $Item.Replace("{}", "") -Verbose
+						Write-Verbose -Message ([string](($SplitPath, "|", $Item.Replace("{}", "")))) -Verbose
 
 						$Type = switch ((Get-Item -Path $Path.PSPath).GetValueKind($Item))
 						{
@@ -13104,12 +13032,12 @@ function UpdateLGPEPolicies
 				{
 					# Parse every ADMX template searching if it contains full path and registry key simultaneously
 					[xml]$config = Get-Content -Path $admx.FullName -Encoding UTF8
-					$config.SelectNodes("//@*") | ForEach-Object {$_.value = $_.value.ToLower()}
-					$SplitPath = Split-Path -Path $Path.Name.Replace("HKEY_LOCAL_MACHINE\", "HKLM:") -NoQualifier
+					$config.SelectNodes("//@*") | ForEach-Object -Process {$_.value = $_.value.ToLower()}
+					$SplitPath = $Path.Name.Replace("HKEY_CURRENT_USER\", "")
 
 					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
-						Write-Verbose -Message $Item.Replace("{}", "") -Verbose
+						Write-Verbose -Message ([string](($SplitPath, "|", $Item.Replace("{}", "")))) -Verbose
 
 						$Type = switch ((Get-Item -Path $Path.PSPath).GetValueKind($Item))
 						{
@@ -13128,7 +13056,7 @@ function UpdateLGPEPolicies
 						}
 
 						$Parameters = @{
-							Scope = "Computer"
+							Scope = "User"
 							# e.g. SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 							Path  = $Path.Name.Replace("HKEY_CURRENT_USER\", "")
 							Name  = $Item.Replace("{}", "")
@@ -13223,19 +13151,24 @@ public static void PostMessage()
 		Set-WinHomeLocation -GeoId $Script:Region
 	}
 
-	Write-Information -MessageData "" -InformationAction Continue
-	Write-Warning -Message $Localization.RestartWarning
+	# Persist Sophia notifications to prevent to immediately disappear from Action Center
+	if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
+	{
+		New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
+	}
+	New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
 
-	<#
-		.NOTES
-		Load the WinRT.Runtime.dll and Microsoft.Windows.SDK.NET.dll assemblies in the current session in order to get localized UWP apps names
+	if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
+	{
+		New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
+	}
+	# Register app
+	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
+	# Determines whether the app can be seen in Settings where the user can turn notifications on or off
+	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
-		.LINK
-		https://github.com/microsoft/CsWinRT
-		https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref
-	#>
-	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
-	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
+	[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+	[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
 	# Telegram group
 	[xml]$ToastTemplate = @"
@@ -13262,7 +13195,7 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel").Show($ToastMessage)
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
 
 	# Telegram channel
 	[xml]$ToastTemplate = @"
@@ -13289,7 +13222,7 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel").Show($ToastMessage)
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
 
 	# Discord group
 	[xml]$ToastTemplate = @"
@@ -13316,7 +13249,7 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel").Show($ToastMessage)
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
 
 	if ((Test-Path -Path "$env:TEMP\Computer.txt") -or (Test-Path -Path "$env:TEMP\User.txt"))
 	{
@@ -13332,7 +13265,8 @@ public static void PostMessage()
 		gpupdate /force
 	}
 
-	Remove-Item -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore
+	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+	Get-ChildItem -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
 
 	Stop-Process -Name explorer -Force
 	Start-Sleep -Seconds 3
@@ -13365,30 +13299,33 @@ function Errors
 			}
 		} | Sort-Object -Property Line | Format-Table -AutoSize -Wrap | Out-String).Trim()
 	}
+
+	Write-Information -MessageData "" -InformationAction Continue
+	Write-Warning -Message $Localization.RestartWarning
 }
 #endregion Refresh Environment
 
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUtkqiqx1Cv1V/HKdtP6X2HVH+
-# TbmgghYNMIIDAjCCAeqgAwIBAgIQHRoCABCYKZ9GjEvb4foaqzANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjExMDQxMzAyMzFa
-# Fw0yNDExMDQxMzEyMDJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvEYSlIZuEnlML66Koz/xyqF+hGO6
-# tVw2P57M2yFo4+n48zNRryFEphdAzca/iOWV29iMLBXq6iKcv+3O5Y9OYq+9bppf
-# eUxtvDFWhWd/I2PU/qDcvyH22Av1XDO4xIwFMv0OT4+QgNHuDF/r3xo5+WF6xNPO
-# aOH71uPqFCMn/pGJK58QNLgPXZBfeDYTebJ0/9pd5ti3TCZ0QIQU04vHbwRJp+3K
-# +/msWyOGklpT01o2BzvEPpwEldWKl+j9hd8mCMpeQWypBzHHHsSD/DYuZb+sxTXs
-# W3NZq5ssjKqPh7cCCdd7pYakHCNw7K3m+ZXY/dqP3eLgU6NiTx2fy1MzAQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUV7b+foPrLgQmBZEKoFS6nZRG
+# PkugghYNMIIDAjCCAeqgAwIBAgIQecfrGhsNi7VEHWuRpLke9jANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMDQxNTA1NTla
+# Fw0yNDEyMDQxNTE1NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5SerjAkErXu1FSNeI7GabOfnQi2j
+# FbXeA6F4eGLh3f40oAyoXXNVXOjVd55lymMOAcfYzGUK1Ss6AnkzelIvbqUUU4ig
+# mHZg0GuS4u3PyOFTcIctM0atpHgpJqaWMixdPEw2QLv8TtLc65b34vZ1bZUNB/gu
+# E6KCejwio8Ivgzzie9oXiDzhiEBeeUwgQtYD5I9PpTvh5JOtMHMR6IHcXqT/QXtw
+# uKNPZG3bJSR+X1yaT2zPTZcM/tAHytew9IfDUZoIFahxBkh3pcfKWZFNxAg6WE4v
+# /dEVmraLqUOxtKPc1eT8Ynho2BlyohBSCk46P5ZHZ7/LKGL19t6nOeHIrQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFDLXf9rcBeOooe30uo1CHzoiiQgbMA0GCSqGSIb3DQEBCwUAA4IBAQBjlJmz
-# HcNHbnDD/9ZaJREssistkQ53n+nteztSNne2xIKKjmfwN0lTiRH08agl9BwG92RB
-# woHrL9m1a6HFdkek22LChzhyQpKXE8m4eq2ywSAJ0qBEuVKmTOX5bI2Nten8GLOM
-# uyrTxRAhQhHQeimfwoMLjf5KbvPIKSgpHDTz/hlfJZ2jw19v97NTyWim0ooO0UoQ
-# RC/JJJMZ8JEbH1NUwyzGWSckRG/JAnR5zHiVgINrsqEG3I13+YXNgJyJsFMbTqd8
-# K6bh6ZwjnhOmtM+mkLpZ6oeKx7Gfs3b3dIkXU77RSoGK6vetIWc1+3teLCrdJM6E
-# xFYAAWKH6qRSuoSMMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFPqjpH3sL+M7WsV2ZrOW/d4a6tbxMA0GCSqGSIb3DQEBCwUAA4IBAQBKpMDN
+# 5TVp8XVJOLa0bKNiKiEzko7D77dOMW9XmdcSlZWaGWn2q51I03RX8JhdZVaAV6ff
+# p5wBj1j67E1GRTUXESwW2o+2r9OC32O+EPb+Gc1myifV5fmfGkhBh17+S/7JBzBy
+# KqCgvQqaE0aRffSyf/tPa55IslDv63bpGHJu5r+v4rO/NBhObQ2hmzySTpbMBpi9
+# VdLJFrNQ99O0HSK7fm5PO9zbU9Rl4ERSEAjGceWJVv3sziS5Sa2cLX1ft01Lsl5v
+# Fu8LWgJGU3X1eOvzZn7bH30qBFbZUOLgYHs+VDNCYjK4zVmCZ1s77euZi6BV9rO+
+# drbKz3OdYQeGmAhfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13490,31 +13427,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAdGgIAEJgpn0aMS9vh+hqrMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB5x+saGw2LtUQda5GkuR72MAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBQLpsLQOegn+sptEFQb4Z1Ij/PPlzANBgkqhkiG9w0BAQEF
-# AASCAQBBuIIN4uspLhDYcxj8ZWIRhfJl60F4KwnbNZFGOtNvs9BvfglNf4nYMesf
-# dmGlWvZo75R4UQwAsD+AYHTqHbXhUZ89vH33oKN+v2PMSEMRa9iRkntMbXmNzmvf
-# HI0zDE91Xo/qx51nC03o81UA0sjiXROlH9GUxJQOtZJDm+rI41d72b2SoqX4mHhg
-# BGN3qrk/n4sRgxE9tctxhj7PayU2fsmkjCW4YwSJjjGHElEUp2DnQrPAb2mbQAi1
-# NnZ1JMpLnsIIQdPegFn6SQh3aAUCKu5mC4suOV0hhyWJfdt1SbS0gDAoCp/sXm2N
-# oL62Yj2vAWdBGa57wo/rLoPQPAy8oYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSphodXMr5N7i08l8Dx2mEX5etXtzANBgkqhkiG9w0BAQEF
+# AASCAQDAZ9aRH2bIzofRaJGpNymg3HPgOQVrhWIQZid18PoeL1XN+3HpDEXMiGq5
+# WOAyzWD1R/yGbMfJozeyZt5moItFkkMqEUgcLUq+8JlH7rkCLWd7aiRlap4GW6BK
+# +k9uuvkTihZFURmcgV9eXL/jwOHyN45y/5hsTsPctQ+Se5JAPEuDeZBN7k9w1IN0
+# aevVg643vPH0+zrlMPJYFoOFItdp72wAC7IsCMMCX4N3E9VwKfNS946v/b51JLED
+# ZTG/9skwQjdztdjyp5PmhRGDjcOMwVlF0l0B9RddnzA3Gbd3Jy3sX679VJ72J/hZ
+# +/XMILxtaF9tga2vm1/5ZS7zl0QMoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTEwNDEz
-# MTI0MlowLwYJKoZIhvcNAQkEMSIEIBWJHBDTPR+E4PxI44AvQnSgi/RbqRPydxyB
-# qNRcRCzfMA0GCSqGSIb3DQEBAQUABIICACzjZizmmiZ30qSQRA5tlTChTuQN4zta
-# EdVA2ambONDBpnqySgfZZ8HC4/QurLEm0Iu3NroE5p+aYmegVb66JPlUWUSV5Wlt
-# A/u88gUlC9OUeR7edheBrPWfJhGA9O5YLLgxMA7D1nKtu0TYi6xPemMvtwKWMkRk
-# 0btjPJN2Z2VNVJoaKv8noL0kGX9FTLRXuTkx+e75glYlXnPEmrH7EP8bjLivRsKF
-# vlUcv8x1ej92nAdBE93YvJjpniwNVDbVYKTPAslJhO3hg84NSP6WqQf8gBkr2u+C
-# RlxhqpEkTnvAvZY8UjMUbkZT6EGdABRHR2Wrz1njbB5SuXrOTx0onP8ai0QlupWY
-# IHBXx6o1NT2OE8JNH6KREHZIITjaiEt4Vsb6adSPSpCQoIRHY9noaTB6BlLPzzPY
-# DU9+cCKKy92fwYouAuZWw38+eQzpxyfav+6Y8lFHRvpCFrOHgaT/MLNTbTYCigPQ
-# 0OC9AfNpOl/cNXgsDP/XqSuoJ3aBNtYXFElGiHfF6K6oOMCtCIJ5iubsPFNpIjU/
-# ne0+wxzzxbMy82Ak6/L9KrI8IDAOeIo5LkH0CWOiIHGYDLDxu6nFSMwUsUEr5Roq
-# tOg/+oUC9Yl9cYk+m2s7cFQe+G7/4f2wc8u9nX8NllD4J4EXUvS2gpS/cn/v3lBN
-# 4fuA0VBfVJxb
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIwNDE1
+# MTYwNVowLwYJKoZIhvcNAQkEMSIEIE8tDC35q8MChI6+mtJDS7GI4I0R9GNv7iUe
+# 2sRtyqCeMA0GCSqGSIb3DQEBAQUABIICAC3Oe3V2nREfBEXjylkBULxQJ03abXCH
+# l+q2pNIRBSTUhEUhyLwIW5LnarpP6rsE3OTpxF4rP7VFn5OEPHsYNlApR7rbFaSo
+# g+95Sn7+lQx2jYKBiFlfFOgckL5mXPVLqQWZzXT/H7XX/tO0gpcKBM/6HwNdvKpO
+# 8uG0YrEaZbSuhUTOIku8RhA8c9+sJ5rGNMZZY8eQu581lcfS3atkOYVOfboGMZ/1
+# oX+FxzhYPOX123npCIz1RUGoqczIv5B8mcZL/V1XTOZDu80exacziQGbo/ZTegi8
+# Yk1GKyUaGa5EIDxCGNdM5ICRdgRt3oZqZRFi/zrPG1LOUQanyiV3js2i45eRzSZt
+# AOqGOlgjXdKOkqW+Aq3LEJaF25tQQAE3qamSVXfLlGWozFTTQ22OTfO3Me7nn+B7
+# X1vxasAUdZcwEEIr04kwDepmDXLdUP3if8H+yRS+ZE1rYNsE1AIA8i9d04fCfX8l
+# i2s/YEqphRLNfFHrxyG4FrJvdEit7l5QCNbK2C5Q4Xu3bmZLN9SjaFEdHPho7aLJ
+# 11sWvaWuzknObAyJN5jnpJWggJhQqKpUYujg2/qvXWGAzw0b+HgdzUDlPrlKU5er
+# 2OCA31u6RycADMTmS7Us+oMsYkB5vLHyp8DJcCTO0BCE5nFKTJjfnlYoYmjLX8d6
+# t0pQEJpFPlrz
 # SIG # End signature block
