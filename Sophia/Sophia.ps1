@@ -126,9 +126,10 @@ OneDrive -Uninstall
 #region System
 
 StorageSense -Disable
+StorageSenseFrequency -Month
 StorageSenseTempFiles -Disable
 Hibernation -Disable
-Win32LongPathLimit -Disable
+Win32LongPathLimit -Enable
 BSoDStopError -Enable
 AdminApprovalMode -Never
 MappedDrivesAppElevatedAccess -Enable
@@ -152,6 +153,7 @@ F1HelpPage -Disable
 StickyShift -Disable
 Autoplay -Disable
 ThumbnailCacheRemoval -Disable
+SaveRestartableApps -Enable
 NetworkDiscovery -Enable
 ActiveHours -Automatically
 RestartDeviceAfterUpdate -Enable
@@ -223,6 +225,7 @@ PrintCMDContext -Hide
 IncludeInLibraryContext -Hide
 SendToContext -Hide
 CompressedFolderNewContext -Hide
+MultipleInvokeContext -Enable
 UseStoreOpenWith -Hide
 OpenWindowsTerminalContext -Show
 Windows10ContextMenu -Disable
