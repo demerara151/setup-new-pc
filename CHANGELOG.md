@@ -8,7 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 -   [`privacy.sexy`](https://privacy.sexy) の導入を検討中
--
+
+## 2022-12-13
+
+### Added
+
+-   Add gpg key to sign each commits.
+-   Add `ja-JP` translation file for `Sophia Script` to be able to use them with Japanese out of the box but still experimental.
 
 ## 2022-11-06
 

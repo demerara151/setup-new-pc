@@ -29,8 +29,8 @@ UserFolderRequest                         = "{0}" フォルダーの場所を変
 UserFolderSelect                          = "{0}" フォルダーのためのフォルダーを選択してください
 UserDefaultFolder                         = "{0}" フォルダーの場所をデフォルトの値に変更しますか？
 ReservedStorageIsInUse                    = 予約ストレージが使用中の場合、この操作はサポートされません\nPC の再起動後、"{0}" 関数を再度実行してください
-ShortcutPinning                           = "{0}" ショートカットはスタートにピン留めされています...
-SSDRequired                               = Windows Subsystem for Android™ を利用する場合、お使いのデバイスに Solid State Drive (SSD) が組み込まれている必要があります
+ShortcutPinning                           = "{0}" ショートカットをスタートにピン留めしています...
+SSDRequired                               = Windows Subsystem for Android™ を利用する場合は、お使いのデバイスに Solid State Drive (SSD) が組み込まれている必要があります
 UninstallUWPForAll                        = 全てのユーザー
 UWPAppsTitle                              = UWP アプリ
 HEVCDownloading                           = デバイスの製造元から HEVC ビデオ拡張機能をダウンロードしています... ~2.8 MB
@@ -78,5 +78,3 @@ DiscordChannelTitle                       = 私たちの公式 Discord チャン
 Uninstall                                 = アンインストール
 '@
 
-# SIG # Begin signature block
-# SIG # End signature block
