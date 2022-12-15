@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
--   [`privacy.sexy`](https://privacy.sexy) の導入を検討中
+-   [`privacy.sexy`](https://privacy.sexy) の利用方法の追加
+-   [.config](/.config) で管理しているドットファイルを [`chezmoi`](https://www.chezmoi.io) で管理するようにしたので、その導入方法と手順の追加
+-   `WPD` と `ShutUp10` が `Freeware` であることへの懸念
+
+## 2022-12-15
+
+### Added
+
+-   add new apps in [installAll.ps1](/installAll.ps1).
+    new apps: `ddu`, `nvcleanstall`, `keepassxc`, `gpg4win`, `chezmoi`, `privacy.sexy`, `synctrayzor`, `hyper`, `brotli`, `deno`, `helix`, `goodbyedpi`, `inkscape`, `openshot`, `waifu2x-ncnn-vulkan` and `Delugia-Nerd-Font-Complete`.
+
+-   add more app categories in [installAll.ps1](/installAll.ps1).
+
+### Changed
+
+-   change environment for running scripts to `PowerShell Core` instead of `Windows Terminal`.
+-   remove some unused apps like `monolith`.
 
 ## 2022-12-13
 

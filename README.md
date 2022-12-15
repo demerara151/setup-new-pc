@@ -81,7 +81,7 @@ X:\Sources> exit
 
 ## Installation
 
-<kbd>Windows</kbd> キーを押して、検索窓に「wt」と入力して <kbd>Enter</kbd> でターミナルを起動
+<kbd>Windows</kbd> キーを押して、検索窓に「shell」と入力して <kbd>Enter</kbd> で `Windows PowerShell` を起動
 
 以下のコマンドをコピーして張り付け
 
@@ -94,9 +94,10 @@ scoop install 7zip mingit gsudo pwsh
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
+
 ```
 
-一度ターミナルを終了し、再度起動して `Ctrl+,` で設定画面を開く。「既定のプロファイル」を _Windows Powershell_ から _**Powershell**_ に変更、設定を保存して終了
+一度 `Windows PowerShell` を終了し、<kbd>Windows</kbd> キーを押して `PowerShell Core` を探して起動
 
 ### スクリプトの編集
 
@@ -123,22 +124,24 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 sudo ~/setup-new-pc/Sophia/Sophia.ps1
+
 ```
 
 プログラムが終了し、PC を再起動するようメッセージが表示されたら、PC を再起動
 
 -   実行に失敗した場合、
 
-    1. Windows Update の実行
+    1. `Windows Update` の実行
     2. ターミナル、または PC の再起動
-    3. Powershell のバージョンがスクリプトの要件を満たしているか確認
+    3. `PowerShell` のバージョンがスクリプトの要件を満たしているか確認
 
 ### メインスクリプトの実行
 
-PC の再起動後、再度ターミナルを起動して次のスクリプトを実行
+PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプトを実行
 
 ```powershell
 ~/setup-new-pc/installAll.ps1
+
 ```
 
 必要なアプリがまとめてインストールされます
@@ -149,7 +152,7 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 
 -   [WPD]
 
-    -   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service`全般はそのままで、それ以外の項目を全てオフに
+    -   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service` 全般はそのままで、それ以外の項目を全てオフに
     -   ブロッカー : `Update` 以外を適用。`Firewall` の設定はそのまま
     -   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
 
@@ -169,6 +172,7 @@ PC の再起動後、再度ターミナルを起動して次のスクリプト�
 
 ```powershell
 Copy-Item -Path ~/setup-new-pc/.config -Recurse -Destination ~/ -Force
+
 ```
 
 ### 設定ファイル用シンボリックリンクの作成 [`symLinkCreator.ps1`](symLinkCreator.ps1)
@@ -177,6 +181,7 @@ Copy-Item -Path ~/setup-new-pc/.config -Recurse -Destination ~/ -Force
 
 ```powershell
 ~/setup-new-pc/symLinkCreator.ps1
+
 ```
 
 本来、`%APPDATA%` や `%LOCALAPPDATA%` 等に保存される設定ファイルへのシンボリックリンクが `~/.config` 内に作成されます。以降、このスクリプトで設定した全ての設定ファイルはこの `~/.config` 内からアクセスできるようになります
@@ -194,6 +199,7 @@ Copy-Item -Path ~/setup-new-pc/.config -Recurse -Destination ~/ -Force
 
 ```powershell
 ~/setup-new-pc/stopService.ps1
+
 ```
 
 ### コピペ用追加設定一括コマンド
@@ -203,6 +209,7 @@ Copy-Item -Path ~/setup-new-pc/.config -Recurse -Destination ~/ -Force
 Move-Item -Path ~/setup-new-pc/.config -Destination ~/ -Force
 ~/setup-new-pc/symLinkCreator.ps1
 ~/setup-new-pc/stopService.ps1
+
 ```
 
 ### Hyper-V の有効化
@@ -211,6 +218,7 @@ BIOS で「ハードウェアの仮想化サポート」が有効になってい
 
 ```Powershell
 sudo ~/setup-new-pc/hyper-v/hv.bat
+
 ```
 
 > もし、_Windows Insider Program_ への参加が条件で `Hyper-V` が実行できない場合は、[OfflineInsiderEnroll] をインストール（`scoop install offlineinsiderenroll`）することで、Microsoft アカウントの作成を回避して _Windows Insider Program_ へ参加可能
@@ -232,6 +240,7 @@ sudo ~/setup-new-pc/hyper-v/hv.bat
 ```powershell
 scoop install librewolf
 librewolf.exe
+
 ```
 
 そのポータブル版で <https://librewolf.net/installation/windows> を開いて、最新版のインストーラーをダウンロードします
@@ -272,7 +281,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 -   [Energized Ultimate Protection]
 -   [Energized Xtreme Extension]
 
-> PC のスペックが低い場合、これらのフィルターを全て適用するとそれなりに重くなることが予想されます。特に、Energized~ は強力ですが、その分重たくなるので、様子を見ながら適度に適用しましょう
+> PC のスペックが低い場合、これらのフィルターを全て適用するとかなり重たくなります。特に、`Energized ~` は強力ですがその分重たくなるので、様子を見ながら適度に適用してください。初めは `oisd` だけ適用するのがよさそうです
 
 ### about:config で変更したい箇所
 
