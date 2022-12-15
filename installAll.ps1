@@ -1,4 +1,4 @@
-# Adding buckets
+# Add buckets
 foreach (
     $bucket in @(
         "extras",
@@ -9,7 +9,7 @@ foreach (
 ) { scoop bucket add $bucket }
 
 <#
-    .DESCRIPTION
+    .SYNOPSIS
     Install all AIO Repack for latest Microsoft Visual C++ Redistributable Runtimes.
 
     .LINK
@@ -21,33 +21,61 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 # Microsoft Windows Desktop Runtime
 sudo scoop install windowsdesktop-runtime-lts
 
-# Essentials
-scoop install aria2 autohotkey2 bat bitwarden bottom brave broot czkawka dust everything everything-cli fd ffmpeg ffsend fzf hwinfo imageglass less librewolf lightbulb lsd mailspring mpv neovim pwsh ripgrep sd sharex starship shutup10 terminal-icons wpd zenhan zoxide
+# Essential for everyone
+scoop install bitwarden brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
 
-# --- Optional from here. You can disable install by put `#` on top of each line. --- #
-# Programming
-scoop install gitui monolith poetry python rustup-msvc so sqlitebrowser tldr vscode
+# Privacy
+scoop install privacy.sexy shutup10 wpd
+
+# <# --- Optional from here. You can disable install by put `#` on top of each line or uncomment out both this line and end line. --- #
+
+# Utility (GUI)
+scoop install autohotkey2 czkawka-gui ddu nvcleanstall synctrayzor
+
+# Shell
+scoop install starship terminal-icons zoxide
+
+# Terminal
+scoop install hyper
+
+# Utility (CLI)
+scoop install aria2 bat bottom broot chezmoi czkawka dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
+
+# Dev
+scoop install brotli deno gitui poetry python rustup-msvc so sqlitebrowser tldr
+
+# Editor
+scoop install helix neovim vscode zenhan
+
+# Security
+scoop install keepassxc gpg4win
+
+# Network
+scoop install goodbyedpi
 
 # Gaming # Steam have to install manually.
-scoop install discord legendary playnite heroic-games-launcher
+scoop install discord heroic-games-launcher legendary playnite
 
 # Media
-scoop install exifcleaner foobar2000 foobar2000-encoders freetube gallery-dl losslesscut yt-dlp
+scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
+
+# Media Tool
+scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan 
 
 # Nerd Fonts
-sudo scoop install IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
+sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
 sudo scoop install icaros-np --global
 
-# --- Optional region ends here --- #
+# --- Optional region ends here --- #>
 
 <#
 
     .NOTES
-    winget source is broken rn. so comment out this function for now.
-    also winget stops working when privacy.sexy strict rules applied.
-    winget has a lot of problem in my recent use case. so I will ditch this in the future.
+    Commented out this function since winget source is broken.
+    Besides that winget stops working when privacy.sexy strict rules applied.
+    winget has a lot of problem in my recent use case. I'm gonna ditch this function in the future.
 
     .LINK
     https://github.com/microsoft/winget-cli/issues/2666
