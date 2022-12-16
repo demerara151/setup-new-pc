@@ -1,7 +1,7 @@
-#Requires -Version 7.2
+#Requires -Version 7.3
 
 if ($PSVersionTable.PSVersion.Major -lt 6) {
-    Write-Host "[Error]: Please use PowerShell 7.2 or higher version." -ForegroundColor DarkRed
+    Write-Host "[Error]: Please use PowerShell 7.3 or higher version." -ForegroundColor DarkRed
 }
 else {
     $CONFIG = "$HOME/.config"

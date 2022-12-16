@@ -60,7 +60,7 @@ scoop install discord heroic-games-launcher legendary playnite
 scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
 
 # Media Tool
-scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan 
+scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
 
 # Nerd Fonts
 sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
