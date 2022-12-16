@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 -   remove `wpd`
+-   remove `privacy.sexy` because that is still experimental. Even `standard` modification will break some functionality. Be careful to use it.
 
 ## 2022-12-15
 
