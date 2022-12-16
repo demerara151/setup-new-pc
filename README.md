@@ -53,7 +53,6 @@
 
 ## Dependencies
 
--   [WPD]
 -   [Scoop]
 -   [O&O ShutUp10]
 -   [Sophia Script for Windows]
@@ -148,13 +147,7 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 ### プライバシーとセキュリティの強化
 
-アプリのインストール完了後、自動的に以下の 2 つのアプリが立ち上がるので、以下のようにそれぞれ設定
-
--   [WPD]
-
-    -   プライバシー : `Windows Update` と `Windows Defender ウィルス対策`、`Service` 全般はそのままで、それ以外の項目を全てオフに
-    -   ブロッカー : `Update` 以外を適用。`Firewall` の設定はそのまま
-    -   アプリ : `App Installer` と `Windows Terminal` 以外の不要なアプリを選択して削除
+アプリのインストール完了後、自動的に以下のアプリが立ち上がるので、以下のように設定
 
 -   [O&O ShutUp10]
 
@@ -318,7 +311,6 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 <!-- Dependencies -->
 
-[wpd]: https://wpd.app
 [scoop]: https://scoop.sh
 [o&o shutup10]: https://www.oo-software.com/en/shutup10
 [sophia script for windows]: https://github.com/farag2/Sophia-Script-for-Windows

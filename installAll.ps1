@@ -25,7 +25,7 @@ sudo scoop install windowsdesktop-runtime-lts
 scoop install bitwarden brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
 
 # Privacy
-scoop install privacy.sexy shutup10 wpd
+scoop install privacy.sexy shutup10
 
 # <# --- Optional from here. You can disable install by put `#` on top of each line or uncomment out both this line and end line. --- #
 
@@ -105,6 +105,5 @@ foreach ($program in $programs) {
 
 #>
 
-# Run WPD and shutup10
-Start-Process -FilePath "$(scoop prefix wpd)\WPD.exe"
+# Run shutup10
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"

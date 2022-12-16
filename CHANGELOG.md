@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   [`privacy.sexy`](https://privacy.sexy) の利用方法の追加
 -   [.config](/.config) で管理しているドットファイルを [`chezmoi`](https://www.chezmoi.io) で管理するようにしたので、その導入方法と手順の追加
--   `WPD` と `ShutUp10` が `Freeware` であることへの懸念
+-   `ShutUp10` が `Freeware` であることへの懸念
+
+## 2022-12-16
+
+### Changed
+
+-   remove `wpd`
 
 ## 2022-12-15
 
