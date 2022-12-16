@@ -1,8 +1,10 @@
+# DNS Blocker
+
 ## About DNS Blocker
 
-`DNS Blocker` とは `DNS` レベルで広告やトラッカーをブロックできるツールの総称。
+`DNS Blocker` とはドメイン単位で広告やトラッカーをブロックできるツールの総称です。
 
-特に、ブラウザ以外のソフトウェア、ゲーム、IOT家電等、インターネットに接続する可能性のある全てのデバイスに適用できるのが大きなメリットです。
+ドメイン単位でのブロックなら、`uBlockOrigin` でもできますが、こちらはブラウザを含めて PC ソフト、ゲーム、IOT 家電など、インターネットに接続する可能性のある全てのデバイスの通信が管理可能です。
 
 ### Adguard Home
 
@@ -16,25 +18,32 @@
 
 [How to install program manually](https://github.com/AdguardTeam/AdGuardHome/wiki/Getting-Started)
 
-まず初めに、以下のコマンドで `Adguard Home` を起動する。
+[Releases](https://github.com/AdguardTeam/AdGuardHome/releases/latest) から圧縮ファイル `AdGuardHome_windows_amd64.zip` をダウンロードしてきて、任意の場所に展開します。
+
+## Getting Started
+
+まず初めに、管理者権限で `Adguard Home` を起動します。
 
 ```Powershell
-sudo .\AdGuardHome
+cd AdguardHome
+sudo .\AdGuardHome.exe
+
 ```
 
 ここで表示されるポートナンバー `3000` のアドレスを開くと、初期設定が始まります。（例：127.0.0.1:3000）
 
 案内に従って設定を終えたら、コントロールパネルを開いてネットワークの設定画面で、`DNS` を現在開いている `LocalHost` の `IP` アドレスに設定します。
 
-# Register as service
+## Register as service
 
-次に、Adguard Home をサービスに登録する。
+次に、Adguard Home をサービスに登録します。
 
 ```Powershell
 sudo .\AdGuardHome -s install
+
 ```
 
-# Web interface（管理ページ）
+## Web interface（管理ページ）
 
 これでセットアップは完了です。
 
@@ -46,7 +55,9 @@ sudo .\AdGuardHome -s install
 
 ### フィルタ設定
 
-フィルタは、`uBlockOrigin` で利用しているものと同じものを設定する
+フィルタは、基本的に `uBlockOrigin` で利用しているものと同じものを設定すればいいです
+
+ただし、ブラウザとは違い主に裏で通信している内容を精査するため、強力で重ためのフィルターも気にせず適用できます
 
 管理ページで、フィルタ -> `DNS` ブロックリストを選択し、手動でフィルタへのリンクを追加します
 
@@ -68,10 +79,17 @@ sudo .\AdGuardHome -s install
 
 注意：`Amazon` や `CloudFlare` をブロックすると、`AWS` のようなホスティングサービスや コンテンツを配信する `CDN` 等もブロックされ、多くのサービスが利用できなくなる可能性があります。自身が利用しているサービスにこれらが含まれていないか確認してからブロックするか、万が一意図せずしてブロックされてしまった場合は、ログからブロックされたレコードを探して解除してください。
 
-## Apendix
+## Appendix
 
-### Public DNS Addrress
+### Public DNS Address
+
+Adguard Home の公開 DNS サーバーのアドレスです
+
+上記の手順で、インストールや設定等をせずとも、コントロールパネルから DNS 設定を書き換えるだけで使えます
+
+ただし、フィルターやブロックするドメイン等を細かく指定することはできません。デフォルトのブロックリストに従うことになります
 
 Default server for IPv4
+
 -   94.140.14.14
 -   94.140.15.15
