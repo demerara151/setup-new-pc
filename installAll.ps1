@@ -22,7 +22,7 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 sudo scoop install windowsdesktop-runtime-lts
 
 # Essential for everyone
-scoop install bitwarden brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
+scoop install brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
 
 # Privacy
 scoop install shutup10

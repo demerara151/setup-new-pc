@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   [.config](/.config) で管理しているドットファイルを [`chezmoi`](https://www.chezmoi.io) で管理するようにしたので、その導入方法と手順の追加
 -   `ShutUp10` が `Freeware` であることへの懸念
 
+## 2022-12-17
+
+### Changed
+
+-   change password manager to `KeePassXC` instead of `Bitwarden`.
+
 ## 2022-12-16
 
 ### Changed
