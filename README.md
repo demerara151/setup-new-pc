@@ -246,6 +246,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 -   [DarkReader] 常にダークモード
 -   [LibRedirect] プライバシーを尊重するサイトへ自動リダイレクト
 -   [KeePassXC-Browser] パスワード管理
+
     導入手順: <https://keepassxc.org/docs/KeePassXC_GettingStarted.html#_setup_browser_integration>
 
 ### `uBlockOrigin` の上級者設定
