@@ -24,12 +24,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Excluding pattern goes here
-/legendary/*
-!config.ini
-
-# Directories
-/nvim/dein/
-
 # Spell checker
 /.vscode/
