@@ -2,11 +2,11 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.2.4
+	Version: v6.2.5
 	Date: 04.12.2022
 
-	Copyright (c) 2014—2022 farag
-	Copyright (c) 2019—2022 farag & Inestic
+	Copyright (c) 2014—2023 farag
+	Copyright (c) 2019—2023 farag & Inestic
 
 	Thanks to all https://forum.ru-board.com members involved
 
@@ -3483,8 +3483,8 @@ function Cursors
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name IBeam -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\beam.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name No -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\unavailable.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name NWPen -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\handwriting.cur" -Force
-					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Person -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\pin.cur" -Force
-					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Pin -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\person.cur" -Force
+					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Person -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\person.cur" -Force
+					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Pin -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\pin.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name precisionhair -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\precision.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name "Scheme Source" -PropertyType DWord -Value 1 -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name SizeAll -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_dark_v2.2\move.cur" -Force
@@ -3600,8 +3600,8 @@ function Cursors
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name IBeam -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\beam.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name No -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\unavailable.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name NWPen -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\handwriting.cur" -Force
-					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Person -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\pin.cur" -Force
-					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Pin -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\person.cur" -Force
+					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Person -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\person.cur" -Force
+					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name Pin -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\pin.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name precisionhair -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\precision.cur" -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name "Scheme Source" -PropertyType DWord -Value 1 -Force
 					New-ItemProperty -Path "HKCU:\Control Panel\Cursors" -Name SizeAll -PropertyType ExpandString -Value "%SystemRoot%\Cursors\W11_light_v2.2\move.cur" -Force
@@ -8629,18 +8629,18 @@ function InstallVCRedist
 
 <#
 	.SYNOPSIS
-	Install the latest .NET Desktop Runtime 6 (x86/x64)
+	Install the latest .NET Desktop Runtime 7 (x86/x64)
 
 	.EXAMPLE
-	InstallDotNetRuntime6
+	InstallDotNetRuntime7
 
 	.LINK
-	https://docs.microsoft.com/en-us/dotnet/core/install/windows?tabs=net60
+	https://dotnet.microsoft.com/en-us/download/dotnet
 
 	.NOTES
 	Machine-wide
 #>
-function InstallDotNetRuntime6
+function InstallDotNetRuntime7
 {
 	try
 	{
@@ -8659,15 +8659,15 @@ function InstallDotNetRuntime6
 		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
 		{
 			# .NET Desktop Runtime x86
-			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x86 --exact --accept-source-agreements
+			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x86 --exact --accept-source-agreements
 			# .NET Desktop Runtime x64
-			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x64 --exact --accept-source-agreements
+			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x64 --exact --accept-source-agreements
 		}
 		else
 		{
 			# https://github.com/dotnet/core/blob/main/release-notes/releases-index.json
 			$Parameters = @{
-				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json"
+				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json"
 				UseBasicParsing = $true
 			}
 			$LatestRelease = (Invoke-RestMethod @Parameters)."latest-release"
@@ -9343,10 +9343,6 @@ function UninstallUWPApps
 		# Photos (and Video Editor)
 		"Microsoft.Windows.Photos",
 		"Microsoft.Photos.MediaEngineDLC",
-		"Microsoft.RawImageExtension"
-
-		# HEVC Video Extensions from Device Manufacturer
-		"Microsoft.HEVCVideoExtension",
 
 		# Calculator
 		"Microsoft.WindowsCalculator",
@@ -9414,7 +9410,10 @@ function UninstallUWPApps
 		"Microsoft.HEVCVideoExtension",
 
 		# Raw Image Extension
-		"Microsoft.RawImageExtension"
+		"Microsoft.RawImageExtension",
+
+		# HEIF Image Extensions
+		"Microsoft.HEIFImageExtension"
 	)
 
 	#region Variables
@@ -9538,7 +9537,7 @@ function UninstallUWPApps
 			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers:$AllUsers | Select-Object -Index 0
 		}
 
-		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
+		$PackagesIds = [Windows.Management.Deployment.PackageManager, Windows.Web, ContentType = WindowsRuntime]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
 
 		foreach ($AppxPackage in $AppxPackages)
 		{
@@ -10701,7 +10700,11 @@ function CleanupTask
 			}
 
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
+
 			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
 			$ScheduleService.Connect()
@@ -10890,7 +10893,10 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 		"Delete"
 		{
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
 
 			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
@@ -10970,7 +10976,10 @@ function SoftwareDistributionTask
 		"Register"
 		{
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
 
 			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
@@ -11044,7 +11053,10 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 		"Delete"
 		{
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
 
 			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
@@ -11119,7 +11131,10 @@ function TempTask
 		"Register"
 		{
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
 
 			# Remove folders in Task Scheduler. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
@@ -11192,7 +11207,10 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 		"Delete"
 		{
 			# Remove all old tasks
-			Unregister-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -TaskName "Windows Cleanup", "Windows Cleanup Notification", SoftwareDistribution, Temp -Confirm:$false -ErrorAction Ignore
+			# We have to use -ErrorAction Ignore in both cases, unless we get an error
+			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
+				Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction Ignore
+			}
 
 			# Remove folder in Task Scheduler if there is no tasks left there. We cannot remove all old folders explicitly and not get errors if any of folders do not exist
 			$ScheduleService = New-Object -ComObject Schedule.Service
@@ -12377,7 +12395,7 @@ function EditWithClipchampContext
 		$Show
 	)
 
-	if (((Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber -ge 22621) -and (Get-AppxPackage -Name Clipchamp.Clipchamp))
+	if (((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber -ge 22621) -and (Get-AppxPackage -Name Clipchamp.Clipchamp))
 	{
 		switch ($PSCmdlet.ParameterSetName)
 		{
@@ -12958,6 +12976,7 @@ function UpdateLGPEPolicies
 
 	Write-Verbose -Message $Localization.Patient -Verbose
 	Write-Verbose -Message $Localization.GPOUpdate -Verbose
+	Write-Verbose -Message HKLM -Verbose
 	Write-Information -MessageData "" -InformationAction Continue
 
 	# Local Machine policies paths to scan recursively
@@ -12982,7 +13001,7 @@ function UpdateLGPEPolicies
 
 					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
-						Write-Verbose -Message ([string](($SplitPath, "|", $Item.Replace("{}", "")))) -Verbose
+						Write-Verbose -Message ([string]($SplitPath, "|", $Item.Replace("{}", ""), "|", $(Get-ItemPropertyValue -Path $Path.PSPath -Name $Item))) -Verbose
 
 						$Type = switch ((Get-Item -Path $Path.PSPath).GetValueKind($Item))
 						{
@@ -13015,6 +13034,9 @@ function UpdateLGPEPolicies
 		}
 	}
 
+	Write-Information -MessageData "" -InformationAction Continue
+	Write-Verbose -Message HKCU -Verbose
+
 	# Current User policies paths to scan recursively
 	$CU_Paths = @(
 		"HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies",
@@ -13037,7 +13059,7 @@ function UpdateLGPEPolicies
 
 					if ($config.SelectSingleNode("//*[local-name()='policy' and @key='$($SplitPath.ToLower())' and (@valueName='$($Item.ToLower())' or @Name='$($Item.ToLower())' or .//*[local-name()='enum' and @valueName='$($Item.ToLower())'])]"))
 					{
-						Write-Verbose -Message ([string](($SplitPath, "|", $Item.Replace("{}", "")))) -Verbose
+						Write-Verbose -Message ([string]($SplitPath, "|", $Item.Replace("{}", ""), "|", $(Get-ItemPropertyValue -Path $Path.PSPath -Name $Item))) -Verbose
 
 						$Type = switch ((Get-Item -Path $Path.PSPath).GetValueKind($Item))
 						{
@@ -13308,24 +13330,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUV7b+foPrLgQmBZEKoFS6nZRG
-# PkugghYNMIIDAjCCAeqgAwIBAgIQecfrGhsNi7VEHWuRpLke9jANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMDQxNTA1NTla
-# Fw0yNDEyMDQxNTE1NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5SerjAkErXu1FSNeI7GabOfnQi2j
-# FbXeA6F4eGLh3f40oAyoXXNVXOjVd55lymMOAcfYzGUK1Ss6AnkzelIvbqUUU4ig
-# mHZg0GuS4u3PyOFTcIctM0atpHgpJqaWMixdPEw2QLv8TtLc65b34vZ1bZUNB/gu
-# E6KCejwio8Ivgzzie9oXiDzhiEBeeUwgQtYD5I9PpTvh5JOtMHMR6IHcXqT/QXtw
-# uKNPZG3bJSR+X1yaT2zPTZcM/tAHytew9IfDUZoIFahxBkh3pcfKWZFNxAg6WE4v
-# /dEVmraLqUOxtKPc1eT8Ynho2BlyohBSCk46P5ZHZ7/LKGL19t6nOeHIrQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJD8Qv45DRGLdXbyZMl90AFdu
+# weCgghYNMIIDAjCCAeqgAwIBAgIQGVBCMJ28PpZOlfh0PypOATANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMTExNjM5MTda
+# Fw0yNDEyMTExNjQ5MDdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8xw2Kh2owRAbBR3S3cg9RA1YzoKE
+# 5vpBQ2cysNHJpHKGnp1X674hUT6o2BmrGyQZvaRT2g+HTglE9zDsN1T9c1heDSRz
+# Zygy9VG7ezGmHkp1bZloHSALz/AmYq7rY62elBd6NCxFfunAe+aWmi/PUBvEB5nP
+# Y/R3xdYVOv89D9+ZSq5FAShW5PR58RvLbhD6VxFf+8oJ8VpRnB167qPrrqFaNGqT
+# BXjYZGKFSo4W49CxQWYIKm8WrvVM6v/C7emPO8YbXC4mB9QV3mBLuoi94nBLmwzo
+# wpjjkfhHF2bs7W8CemAL5q39aa5vvceyQrS3Df9depV1ll5AfYoOpK/AwQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFPqjpH3sL+M7WsV2ZrOW/d4a6tbxMA0GCSqGSIb3DQEBCwUAA4IBAQBKpMDN
-# 5TVp8XVJOLa0bKNiKiEzko7D77dOMW9XmdcSlZWaGWn2q51I03RX8JhdZVaAV6ff
-# p5wBj1j67E1GRTUXESwW2o+2r9OC32O+EPb+Gc1myifV5fmfGkhBh17+S/7JBzBy
-# KqCgvQqaE0aRffSyf/tPa55IslDv63bpGHJu5r+v4rO/NBhObQ2hmzySTpbMBpi9
-# VdLJFrNQ99O0HSK7fm5PO9zbU9Rl4ERSEAjGceWJVv3sziS5Sa2cLX1ft01Lsl5v
-# Fu8LWgJGU3X1eOvzZn7bH30qBFbZUOLgYHs+VDNCYjK4zVmCZ1s77euZi6BV9rO+
-# drbKz3OdYQeGmAhfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFEUZwbysDqGDCfgbb7n08vCwfSBjMA0GCSqGSIb3DQEBCwUAA4IBAQC/mTC/
+# Rr3sU1I82vgafvvgIA1AtsGAgtGEaOFujuyqH4MbdqFXgeGTz6VfDpNlvO92ZuDZ
+# 3RvhYvFTAzsCTEkYUcSyV874BdDGDYDJQ4PRWuDCKr/qJHPA1tZNGEHaQiAftCY+
+# lh2iVuFLrClWv1RtAsirOHtObbXbLB2AyB3dUuL6LHJNxcB9s+bOIEy/MYDGXaXY
+# oi5KGo3F6vcMfzu2s6PYm1FosIMCw+NtMLh7ZXA8KvCf+nMQ5BeSwLVjHWBLwsUM
+# yk5t6W4WY+4yvTt59rBirCulVN3KwhW9zATCvFdiZp1CmBbusvL+j83JQTE6Thga
+# 0NPVL6zpsr9Ixa2fMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13427,31 +13449,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB5x+saGw2LtUQda5GkuR72MAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAZUEIwnbw+lk6V+HQ/Kk4BMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBSphodXMr5N7i08l8Dx2mEX5etXtzANBgkqhkiG9w0BAQEF
-# AASCAQDAZ9aRH2bIzofRaJGpNymg3HPgOQVrhWIQZid18PoeL1XN+3HpDEXMiGq5
-# WOAyzWD1R/yGbMfJozeyZt5moItFkkMqEUgcLUq+8JlH7rkCLWd7aiRlap4GW6BK
-# +k9uuvkTihZFURmcgV9eXL/jwOHyN45y/5hsTsPctQ+Se5JAPEuDeZBN7k9w1IN0
-# aevVg643vPH0+zrlMPJYFoOFItdp72wAC7IsCMMCX4N3E9VwKfNS946v/b51JLED
-# ZTG/9skwQjdztdjyp5PmhRGDjcOMwVlF0l0B9RddnzA3Gbd3Jy3sX679VJ72J/hZ
-# +/XMILxtaF9tga2vm1/5ZS7zl0QMoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBS+sTGUGXDoO/UPQdr/6H62Pv5qzzANBgkqhkiG9w0BAQEF
+# AASCAQCzcnNuQNvU65fPdF1BLZzQIUxz89y07VfvGSjZtF1FKdNK/hF0UqEKOqd4
+# vAU0Tqr1iufgGl7i3ySomFI8l03F01gni7lpS4doeul34/XF6Q9M2j0Tf/KnSlgc
+# S7P69fwmtZ7t2XzsaI8Nb7GQ4J3j8tPKsV8x6hnA1Tj86dh6kRjNKWT9S09HlbGS
+# rHbKiIvZuojoturKB6DihNtP8q5SkzjQT6Y3NeuHB7QCfkwjdARH/Hcro+njHUJT
+# hxOY2ueBn/HsqgoJlJVMMJiz+uHj1RLzNXDmbefmbdWFHrelpAz4OSpEn05aQL32
+# DlDG7NSWC4fb1kRcAcM9DYlmiaBMoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIwNDE1
-# MTYwNVowLwYJKoZIhvcNAQkEMSIEIE8tDC35q8MChI6+mtJDS7GI4I0R9GNv7iUe
-# 2sRtyqCeMA0GCSqGSIb3DQEBAQUABIICAC3Oe3V2nREfBEXjylkBULxQJ03abXCH
-# l+q2pNIRBSTUhEUhyLwIW5LnarpP6rsE3OTpxF4rP7VFn5OEPHsYNlApR7rbFaSo
-# g+95Sn7+lQx2jYKBiFlfFOgckL5mXPVLqQWZzXT/H7XX/tO0gpcKBM/6HwNdvKpO
-# 8uG0YrEaZbSuhUTOIku8RhA8c9+sJ5rGNMZZY8eQu581lcfS3atkOYVOfboGMZ/1
-# oX+FxzhYPOX123npCIz1RUGoqczIv5B8mcZL/V1XTOZDu80exacziQGbo/ZTegi8
-# Yk1GKyUaGa5EIDxCGNdM5ICRdgRt3oZqZRFi/zrPG1LOUQanyiV3js2i45eRzSZt
-# AOqGOlgjXdKOkqW+Aq3LEJaF25tQQAE3qamSVXfLlGWozFTTQ22OTfO3Me7nn+B7
-# X1vxasAUdZcwEEIr04kwDepmDXLdUP3if8H+yRS+ZE1rYNsE1AIA8i9d04fCfX8l
-# i2s/YEqphRLNfFHrxyG4FrJvdEit7l5QCNbK2C5Q4Xu3bmZLN9SjaFEdHPho7aLJ
-# 11sWvaWuzknObAyJN5jnpJWggJhQqKpUYujg2/qvXWGAzw0b+HgdzUDlPrlKU5er
-# 2OCA31u6RycADMTmS7Us+oMsYkB5vLHyp8DJcCTO0BCE5nFKTJjfnlYoYmjLX8d6
-# t0pQEJpFPlrz
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIxMTE2
+# NDkyNFowLwYJKoZIhvcNAQkEMSIEICCdmbNRkGLlIX/VAeFtqVXhZa8jYRiu8MfJ
+# bSgVCkBQMA0GCSqGSIb3DQEBAQUABIICAKGNdPRfMscEfW9SaHy5WZyaICvL2SG6
+# xn/ykEZs0iKfp+1TqRt1/lKkcGH1qk+ryk3esnWBwsNa8FkV+WfGme1ymHPQezwW
+# y6+ZR2H/zmODqqOqPBMbXPtHm54IHO6/G1curhBRgi/t0bETrdkrF7FM8Oy3vJt3
+# zzrLdfu+IRVzKskRNo8Kv3CBBZoUgupeCJlIdIbnMGQM3UV6A4l8ddbgLKODiR57
+# fWI1pxiNLsafqaXV840Lk3+rVBgsSrhTbZazy32wJ10vzwb2CACnO+CfroDJEZdA
+# QHwbyCtx2iHApXOCFELV4F/vXjencoRav9VurSEsTSZO0OB8jUtnuPeM3CM+63GN
+# 1p+Ke+xvPK3+GHBJQsOZCzpYS3SzPV7opniWr7SCfzqV1KcKCGnutcMxzqucIh19
+# YUyLXcwIeNb/b7PtmILst5Z4/3fK9XoR00SuaPH5J8KeHWJ4ZWfOHJ/4e59RaDGg
+# 9ReNgL8vfEH1ahLMbln7X07qyujUg/zRjX9/37ZCKN6ehn05fEEdXJ4vgzxRPF6b
+# BaE+YQJ/AORzzbVgJPp0ATO0Nq3iq7kc9hbcxoJDQ+tuKoDaDTxgxwXno+86xTya
+# YpmxfPSIEhQTwmYNx4spc6gCDf+U394SvCaPT/o7rEovpJ6EJVBdP56OGCZYOYTD
+# 36M7gfnCE7zN
 # SIG # End signature block
