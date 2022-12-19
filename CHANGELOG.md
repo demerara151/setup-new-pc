@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   [.config](/.config) で管理しているドットファイルを [`chezmoi`](https://www.chezmoi.io) で管理するようにしたので、その導入方法と手順の追加
 -   `ShutUp10` が `Freeware` であることへの懸念
 
+## 2022-12-19
+
+### Changed
+
+-   Remove `symLinkCreator.ps1`.
+
+### Added
+
+-   Add new instruction about config installation with chezmoi in [README.md](/README.md).
+
 ## 2022-12-17
 
 ### Changed
