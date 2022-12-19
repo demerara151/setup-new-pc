@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+-   Update Sophia script to v6.2.5
+
+## 2022-12-19
+
+### Changed
+
 -   Remove `symLinkCreator.ps1`.
 
 ### Added
