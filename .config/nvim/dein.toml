@@ -1,5 +1,0 @@
-[[plugins]]
-repo = 'Shougo/dein.vim'
-
-[[plugins]]
-repo = 'nanotee/zoxide.vim'
