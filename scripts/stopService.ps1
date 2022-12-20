@@ -1,51 +1,107 @@
 <#
     .SYNOPSIS
-    Stop and disable unnecessary services.
+    個人的に不要なサービスを停止し、無効化します
 
     .DESCRIPTION
-    個人的に不要だなと思うサービスを停止し、無効化します。
+    サービスを停止し、無効化するメリット:
 
-    メリットは、メモリの使用量をわずかに減らす程度なので、気にしなくてもいいレベルのものです。
-    使うことのないサービスが常駐してるのが気持ち悪い人向けです。
+    - セキュリティの向上
+    - プライバシーの保護
+    - メモリ使用量の削減
 
     .NOTES
-    無効化したくないサービスには、行の先頭に # を付けてください。
-    サービス名が並んだ最終行の末尾に、カンマがある場合、取り除いてください。
+    無効化したくないサービスには、サービス名の先頭に # を付けてください
 
-    Sophia Script や WPD, shutup10 等で無効化されないものだけを並べています。ある意味安全です。
+    このスクリプトの実行には管理者権限が必要です
+
+    Program Compatibility Service を無効にすると古いゲーム等が遊べなくなる可能性があります。 Windows 11 と互換性のないソフトを利用する予定がある場合は無効化しないことをおすすめします
+
+    その他、各サービスの詳細は以下のページをご覧ください
+
+    .LINK
+    各サービスの詳細: https://github.com/demerara151/setup-new-pc/docs/windows-service.md
+
+    .LINK
+    Reference:
+    https://nerdschalk.com/what-windows-11-services-to-disable-safely-and-how/
 #>
 
 #Requires -RunAsAdministrator
 
-$services = @(
-    # 外部デバイス
-    "Fax", # ファックス
-    "Spooler", # 印刷
+[string[]]$services = @(
+    # Fax
+    "Fax"
 
-    # IPv6
-    "iphlpsvc", # IP Helper
-    "IpxlatCfgSvc", # IP 変換構成サービス
+    # Print Spooler
+    "Spooler"
 
-    # 位置情報
-    "lfsvc", # Geo location
+    # IP Helper
+    "iphlpsvc"
 
-    # Xbox関連
+    # IP 変換構成サービス
+    "IpxlatCfgSvc"
+
+    # Network Connectivity Assistant
+    "NcaSvc"
+
+    # Geo Location
+    "lfsvc"
+
+    # Windows search
+    "WSearch"
+
+    # Microsoft Edge Elevation Service
+    "MicrosoftEdgeElevationService"
+
+    # Microsoft Edge Update Service
+    "edgeupdate"
+
+    # Microsoft Edge Update Service
+    "edgeupdatem"
+
+    # Connected User Experiences and Telemetry.
+    "DiagTrack"
+
+    # AllJoyn Router Service.
+    "AxInstSV"
+
+    # Program Compatibility Assistant Service
+    "PcaSvc"
+
+    # デバイス管理ワイヤレス アプリケーション プロトコル (WAP) プッシュ メッセージ ルーティング サービス
+	"dmwappushservice"
+
+    # Remote Registry.
+    "Remote Registry"
+
+    # Windows Image Acquisition.
+    "StiSvc"
+
+    # Xbox Accessory Management Service
     "XboxGipSvc",
 
-    # 標準検索（無効化しても検索はできるし十分速い）
-    "WSearch", # Windows search
+    # Xbox Live Auth Manager.
+    "XblAuthManager"
 
-    # Microsoft Edgeの自動アップデート（常駐型）
-    "edgeupdate",
-    "edgeupdatem",
-    "MicrosoftEdgeElevationService"
+    # Xbox Live Game Save Service
+    "XblGameSave"
+
+    # Xbox Live Networking Service
+    "XboxNetApiSvc"
+
+    # Windows Network Data Usage Monitor
+    "DusmSvc"
+
+    # Windows Insider Service.
+	#"wisvc"
 )
 
 if ($PSVersionTable.PSVersion.Major -lt 6) {
-    foreach ($name in $services) {
-        sudo Set-Service -Name $name -StartupType Disabled -Status Stopped
+    foreach ($service in $services) {
+        Write-Output "Trying to disable $service"
+        Get-Service -Name $service | Set-Service -StartupType Disabled -Status Stopped
     }
 }
 else {
-    $services.ForEach{ sudo Set-Service -Name $_ -StartupType Disabled -Status Stopped }
+    $services.ForEach{ Write-Output "Trying to disable $_"; Get-Service -Name $_ | Set-Service -StartupType Disabled -Status Stopped }
 }
