@@ -10,17 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   [privacy.sexy](https://privacy.sexy) の利用方法の追加
 -   `ShutUp10` が `Freeware` であることへの懸念
 
-## 2022-12-19
+## 2022-12-20
 
-### Changed
+### Added
 
--   Update Sophia script to v6.2.5
+-   Add another windows service that can be stopped in [stopService.ps1](/scripts/stopService.ps1).
+-   Add detail of windows service in [windows-service.md](/docs/windows-service.md).
 
 ## 2022-12-19
 
 ### Changed
 
 -   Remove `symLinkCreator.ps1`.
+-   Update Sophia script to v6.2.5
 
 ### Added
 

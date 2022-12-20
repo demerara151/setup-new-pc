@@ -30,7 +30,7 @@
   - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
 - [Personal Settings](#personal-settings)
   - [各種設定ファイルの配置](#各種設定ファイルの配置)
-  - [不要なサービスの停止 `stopService.ps1`](#不要なサービスの停止-stopserviceps1)
+  - [不要なサービスの停止](#不要なサービスの停止)
   - [Hyper-V の有効化](#hyper-v-の有効化)
 - [Note](#note)
 - [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
@@ -180,21 +180,29 @@ chezmoi apply
 
 ```
 
-### 不要なサービスの停止 [`stopService.ps1`](/stopService.ps1)
+### 不要なサービスの停止
 
-個人的に全く使わない以下のようなサービスをまとめて停止します。メモリの使用量をわずかに減らせます
+個人的に全く使わない以下のサービスをまとめて停止します
 
 -   印刷
 -   ファックス
 -   IPv6
--   Windows Search
+-   ダイレクトアクセス
+-   位置情報
+-   IoT 家電
+-   デジカメ、スキャナー
+-   リモートレジストリ
+-   Windows 検索
 -   Microsoft Edge 自動アップデート
+-   ネットワークデータ使用状況
 -   Xbox gaming
 
 ```powershell
-~/setup-new-pc/stopService.ps1
+sudo ~/setup-new-pc/stopService.ps1
 
 ```
+
+> 詳細は、[stopService.ps1](/scripts/stopService.ps1) 及び、[windows-service](/docs/windows-service.md) で確認できます
 
 ### Hyper-V の有効化
 
