@@ -30,7 +30,7 @@ scoop install shutup10
 # <# --- Optional from here. You can disable install by put `#` on top of each line or uncomment out both this line and end line. --- #
 
 # Utility (GUI)
-scoop install autohotkey2 czkawka-gui ddu nvcleanstall synctrayzor
+scoop install autohotkey czkawka-gui ddu nvcleanstall synctrayzor
 
 # Shell
 scoop install starship terminal-icons zoxide

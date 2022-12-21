@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   [privacy.sexy](https://privacy.sexy) の利用方法の追加
 -   `ShutUp10` が `Freeware` であることへの懸念
 
+## 2022-12-22
+
+### Changed
+
+-   Change app name `autohotkey2` to `autohotkey`. [(#10075)](https://github.com/ScoopInstaller/Extras/pull/10075)
+
 ## 2022-12-20
 
 ### Added
