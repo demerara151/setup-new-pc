@@ -11,7 +11,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.5 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.6 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -114,6 +114,7 @@ AppsLanguageSwitch -Enable
 AeroShaking -Enable
 Cursors -Light
 UnpinTaskbarShortcuts -Shortcuts Edge, Store
+FolderGroupBy -None
 
 #endregion UI & Personalization
 
@@ -125,6 +126,7 @@ OneDrive -Uninstall
 
 #region System
 
+StorageSenseFrequency -Month
 Hibernation -Disable
 Win32LongPathLimit -Enable
 BSoDStopError -Enable
@@ -137,7 +139,6 @@ WindowsFeatures -Disable
 WindowsCapabilities -Uninstall
 UpdateMicrosoftProducts -Disable
 PowerPlan -Balanced
-LatestInstalled.NET -Disable
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
@@ -150,7 +151,6 @@ F1HelpPage -Disable
 StickyShift -Disable
 Autoplay -Disable
 ThumbnailCacheRemoval -Disable
-SaveRestartableApps -Enable
 NetworkDiscovery -Enable
 ActiveHours -Automatically
 RestartDeviceAfterUpdate -Enable
@@ -165,6 +165,7 @@ DefaultTerminalApp -WindowsTerminal
 
 #region Start menu
 
+RunPowerShellShortcut -NonElevated
 StartLayout -ShowMorePins
 UnpinAllStartApps
 

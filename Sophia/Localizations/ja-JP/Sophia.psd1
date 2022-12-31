@@ -1,12 +1,14 @@
 ConvertFrom-StringData -StringData @'
 UnsupportedOSBuild                        = このスクリプトは Windows 11 21H2 かそれ以上のバージョンをサポートしています
-UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22000.739, 22621 かそれ以上です
+UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22000.1335, 22621.963 かそれ以上です
 UnsupportedLanguageMode                   = PowerShell は限られた言語モードで実行されています
 LoggedInUserNotAdmin                      = ログオンしているユーザーには管理者権限がありません
 UnsupportedPowerShell                     = PowerShell {0}.{1} でスクリプトを実行しようとしています。適切な PowerShell のバージョンで実行してください
 UnsupportedISE                            = Windows PowerShell ISE でのスクリプトの実行はサポートされていません
 Win10TweakerWarning                       = お使いの OS は Win 10 Tweaker のバックドアから感染した可能性があります
 Windows10DebloaterWarning                 = Windos の安定性が Sycnex の Windows10Debloater スクリプトで損なわれた可能性があります。念のため、OS を再インストールしてください
+SycnexWarning                             = Windos の安定性が Windows10Debloater スクリプトで損なわれた可能性があります。念のため、OS を再インストールしてください
+Fs00Warning                               = Windos の安定性が "Windows 10 Bloat Remover and Tweaker" スクリプトで損なわれた可能性があります。念のため、OS を再インストールしてください
 bin                                       = bin フォルダーの中にファイルがありません。再度、アーカイブをダウンロードしてください
 RebootPending                             = PC は再起動の待機中です
 UnsupportedRelease                        = 新しいバージョンが見つかりました

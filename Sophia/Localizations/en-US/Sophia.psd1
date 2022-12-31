@@ -1,12 +1,13 @@
 ﻿ConvertFrom-StringData -StringData @'
 UnsupportedOSBuild                        = The script supports Windows 11 21H2 version and higher
-UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22000.739, 22621 and higher
+UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22000.1335, 22621.963 and higher
 UnsupportedLanguageMode                   = The PowerShell session in running in a limited language mode
 LoggedInUserNotAdmin                      = The logged-on user doesn't have admin rights
 UnsupportedPowerShell                     = You're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version
 UnsupportedISE                            = The script doesn't support running via Windows PowerShell ISE
 Win10TweakerWarning                       = Probably your OS was infected via the Win 10 Tweaker backdoor
-Windows10DebloaterWarning                 = The Windows stability may have been compromised by using Sycnex's Windows10Debloater PowerShell script. Preventively, reinstall the entire OS
+SycnexWarning                             = The Windows stability may have been compromised by using Windows10Debloater script. Preventively, reinstall Windows
+Fs00Warning                               = The Windows stability may have been compromised by using "Windows 10 Bloat Remover and Tweaker". Preventively, reinstall Windows
 bin                                       = There are no files in the bin folder. Please, re-download the archive
 RebootPending                             = The PC is waiting to be restarted
 UnsupportedRelease                        = A new version found
@@ -81,24 +82,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpI2TwIloOwnTgQhzqNxiQiFM
-# Of2gghYNMIIDAjCCAeqgAwIBAgIQGVBCMJ28PpZOlfh0PypOATANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMTExNjM5MTda
-# Fw0yNDEyMTExNjQ5MDdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8xw2Kh2owRAbBR3S3cg9RA1YzoKE
-# 5vpBQ2cysNHJpHKGnp1X674hUT6o2BmrGyQZvaRT2g+HTglE9zDsN1T9c1heDSRz
-# Zygy9VG7ezGmHkp1bZloHSALz/AmYq7rY62elBd6NCxFfunAe+aWmi/PUBvEB5nP
-# Y/R3xdYVOv89D9+ZSq5FAShW5PR58RvLbhD6VxFf+8oJ8VpRnB167qPrrqFaNGqT
-# BXjYZGKFSo4W49CxQWYIKm8WrvVM6v/C7emPO8YbXC4mB9QV3mBLuoi94nBLmwzo
-# wpjjkfhHF2bs7W8CemAL5q39aa5vvceyQrS3Df9depV1ll5AfYoOpK/AwQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU5d55q5xWp/MKH3Smi8f9JIxp
+# eQCgghYNMIIDAjCCAeqgAwIBAgIQdU+DsbqS7I1L4FWv4bamojANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMjYyMjA1MTJa
+# Fw0yNDEyMjYyMjE0NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwKca8pZPPf7Q9obxHYeUtXkiHEIX
+# mi/ra6oTz+qi4FJIS/CGvFLaz6uTZtwvoe72wSe7VNCaEBQ9rD3hmrTbtJWEcq8h
+# 20v9emhYV4sFNpaQ+pawJOV2AaMXslJrY+JA8mgZ4luKOOlfmQlZwTdE9Tpu0Kzf
+# v7UPeE8w/bz3F6oCIKDPFUDN8a1SBo4KussmAk0i5YRgMiUhJzBdef74HXlJvTDN
+# PYGh6ObPfG/akjXP4Hrr7gEyLUTxydPrn/saG2ip/8A6jVuzFgMnhQYXtoXpL/Js
+# z+pbkokra22NmmOg8AffK5Auy7MAUrMYrMl5EbASI4Cf7IsUp+D+pyL5AQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFEUZwbysDqGDCfgbb7n08vCwfSBjMA0GCSqGSIb3DQEBCwUAA4IBAQC/mTC/
-# Rr3sU1I82vgafvvgIA1AtsGAgtGEaOFujuyqH4MbdqFXgeGTz6VfDpNlvO92ZuDZ
-# 3RvhYvFTAzsCTEkYUcSyV874BdDGDYDJQ4PRWuDCKr/qJHPA1tZNGEHaQiAftCY+
-# lh2iVuFLrClWv1RtAsirOHtObbXbLB2AyB3dUuL6LHJNxcB9s+bOIEy/MYDGXaXY
-# oi5KGo3F6vcMfzu2s6PYm1FosIMCw+NtMLh7ZXA8KvCf+nMQ5BeSwLVjHWBLwsUM
-# yk5t6W4WY+4yvTt59rBirCulVN3KwhW9zATCvFdiZp1CmBbusvL+j83JQTE6Thga
-# 0NPVL6zpsr9Ixa2fMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFJgSpoEnuwAttHaxXGxVslua8L8QMA0GCSqGSIb3DQEBCwUAA4IBAQCaUhMN
+# 386obCQbPa9sZG23OIC0WLXckHaTWoS08wPQ1g0uOBNiMRsB8RuR3y66MuRWC6J6
+# KHa9uIk/2thLn58PcI6sW1ASQZuH7Gs0jj1dnUbEpIaks0ILeV57bQahkIIepg59
+# lw+eF4co9h1VKRdxOj/7MycAM5e8oePfcYZUNjgo2fQXLDWqQ7+Oi4PatgIAPKpP
+# 2nKlKA0JfBMZqkq3s8GbiSEcS5c5KG6/bAhMD/H0BRrKQ6CbCwaMHHp0+LQPCFwa
+# UyvJYchwKQNBuVbTNaYM5iujz7fZRzkxGoVWsY7Vee7lfYMAlHiF9xG31nIiMr3Z
+# fV73lpCzbULhWlrkMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -200,31 +201,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAZUEIwnbw+lk6V+HQ/Kk4BMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB1T4OxupLsjUvgVa/htqaiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBR/snwb11dk0eniSeL3zNWm7DjmVDANBgkqhkiG9w0BAQEF
-# AASCAQAUASL6AnNriWd/PsZXn1mEvcUpXmHsUFxUHRm858L0BbMoMDRjQxlfnDvR
-# pPUGXuIy3HdpkWBmsxaUAKpaJ9NoOhRXK7peuYpuS+fP+RZWUmkZwY1xopLUj624
-# IUPEQ73PTl3qkYatwmBwG0GyTqkNjlf5qDqEqjlYqXFz/OAnUhL9CYPAiMY0rSGf
-# PWyCt/7787w7Ap80jq8HjZyxFsnF7mneahM+lbEgD9NYLAQGoUThFG2TwdpbN4BP
-# Q2v+xMt01AkPKQPcE7PN3xVfegG/hCgTAwAMgPK4aMkOtXZ/NJCwHmsWA4+6Nhi8
-# NaKqdRRGBAKlaXVHFO5z5P2ShMWUoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSi5aN8Qk6lZV2lP3v1L+oumT23TTANBgkqhkiG9w0BAQEF
+# AASCAQAZ2DXTdRPJUc43prtjp4g1h3gMxcG+S7WwWPFaHo7bzQeyd4rDuN5sQGXc
+# CgDN/KI+6ZunfsLh3RZrDm8gQ0qLxckbMyvpCRlMxEOUoEznZ7a7gzXNSf8FsDDq
+# MVvqVxYUoZjL0f+s4r4ypICLscYW4ua6Qlvmm3XZ22f8tm5eI6llNSH4GLh08ptx
+# gLXIBKCq3BhhJ1yemzOmUQtFBGCAlPaE0ajrA0VPSmJNJ5Yv1iQpeyYob5Ubr2hV
+# k/q5HGVyOoQuCNQEx5h34QHsN5buYdn4TFXz+gsaL3u8XmWDivvIpgabZOycbTu9
+# np1Qhysjpj0/aAbe3Eq4VQ4pVascoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIxMTE2
-# NDkyM1owLwYJKoZIhvcNAQkEMSIEIJ36eZ6tmF/qCG9Yacy78OGtvzcAKZOPY0fr
-# lY9SwgzRMA0GCSqGSIb3DQEBAQUABIICAFgvNN6710QHzB+hm3CHvx/cXUm0CBm9
-# ERx9MZTLtJTVQhi57agDVU4SLxrRHVZBr8nLe0v9ts+ASw9hju3wZOSppIwJWgGG
-# 9EHgvo84XkL1dpqCVpmyYZ7ZWP8UURGYByopAKMreiuFPMO7iZ4zmt4wQaN92V9j
-# Yx6F7IpGOCDEhl9rbUBu/JSDwcuX4LdhpYYW0yq+3IswYJyC9YJoUeQBXMMfjtF2
-# fega0gxJw4CRUjtFcr/9ScfxzeGo42DjqnSQbkfZt4BF84xAWWWebhORdED3LlIV
-# i5QXq6NS86fI8wJdLO/3DGyOH/wGA2XLb7ZhkQ0mTOhU72Bo4Il6jsZfrpmMBp/M
-# hhoCpwT1WB0eBy+d+eXo0CAYwA45iLksczqpCKzq2N1Xg7XZYkyAs1UhpWV0UgdV
-# GTImI7NTS1ipW9kurZaX+RERUmSPBukAsVKgv2EQ5DBtPubVz0V06BiLBaX8A5kT
-# Y6qTjHRczakHT7sNykj97Yk19z7ovVRDLHWNEOvW7M02cEhzkcmuKnU8rp7+S5aP
-# 1G66A7wKexKQazFHH8HI52/1mNlaTyga1Cshj7bT4XebvnP28wMN3Stua1f1gNtJ
-# XRrudTD3gxAK1aVOD7XN3XzvqhSAiVVTf8CU/hkjkdHOBAeyVIAO1wnUFYNTIKJw
-# vMJAtkW768TU
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIyNjIy
+# MTUyMFowLwYJKoZIhvcNAQkEMSIEIM0uZb2jnX/l9l5K+msH1o+UlIw1JcPweXPW
+# IgKbRdKmMA0GCSqGSIb3DQEBAQUABIICAH1rYL4fnjuE/DUTKaSkrLUcQc2R+jzS
+# Oxa6rMtYHF1X0Ca6EmijZ0CWeMF/QGjQr0KKTgA5uqy/pZAzaU8s6o/OaRwQfFzE
+# jmkgxrxJGF/nFQRW5EahUl29SqAYvLy/z+zTbG1x2OXs/wANZnNm+Via7LYHuUeM
+# TUP+QyLnKDnP5HOgH8WW3iPPiIvk6JiWp3+N0JjAyJqhX6gmLk2CFHUT/iSeqWPK
+# fd8N1xWOjGER9AUwELnCjwvRtFDnPj1Thm/g3mqlRov+lLtvUzGleJjmuPXiMpH/
+# poulv31wUZXCkuEm5a1HBPHlzkeMTlVGDZnsZ0CdeJYNZ7NBptJIa3MOB4zF0Q9/
+# yAv0ZwIQwr0D39KbLwUvC9/NZOcNq3yMvIIBMIJt1yB0M1wFLdOjSFTVXA2zc6Eu
+# DHn9hSzvqjjmfLqrCLpUZOkh9Cy5X/xlMNMgOvRTPWLHEUVFURu4+Ukw5HYxC+BF
+# m90VqP6G7IsgJEceoXO3VeeJeJsmlR0wYv1vSeDtti4y+UwEUtaDvnr3BkTqBbTR
+# fsQumRwPJ11HptM6p0ffJYId5SI/zKtPo+H8hWTDZ3Hqy4ZHCBlnWZHmjyfsIkwq
+# BNYm5N9XG+fMNBbfU9s14L+E7CRwLcctz1X3J+o9k87rQHsVR/Wu2pNqU0Mxmsol
+# SOaxdHwM+4u7
 # SIG # End signature block

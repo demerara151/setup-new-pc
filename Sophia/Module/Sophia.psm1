@@ -2,7 +2,7 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.2.5
+	Version: v6.2.6
 	Date: 04.12.2022
 
 	Copyright (c) 2014—2023 farag
@@ -13,7 +13,7 @@
 	.NOTES
 	Supported Windows 11 versions
 	Versions: 21H2/22H2/23H2+
-	Builds: 22000.739+, 22621+
+	Builds: 22000.1335+, 22621+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -60,11 +60,10 @@ function Checks
 	{
 		{$_ -eq 22000}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 978)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1335)
 			{
-				# Check whether the OS minor build version is 739 minimum
+				# Check whether the OS minor build version is 963 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
-				# https://support.microsoft.com/en-us/topic/september-13-2022-kb5017328-os-build-22000-978-40843fca-a0be-4a60-b68b-6cb23a73a5aa
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
 
@@ -91,9 +90,9 @@ function Checks
 		}
 		{$_ -ge 22621}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 521)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 963)
 			{
-				# Check whether the OS minor build version is 521 minimum
+				# Check whether the OS minor build version is 963 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
@@ -175,11 +174,21 @@ function Checks
 		exit
 	}
 
-	# Check whether the OS was destroyed by Sycnex's Windows10Debloater script
+	# Check whether Windows was destroyed by Windows10Debloater
 	# https://github.com/Sycnex/Windows10Debloater
 	if (Test-Path -Path $env:SystemDrive\Temp\Windows10Debloater)
 	{
-		Write-Warning -Message $Localization.Windows10DebloaterWarning
+		Write-Warning -Message $Localization.SycnexWarning
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
+	}
+
+	# Check whether Windows was destroyed by Win10BloatRemover
+	# https://github.com/Fs00/Win10BloatRemover
+	if (Test-Path -Path $env:TEMP\.net\Win10BloatRemover)
+	{
+		Write-Warning -Message $Localization.Fs00Warning
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
@@ -298,24 +307,16 @@ function Checks
 	}
 
 	# Checking services
-	@("Windefend", "SecurityHealthService", "wscsvc") | ForEach-Object -Process {
-		if ($null -eq (Get-Service -Name $_ -ErrorAction Ignore))
-		{
-			$Localization.WindowsBroken
-			exit
-		}
-		else
-		{
-			if ((Get-Service -Name $_).Status -eq "running")
-			{
-				$Script:DefenderServices = $true
-			}
-			else
-			{
-				$Script:DefenderServices = $false
-			}
-		}
+	try
+	{
+		$Services = Get-Service -Name Windefend, SecurityHealthService, wscsvc -ErrorAction Stop
 	}
+	catch [Microsoft.PowerShell.Commands.ServiceCommandException]
+	{
+		$Localization.WindowsBroken
+		exit
+	}
+	$Script:DefenderServices = ($Services | Where-Object -FilterScript {$_.Status -ne "running"} | Measure-Object).Count -lt $Services.Count
 
 	# Specifies whether Antispyware protection is enabled
 	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AntispywareEnabled)
@@ -3696,6 +3697,68 @@ public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, uint
 	}
 	[WinAPI.SystemParamInfo]::SystemParametersInfo(0x0057, 0, $null, 0)
 }
+
+<#
+	.SYNOPSIS
+	Files and folders grouping
+
+	.PARAMETER None
+	Do not group files and folder
+
+	.PARAMETER Default
+	Group files and folder by date modified (default value)
+
+	.EXAMPLE
+	FolderGroupBy -None
+
+	.EXAMPLE
+	FolderGroupBy -Default
+
+	.NOTES
+	Current user
+#>
+function FolderGroupBy
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "None"
+		)]
+		[switch]
+		$None,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Default"
+		)]
+		[switch]
+		$Default
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"None"
+		{
+			# Clear any Common Dialog views
+			Get-ChildItem -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\*\Shell" -Recurse | Where-Object -FilterScript {$_.PSChildName -eq "{885A186E-A440-4ADA-812B-DB871B942259}"} | Remove-Item -Force
+
+			if (-not (Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}"))
+			{
+				New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Force
+			}
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name ColumnList -PropertyType String -Value "prop:0(34)System.ItemNameDisplay;0System.DateModified;0System.ItemTypeText;0System.Size;1System.DateCreated;1System.Author;1System.Category;1System.Keywords;1System.Title" -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name LogicalViewMode -PropertyType DWord -Value 1 -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name Name -PropertyType String -Value NoName -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name Order -PropertyType DWord -Value 0 -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name SortByList -PropertyType String -Value "prop:System.ItemNameDisplay" -Force
+		}
+		"Default"
+		{
+			Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}" -Recurse -Force -ErrorAction Ignore
+		}
+	}
+}
 #endregion UI & Personalization
 
 #region OneDrive
@@ -5731,12 +5794,12 @@ function NetworkAdaptersSavePower
 		$Enable
 	)
 
-	if (Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"})
+	if (Get-NetAdapter -Physical | Where-Object -FilterScript {($_.Status -eq "Up") -and $_.MacAddress})
 	{
-		$PhysicalAdaptersStatusUp = @((Get-NetAdapter -Physical | Where-Object -FilterScript {$_.Status -eq "Up"}).Name)
+		$PhysicalAdaptersStatusUp = @((Get-NetAdapter -Physical | Where-Object -FilterScript {($_.Status -eq "Up") -and $_.MacAddress}).Name)
 	}
 
-	$Adapters = Get-NetAdapter -Physical | Get-NetAdapterPowerManagement | Where-Object -FilterScript {$_.AllowComputerToTurnOffDevice -ne "Unsupported"}
+	$Adapters = Get-NetAdapter -Physical | Where-Object -FilterScript {$_.MacAddress} | Get-NetAdapterPowerManagement | Where-Object -FilterScript {$_.AllowComputerToTurnOffDevice -ne "Unsupported"}
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
@@ -5764,7 +5827,7 @@ function NetworkAdaptersSavePower
 	{
 		while
 		(
-			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | Where-Object -FilterScript {$_.Status -eq "Disconnected"}
+			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | Where-Object -FilterScript {($_.Status -eq "Disconnected") -and $_.MacAddress}
 		)
 		{
 			Write-Verbose -Message $Localization.Patient -Verbose
@@ -7923,7 +7986,7 @@ namespace RegistryUtils
 					uint maxValueLen;
 					uint securityDescriptor;
 					StringBuilder sb;
-					
+
 					if (RegQueryInfoKey(hKey, out sb, ref lpcbClass, lpReserved, out lpcbSubKeys, out lpcbMaxKeyLen, out lpcbMaxClassLen,
 						out lpcValues, out maxValueName, out maxValueLen, out securityDescriptor, ref lastModified) != 0)
 					{
@@ -8629,10 +8692,10 @@ function InstallVCRedist
 
 <#
 	.SYNOPSIS
-	Install the latest .NET Desktop Runtime 7 (x86/x64)
+	Install the latest .NET Desktop Runtime 6, 7 (x86/x64)
 
 	.EXAMPLE
-	InstallDotNetRuntime7
+	InstallDotNetRuntimes
 
 	.LINK
 	https://dotnet.microsoft.com/en-us/download/dotnet
@@ -8640,7 +8703,7 @@ function InstallVCRedist
 	.NOTES
 	Machine-wide
 #>
-function InstallDotNetRuntime7
+function InstallDotNetRuntimes
 {
 	try
 	{
@@ -8658,22 +8721,28 @@ function InstallDotNetRuntime7
 
 		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
 		{
-			# .NET Desktop Runtime x86
+			# .NET Desktop Runtime 6 x86
+			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x86 --exact --accept-source-agreements
+			# .NET Desktop Runtime 7 x64
+			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x64 --exact --accept-source-agreements
+
+			# .NET Desktop Runtime 7 x86
 			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x86 --exact --accept-source-agreements
-			# .NET Desktop Runtime x64
+			# .NET Desktop Runtime 7 x64
 			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x64 --exact --accept-source-agreements
 		}
 		else
 		{
+			# Install .NET Desktop Runtime 6
 			# https://github.com/dotnet/core/blob/main/release-notes/releases-index.json
 			$Parameters = @{
-				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json"
+				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json"
 				UseBasicParsing = $true
 			}
 			$LatestRelease = (Invoke-RestMethod @Parameters)."latest-release"
 			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
 
-			# .NET Desktop Runtime x86
+			# .NET Desktop Runtime 6 x86
 			$Parameters = @{
 				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x86.exe"
 				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe"
@@ -8684,7 +8753,7 @@ function InstallDotNetRuntime7
 
 			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe" -ArgumentList "/install /passive /norestart" -Wait
 
-			# .NET Desktop Runtime x64
+			# .NET Desktop Runtime 6 x64
 			$Parameters = @{
 				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x64.exe"
 				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe"
@@ -8699,7 +8768,46 @@ function InstallDotNetRuntime7
 			$Paths = @(
 				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe",
 				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe",
-				"$env:TEMP\Microsoft_Windows_Desktop_Runtime*.log"
+				"$env:TEMP\Microsoft_.NET_Runtime*.log"
+			)
+			Get-ChildItem -Path $Paths -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
+
+			# .NET Desktop Runtime 7
+			# https://github.com/dotnet/core/blob/main/release-notes/releases-index.json
+			$Parameters = @{
+				Uri             = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json"
+				UseBasicParsing = $true
+			}
+			$LatestRelease = (Invoke-RestMethod @Parameters)."latest-release"
+			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+
+			# .NET Desktop Runtime 7 x86
+			$Parameters = @{
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x86.exe"
+				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+
+			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe" -ArgumentList "/install /passive /norestart" -Wait
+
+			# .NET Desktop Runtime 7 x64
+			$Parameters = @{
+				Uri             = "https://dotnetcli.azureedge.net/dotnet/Runtime/$LatestRelease/dotnet-runtime-$LatestRelease-win-x64.exe"
+				OutFile         = "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+
+			Start-Process -FilePath "$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe" -ArgumentList "/install /passive /norestart" -Wait
+
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			$Paths = @(
+				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x86.exe",
+				"$DownloadsFolder\dotnet-runtime-$LatestRelease-win-x64.exe",
+				"$env:TEMP\Microsoft_.NET_Runtime*.log"
 			)
 			Get-ChildItem -Path $Paths -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
 		}
@@ -9537,7 +9645,7 @@ function UninstallUWPApps
 			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers:$AllUsers | Select-Object -Index 0
 		}
 
-		$PackagesIds = [Windows.Management.Deployment.PackageManager, Windows.Web, ContentType = WindowsRuntime]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
+		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
 
 		foreach ($AppxPackage in $AppxPackages)
 		{
@@ -12974,6 +13082,10 @@ function UpdateLGPEPolicies
 		return
 	}
 
+	Get-Partition | Where-Object -FilterScript{$_. DriveLetter -eq "C"} | Get-Disk | Get-PhysicalDisk | ForEach-Object -Process {
+		Write-Verbose -Message ([string]($_.FriendlyName, '|', $_.MediaType, '|', $_.BusType)) -Verbose
+	}
+
 	Write-Verbose -Message $Localization.Patient -Verbose
 	Write-Verbose -Message $Localization.GPOUpdate -Verbose
 	Write-Verbose -Message HKLM -Verbose
@@ -13189,8 +13301,8 @@ public static void PostMessage()
 	# Determines whether the app can be seen in Settings where the user can turn notifications on or off
 	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
-	[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-	[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
 
 	# Telegram group
 	[xml]$ToastTemplate = @"
@@ -13330,24 +13442,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJD8Qv45DRGLdXbyZMl90AFdu
-# weCgghYNMIIDAjCCAeqgAwIBAgIQGVBCMJ28PpZOlfh0PypOATANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMTExNjM5MTda
-# Fw0yNDEyMTExNjQ5MDdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8xw2Kh2owRAbBR3S3cg9RA1YzoKE
-# 5vpBQ2cysNHJpHKGnp1X674hUT6o2BmrGyQZvaRT2g+HTglE9zDsN1T9c1heDSRz
-# Zygy9VG7ezGmHkp1bZloHSALz/AmYq7rY62elBd6NCxFfunAe+aWmi/PUBvEB5nP
-# Y/R3xdYVOv89D9+ZSq5FAShW5PR58RvLbhD6VxFf+8oJ8VpRnB167qPrrqFaNGqT
-# BXjYZGKFSo4W49CxQWYIKm8WrvVM6v/C7emPO8YbXC4mB9QV3mBLuoi94nBLmwzo
-# wpjjkfhHF2bs7W8CemAL5q39aa5vvceyQrS3Df9depV1ll5AfYoOpK/AwQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJTMoqym1Zi8lFkMWbphKYHJ9
+# zqqgghYNMIIDAjCCAeqgAwIBAgIQdU+DsbqS7I1L4FWv4bamojANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMjYyMjA1MTJa
+# Fw0yNDEyMjYyMjE0NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwKca8pZPPf7Q9obxHYeUtXkiHEIX
+# mi/ra6oTz+qi4FJIS/CGvFLaz6uTZtwvoe72wSe7VNCaEBQ9rD3hmrTbtJWEcq8h
+# 20v9emhYV4sFNpaQ+pawJOV2AaMXslJrY+JA8mgZ4luKOOlfmQlZwTdE9Tpu0Kzf
+# v7UPeE8w/bz3F6oCIKDPFUDN8a1SBo4KussmAk0i5YRgMiUhJzBdef74HXlJvTDN
+# PYGh6ObPfG/akjXP4Hrr7gEyLUTxydPrn/saG2ip/8A6jVuzFgMnhQYXtoXpL/Js
+# z+pbkokra22NmmOg8AffK5Auy7MAUrMYrMl5EbASI4Cf7IsUp+D+pyL5AQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFEUZwbysDqGDCfgbb7n08vCwfSBjMA0GCSqGSIb3DQEBCwUAA4IBAQC/mTC/
-# Rr3sU1I82vgafvvgIA1AtsGAgtGEaOFujuyqH4MbdqFXgeGTz6VfDpNlvO92ZuDZ
-# 3RvhYvFTAzsCTEkYUcSyV874BdDGDYDJQ4PRWuDCKr/qJHPA1tZNGEHaQiAftCY+
-# lh2iVuFLrClWv1RtAsirOHtObbXbLB2AyB3dUuL6LHJNxcB9s+bOIEy/MYDGXaXY
-# oi5KGo3F6vcMfzu2s6PYm1FosIMCw+NtMLh7ZXA8KvCf+nMQ5BeSwLVjHWBLwsUM
-# yk5t6W4WY+4yvTt59rBirCulVN3KwhW9zATCvFdiZp1CmBbusvL+j83JQTE6Thga
-# 0NPVL6zpsr9Ixa2fMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFJgSpoEnuwAttHaxXGxVslua8L8QMA0GCSqGSIb3DQEBCwUAA4IBAQCaUhMN
+# 386obCQbPa9sZG23OIC0WLXckHaTWoS08wPQ1g0uOBNiMRsB8RuR3y66MuRWC6J6
+# KHa9uIk/2thLn58PcI6sW1ASQZuH7Gs0jj1dnUbEpIaks0ILeV57bQahkIIepg59
+# lw+eF4co9h1VKRdxOj/7MycAM5e8oePfcYZUNjgo2fQXLDWqQ7+Oi4PatgIAPKpP
+# 2nKlKA0JfBMZqkq3s8GbiSEcS5c5KG6/bAhMD/H0BRrKQ6CbCwaMHHp0+LQPCFwa
+# UyvJYchwKQNBuVbTNaYM5iujz7fZRzkxGoVWsY7Vee7lfYMAlHiF9xG31nIiMr3Z
+# fV73lpCzbULhWlrkMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13449,31 +13561,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAZUEIwnbw+lk6V+HQ/Kk4BMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB1T4OxupLsjUvgVa/htqaiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBS+sTGUGXDoO/UPQdr/6H62Pv5qzzANBgkqhkiG9w0BAQEF
-# AASCAQCzcnNuQNvU65fPdF1BLZzQIUxz89y07VfvGSjZtF1FKdNK/hF0UqEKOqd4
-# vAU0Tqr1iufgGl7i3ySomFI8l03F01gni7lpS4doeul34/XF6Q9M2j0Tf/KnSlgc
-# S7P69fwmtZ7t2XzsaI8Nb7GQ4J3j8tPKsV8x6hnA1Tj86dh6kRjNKWT9S09HlbGS
-# rHbKiIvZuojoturKB6DihNtP8q5SkzjQT6Y3NeuHB7QCfkwjdARH/Hcro+njHUJT
-# hxOY2ueBn/HsqgoJlJVMMJiz+uHj1RLzNXDmbefmbdWFHrelpAz4OSpEn05aQL32
-# DlDG7NSWC4fb1kRcAcM9DYlmiaBMoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSqHI2AuT/euMjwkuCn6VPCaNAxHjANBgkqhkiG9w0BAQEF
+# AASCAQBEsD2vx/+BwkIFhlWIg1yWZM6i4FihU/emY8uqLfWFVhZVkfPPmPvTrNNR
+# dUW191ErlWvtmhalyS/T9bWq0lNyEGOCvPfxgTa63Q/UKswuN5JOn7mtgwNsjPje
+# b1qivdcOwSgWwB+KCyPRkSDHymw7bqOreMqUnIhMo8qCRwB/cLKwq1fkE7/QT+z8
+# YhzffQK8iKiVDYOjT77PWg+BVJJbpudU8T0+mXzvEmEV6Qi5Wvs2kyUftBMN18Ef
+# C+jpAavDPG6vVxbgsgcTXVtUXNKpupwLYpR95M9oI4aGU5U/dxB3dDCcsYa9U2L3
+# uhm7gmLBnDUoACxl8BmxWSXaU8jfoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIxMTE2
-# NDkyNFowLwYJKoZIhvcNAQkEMSIEICCdmbNRkGLlIX/VAeFtqVXhZa8jYRiu8MfJ
-# bSgVCkBQMA0GCSqGSIb3DQEBAQUABIICAKGNdPRfMscEfW9SaHy5WZyaICvL2SG6
-# xn/ykEZs0iKfp+1TqRt1/lKkcGH1qk+ryk3esnWBwsNa8FkV+WfGme1ymHPQezwW
-# y6+ZR2H/zmODqqOqPBMbXPtHm54IHO6/G1curhBRgi/t0bETrdkrF7FM8Oy3vJt3
-# zzrLdfu+IRVzKskRNo8Kv3CBBZoUgupeCJlIdIbnMGQM3UV6A4l8ddbgLKODiR57
-# fWI1pxiNLsafqaXV840Lk3+rVBgsSrhTbZazy32wJ10vzwb2CACnO+CfroDJEZdA
-# QHwbyCtx2iHApXOCFELV4F/vXjencoRav9VurSEsTSZO0OB8jUtnuPeM3CM+63GN
-# 1p+Ke+xvPK3+GHBJQsOZCzpYS3SzPV7opniWr7SCfzqV1KcKCGnutcMxzqucIh19
-# YUyLXcwIeNb/b7PtmILst5Z4/3fK9XoR00SuaPH5J8KeHWJ4ZWfOHJ/4e59RaDGg
-# 9ReNgL8vfEH1ahLMbln7X07qyujUg/zRjX9/37ZCKN6ehn05fEEdXJ4vgzxRPF6b
-# BaE+YQJ/AORzzbVgJPp0ATO0Nq3iq7kc9hbcxoJDQ+tuKoDaDTxgxwXno+86xTya
-# YpmxfPSIEhQTwmYNx4spc6gCDf+U394SvCaPT/o7rEovpJ6EJVBdP56OGCZYOYTD
-# 36M7gfnCE7zN
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIyNjIy
+# MTUyMVowLwYJKoZIhvcNAQkEMSIEIFNoTrHogs16ktQTRxcpBeE9Q+laE+K3PzZb
+# Ixp8stT4MA0GCSqGSIb3DQEBAQUABIICAG+2JXIwM458ie+5gh93EGPNqcuXUaWz
+# EtbiMc6aqjJ9wlSBQOlvBXj5lQQq2AbPK2DBkXNeyP5uZtH52K2t/CBA5Rdq5ioN
+# wPJKIP/6BuNtY4wSbM5B2cIMEv/S+fY2YyPhGCFCvv3552WVzUyza4tIkudQGH/K
+# GPWb3xAFes/zAEAhE9qvNk0bPtQkHWX2PkGtjjw8teQsRPxLKsQpXxhZFpsBj0JD
+# udA/KWm7P8YEAiU8zPOCDb/Bxf6axT0d1NIQq/qfMoUpbo72ZRjBIPNqTM77/Oey
+# UdzJWxQHFXUUj7mszZ/fkTU0fzOk08X0CqUAm9wV+dNbWWlat+CT6zT+tOghiBdD
+# vjnuSUgZGU3I9C+s0NmCv/E2bc9e0ZkyC6F4IvKqsRbXoMkQw6zCZAxH5QDbRb4N
+# tckZ/QfnomZTlQ17OceiBLVZizwUz8XzFWv4Fflrwmt5z+/Q6TOkVjCsLUtiUmij
+# k9wXem/gpORXiYccKD0oReuOTRgUbIWB7zx2tO5VQml0oQiukS6p0whhZgy5N8CT
+# 4XtQBVBo0SNVnQtyuFnc5+vsf6f8MbmKfzMUbICJfLV8cbNuKo//8IVQz+HLznWP
+# xxlSdu3zd84VR0nEZMWbtDgfRPTahQru4uMb3bjY1JNhmCBBqXqJDwvdixI5o9nn
+# LsHZio33TkBV
 # SIG # End signature block
