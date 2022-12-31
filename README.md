@@ -129,7 +129,7 @@ sudo ~/setup-new-pc/Sophia/Sophia.ps1
 -   実行に失敗した場合、
 
     1. `Windows Update` の実行
-    2. ターミナル、または PC の再起動
+    2. `PoserShell`、または PC の再起動
     3. `PowerShell` のバージョンがスクリプトの要件を満たしているか確認
 
 ### メインスクリプトの実行
@@ -290,7 +290,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 -   10/21 更新: _AutoHotkey のバージョンを `Version 1.1.34.04` から `Version 2.0-beta.12` へアップグレード。_ 既存のバージョンとの互換性はないため、以前のスクリプトを削除。スクリプトファイル、及び実行ファイルのパスも変わっているため注意
 
--   12/22 更新: AutoHokey が正式にバージョン 2.0 に昇格したため、名前が AutoHokey V2 から AutoHokey へ戻りました
+-   12/22 更新: AutoHotkey が正式にバージョン 2.0 に昇格したため、名前が AutoHotkey V2 から AutoHotkey へ戻りました
 
 > 参照: <https://lexikos.github.io/v2/docs/AutoHotkey.htm>
 
