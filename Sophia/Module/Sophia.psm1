@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.2.6
-	Date: 04.12.2022
+	Version: v6.2.7
+	Date: 07.01.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -62,7 +62,7 @@ function Checks
 		{
 			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1335)
 			{
-				# Check whether the OS minor build version is 963 minimum
+				# Check whether the OS minor build version is 1335 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
@@ -78,6 +78,9 @@ function Checks
 				Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
 
 				# Open the "Windows Update" page
+				Start-Process -FilePath "ms-settings:windowsupdate"
+
+				# Check for updates
 				Start-Process -FilePath "ms-settings:windowsupdate-action"
 
 				Start-Sleep -Seconds 1
@@ -92,7 +95,7 @@ function Checks
 		{
 			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 963)
 			{
-				# Check whether the OS minor build version is 963 minimum
+				# Check whether the OS minor build version is 1335 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
 				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
 				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
@@ -108,6 +111,9 @@ function Checks
 				Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
 
 				# Open the "Windows Update" page
+				Start-Process -FilePath "ms-settings:windowsupdate"
+
+				# Check for updates
 				Start-Process -FilePath "ms-settings:windowsupdate-action"
 
 				Start-Sleep -Seconds 1
@@ -215,6 +221,7 @@ function Checks
 	if (($PendingActions | Test-Path) -contains $true)
 	{
 		Write-Warning -Message $Localization.RebootPending
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
@@ -292,9 +299,24 @@ function Checks
 	if ($null -eq (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct -ErrorAction Ignore))
 	{
 		$Localization.WindowsBroken
+		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
 
+	# Checking services
+	try
+	{
+		$Services = Get-Service -Name Windefend, SecurityHealthService, wscsvc -ErrorAction Stop
+	}
+	catch [Microsoft.PowerShell.Commands.ServiceCommandException]
+	{
+		$Localization.WindowsBroken
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		exit
+	}
+	$Script:DefenderServices = ($Services | Where-Object -FilterScript {$_.Status -ne "running"} | Measure-Object).Count -lt $Services.Count
+
+	# Check Microsoft Defender state
 	$productState = (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName Antivirusproduct | Where-Object -FilterScript {$_.instanceGuid -eq "{D68DDC3A-831F-4fae-9E44-DA132C1ACF46}"}).productState
 	$DefenderState = ('0x{0:x}' -f $productState).Substring(3, 2)
 	if ($DefenderState -notmatch "00|01")
@@ -306,19 +328,7 @@ function Checks
 		$Script:DefenderproductState = $false
 	}
 
-	# Checking services
-	try
-	{
-		$Services = Get-Service -Name Windefend, SecurityHealthService, wscsvc -ErrorAction Stop
-	}
-	catch [Microsoft.PowerShell.Commands.ServiceCommandException]
-	{
-		$Localization.WindowsBroken
-		exit
-	}
-	$Script:DefenderServices = ($Services | Where-Object -FilterScript {$_.Status -ne "running"} | Measure-Object).Count -lt $Services.Count
-
-	# Specifies whether Antispyware protection is enabled
+	# Specify whether Antispyware protection is enabled
 	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AntispywareEnabled)
 	{
 		$Script:DefenderAntispywareEnabled = $true
@@ -329,13 +339,47 @@ function Checks
 	}
 
 	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
-	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).ProductStatus -eq 1)
+	try
 	{
-		$Script:DefenderProductStatus = $false
+		if ($Script:DefenderproductState)
+		{
+			if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).ProductStatus -eq 1)
+			{
+				$Script:DefenderProductStatus = $false
+			}
+			else
+			{
+				$Script:DefenderProductStatus = $true
+			}
+		}
+		else
+		{
+			$Script:DefenderProductStatus = $false
+		}
 	}
-	else
+	catch [System.Management.Automation.PropertyNotFoundException]
 	{
-		$Script:DefenderProductStatus = $true
+		$Localization.UpdateDefender
+
+		Start-Process -FilePath "https://t.me/sophia_chat"
+
+		# Enable receiving updates for other Microsoft products when you update Windows
+		(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+		Start-Sleep -Seconds 1
+
+		# Open the "Windows Update" page
+		Start-Process -FilePath "ms-settings:windowsupdate"
+
+		# Check for updates
+		Start-Process -FilePath "ms-settings:windowsupdate-action"
+
+		Start-Sleep -Seconds 1
+
+		# Trigger Windows Update for detecting new updates
+		(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+
+		exit
 	}
 
 	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
@@ -443,6 +487,8 @@ function Checks
 				Start-Sleep -Seconds 5
 
 				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#how-to-use"
+				Start-Process -FilePath "https://t.me/sophia_chat"
+
 				exit
 			}
 			"1"
@@ -9521,7 +9567,10 @@ function UninstallUWPApps
 		"Microsoft.RawImageExtension",
 
 		# HEIF Image Extensions
-		"Microsoft.HEIFImageExtension"
+		"Microsoft.HEIFImageExtension",
+
+		# MPEG-2 Video Extension
+		"Microsoft.MPEG2VideoExtension"
 	)
 
 	#region Variables
@@ -13442,24 +13491,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJTMoqym1Zi8lFkMWbphKYHJ9
-# zqqgghYNMIIDAjCCAeqgAwIBAgIQdU+DsbqS7I1L4FWv4bamojANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMjEyMjYyMjA1MTJa
-# Fw0yNDEyMjYyMjE0NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwKca8pZPPf7Q9obxHYeUtXkiHEIX
-# mi/ra6oTz+qi4FJIS/CGvFLaz6uTZtwvoe72wSe7VNCaEBQ9rD3hmrTbtJWEcq8h
-# 20v9emhYV4sFNpaQ+pawJOV2AaMXslJrY+JA8mgZ4luKOOlfmQlZwTdE9Tpu0Kzf
-# v7UPeE8w/bz3F6oCIKDPFUDN8a1SBo4KussmAk0i5YRgMiUhJzBdef74HXlJvTDN
-# PYGh6ObPfG/akjXP4Hrr7gEyLUTxydPrn/saG2ip/8A6jVuzFgMnhQYXtoXpL/Js
-# z+pbkokra22NmmOg8AffK5Auy7MAUrMYrMl5EbASI4Cf7IsUp+D+pyL5AQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxDXscp+JKRwINWDuTgw1IcQq
+# 3AygghYNMIIDAjCCAeqgAwIBAgIQEpJorqcKlJdB/15LVIAQJTANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAxMDgxNTQ1NDla
+# Fw0yNTAxMDgxNTU1MTRaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqOuXe0pOmP5FOxyCFZCEZYUMW4uq
+# xuTI92bjM2vEErLGUehk5o0ZRGkUe39GaciScgY8HnBLdcmFsQtBkfu+hDwTWwPh
+# NAUEHajDFfjuYG3vYHFy2i0vm+6HN48tlAMETEL137MdCyMmDX/6At/qUryPxGX3
+# 97SGcKYJpPnaLXQCxz0W8xwqD4XT9neYsOhIYzZKd1huhhoGBik60xJaHQLz/mjs
+# /V+HYk9APfh/akp5qaZsvn0fcJHp/YU7reLHhNEWxBFOMaS2/zCw9vxoZVdutZn3
+# +LCci1ErH8DqL7BUTj/sgDB+m6C6TiCAJRXE5NYPRKjWpxVB/ub0RT4CaQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFJgSpoEnuwAttHaxXGxVslua8L8QMA0GCSqGSIb3DQEBCwUAA4IBAQCaUhMN
-# 386obCQbPa9sZG23OIC0WLXckHaTWoS08wPQ1g0uOBNiMRsB8RuR3y66MuRWC6J6
-# KHa9uIk/2thLn58PcI6sW1ASQZuH7Gs0jj1dnUbEpIaks0ILeV57bQahkIIepg59
-# lw+eF4co9h1VKRdxOj/7MycAM5e8oePfcYZUNjgo2fQXLDWqQ7+Oi4PatgIAPKpP
-# 2nKlKA0JfBMZqkq3s8GbiSEcS5c5KG6/bAhMD/H0BRrKQ6CbCwaMHHp0+LQPCFwa
-# UyvJYchwKQNBuVbTNaYM5iujz7fZRzkxGoVWsY7Vee7lfYMAlHiF9xG31nIiMr3Z
-# fV73lpCzbULhWlrkMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFFXAZeksV/ORhtTyTq/r976yQu8gMA0GCSqGSIb3DQEBCwUAA4IBAQCdrFq2
+# IZvPIvu8qsjnguS3hlofrKIBN2W72rYDf1XKZ1ZbKtPEUkUaw7KVfYuCO3R9+5Qj
+# dJs8BSKXndpcccWP8abgTpbIYlWiZTYmefw8szGtx3hWDXLxJoqPDrBPnDMi3DYG
+# 83oH/ffYRJEnAe1hARiH/52IE9r5oUmTDlRKjr5xyzx2qg7ageFPZibpVRWXKeaR
+# e8w/0j2+vDX6XeY6hsE0L5Do0wfeOMcW4nZU6vM5ISOsHDqs+ieUAD1BsAUIt30K
+# rNt8ZQpng5nsgxacuPnWl+gh0RnstZGAaLgswFzw6e45IsaVk4nZ7NFSk7ROkG/N
+# NmcUTIyzCiFwRyM/MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13561,31 +13610,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhB1T4OxupLsjUvgVa/htqaiMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhASkmiupwqUl0H/XktUgBAlMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBSqHI2AuT/euMjwkuCn6VPCaNAxHjANBgkqhkiG9w0BAQEF
-# AASCAQBEsD2vx/+BwkIFhlWIg1yWZM6i4FihU/emY8uqLfWFVhZVkfPPmPvTrNNR
-# dUW191ErlWvtmhalyS/T9bWq0lNyEGOCvPfxgTa63Q/UKswuN5JOn7mtgwNsjPje
-# b1qivdcOwSgWwB+KCyPRkSDHymw7bqOreMqUnIhMo8qCRwB/cLKwq1fkE7/QT+z8
-# YhzffQK8iKiVDYOjT77PWg+BVJJbpudU8T0+mXzvEmEV6Qi5Wvs2kyUftBMN18Ef
-# C+jpAavDPG6vVxbgsgcTXVtUXNKpupwLYpR95M9oI4aGU5U/dxB3dDCcsYa9U2L3
-# uhm7gmLBnDUoACxl8BmxWSXaU8jfoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBQR3DVWiyaO7ujBVDm9RB7P+P5v6TANBgkqhkiG9w0BAQEF
+# AASCAQCJ14tK29tYmX6+/rV8TdOVf36Xn/5YtbktYrhJUwDg1otSyAO9W1KZqVzY
+# ie6rWPtP5nhhJAqnaJv6EVKkEYR1h7ZlZOvw+JbwQ+a8A73SvghJzHsGJW9TRgmZ
+# YtFl70BeweEAA+AVJq2c48kK1p7hhfkXm+0E6+Gs2aXBM4eQNFkRQE9fXkS/jzHq
+# 4hVsj1BZRQQ3FyRbBW+ox7+2VA/5Vy148VAtEhqaQB8BuXTbV3RNw+gqzPdqYA+7
+# BzwzxQyNmsR2rypSz95JZ1lev2/Z2HEhbF9tNEBpOPVNiWt/YhpLSHZYYhHFnQ+F
+# wgoYmbVmF4qbn7fdql/ek2g8JkiBoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMTIyNjIy
-# MTUyMVowLwYJKoZIhvcNAQkEMSIEIFNoTrHogs16ktQTRxcpBeE9Q+laE+K3PzZb
-# Ixp8stT4MA0GCSqGSIb3DQEBAQUABIICAG+2JXIwM458ie+5gh93EGPNqcuXUaWz
-# EtbiMc6aqjJ9wlSBQOlvBXj5lQQq2AbPK2DBkXNeyP5uZtH52K2t/CBA5Rdq5ioN
-# wPJKIP/6BuNtY4wSbM5B2cIMEv/S+fY2YyPhGCFCvv3552WVzUyza4tIkudQGH/K
-# GPWb3xAFes/zAEAhE9qvNk0bPtQkHWX2PkGtjjw8teQsRPxLKsQpXxhZFpsBj0JD
-# udA/KWm7P8YEAiU8zPOCDb/Bxf6axT0d1NIQq/qfMoUpbo72ZRjBIPNqTM77/Oey
-# UdzJWxQHFXUUj7mszZ/fkTU0fzOk08X0CqUAm9wV+dNbWWlat+CT6zT+tOghiBdD
-# vjnuSUgZGU3I9C+s0NmCv/E2bc9e0ZkyC6F4IvKqsRbXoMkQw6zCZAxH5QDbRb4N
-# tckZ/QfnomZTlQ17OceiBLVZizwUz8XzFWv4Fflrwmt5z+/Q6TOkVjCsLUtiUmij
-# k9wXem/gpORXiYccKD0oReuOTRgUbIWB7zx2tO5VQml0oQiukS6p0whhZgy5N8CT
-# 4XtQBVBo0SNVnQtyuFnc5+vsf6f8MbmKfzMUbICJfLV8cbNuKo//8IVQz+HLznWP
-# xxlSdu3zd84VR0nEZMWbtDgfRPTahQru4uMb3bjY1JNhmCBBqXqJDwvdixI5o9nn
-# LsHZio33TkBV
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEwODE1
+# NTYwMVowLwYJKoZIhvcNAQkEMSIEIFYf+uv/JyXEwDTTw32HzldswcKqAxZL8oeN
+# AgCpwrGFMA0GCSqGSIb3DQEBAQUABIICAMNev7vUTPShmgRwbruEVZWUWv4cWI3S
+# mdzHsemGZzTSuPsjnF31r2Uc8iBl24ndJeJc8IOqCChhCOfpDyKCgAifJN1a8lFr
+# lcMnv2sEamEc5gLEt5pa5aJwr48HEZJc9H2YtSyY7tXu/rgqnj7utbq+I6gPkTRT
+# sQ5Io1XpWl9UUWj4lF3vy/YunrpzjWwIPrycvA99/RYvq8IfoYpQi5QdKQaaA+To
+# UTL0bmeNE3PIeGk4+/ayGkLy9TWICi+HusTnaDXWBpNJ1i6k44aQr05+B6dc++Ld
+# NHX0MZwPETAxxSvYqcRuZN10OTrEh5p94WLBrrODEyNN0JgY77bse9sDHyp6JQUA
+# G5jyGJyI7+VjXCcYew4q3S3MDweOwiUfGk0KsyzFe+zGvHt8ppX2XvUD8lkEMu66
+# w06G5s+uP+sdCQ1eOzFPdChMMvUqGMxdYgaa7hX39erwBtzQua9wIgJ57wl74KaO
+# 7MboIPtwNQDdQdHJPSUulCE1gLHZQe4vpAms1cSO4D5XBQPZWNOBsAFvh5aWhgIW
+# 5iRglIcXOlf0M5TzArJEhjUDPsAqFG97u7Vm9lnxX4k08EhGYEJs3OYD0B92Ps2b
+# 9cXvzpQ/VPY8VeH54HeirDCKHpYXeWD21DM3io8f6QZeTm0wTyY4vXw9WH7IDBzP
+# noOZbPCe++26
 # SIG # End signature block
