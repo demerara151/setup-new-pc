@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.2.7
-	Date: 07.01.2023
+	Version: v6.3.2
+	Date: 11.02.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -13,7 +13,7 @@
 	.NOTES
 	Supported Windows 11 versions
 	Versions: 21H2/22H2/23H2+
-	Builds: 22000.1335+, 22621+
+	Builds: 22000.1335+, 22621.963+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -64,8 +64,10 @@ function Checks
 			{
 				# Check whether the OS minor build version is 1335 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
-				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
-				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
+				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
+				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
+
+				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
 
 				Start-Process -FilePath "https://t.me/sophia_chat"
 
@@ -75,7 +77,7 @@ function Checks
 				Start-Sleep -Seconds 1
 
 				# Check for UWP apps updates
-				Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
+				Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 
 				# Open the "Windows Update" page
 				Start-Process -FilePath "ms-settings:windowsupdate"
@@ -97,8 +99,10 @@ function Checks
 			{
 				# Check whether the OS minor build version is 1335 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
-				$Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion"
-				Write-Warning -Message ($Localization.UpdateWarning -f $Version.CurrentBuild, $Version.UBR)
+				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
+				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
+
+				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
 
 				Start-Process -FilePath "https://t.me/sophia_chat"
 
@@ -108,7 +112,7 @@ function Checks
 				Start-Sleep -Seconds 1
 
 				# Check for UWP apps updates
-				Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
+				Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 
 				# Open the "Windows Update" page
 				Start-Process -FilePath "ms-settings:windowsupdate"
@@ -298,7 +302,7 @@ function Checks
 	# Check Microsoft Defender state
 	if ($null -eq (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct -ErrorAction Ignore))
 	{
-		$Localization.WindowsBroken
+		Write-Warning -Message $Localization.WindowsBroken
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
@@ -310,7 +314,7 @@ function Checks
 	}
 	catch [Microsoft.PowerShell.Commands.ServiceCommandException]
 	{
-		$Localization.WindowsBroken
+		Write-Warning -Message $Localization.WindowsBroken
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
@@ -359,7 +363,7 @@ function Checks
 	}
 	catch [System.Management.Automation.PropertyNotFoundException]
 	{
-		$Localization.UpdateDefender
+		Write-Warning -Message $Localization.UpdateDefender
 
 		Start-Process -FilePath "https://t.me/sophia_chat"
 
@@ -661,7 +665,7 @@ $($Type):$($Value)`n
 	DiagTrackService -Enable
 
 	.NOTES
-	Disabling the "Connected User Experiences and Telemetry" service (DiagTrack) can cause you not being able to get Xbox achievements anymore
+	Disabling the "Connected User Experiences and Telemetry" service (DiagTrack) can cause you not being able to get Xbox achievements anymore and affects Feedback Hub
 
 	.NOTES
 	Current user
@@ -771,6 +775,11 @@ function DiagnosticDataLevel
 				New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 1 -Force
 				Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 1
 			}
+
+			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
+			{
+				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
+			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 1 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 1 -Force
 		}
@@ -779,6 +788,11 @@ function DiagnosticDataLevel
 			# Optional diagnostic data
 			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force -ErrorAction Ignore
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type CLEAR
+
+			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
+			{
+				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
+			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
 		}
@@ -3746,13 +3760,13 @@ public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, uint
 
 <#
 	.SYNOPSIS
-	Files and folders grouping
+	Files and folders grouping in the Downloads folder
 
 	.PARAMETER None
-	Do not group files and folder
+	Do not group files and folder in the Downloads folder
 
 	.PARAMETER Default
-	Group files and folder by date modified (default value)
+	Group files and folder by date modified in the Downloads folder (default value)
 
 	.EXAMPLE
 	FolderGroupBy -None
@@ -3789,19 +3803,73 @@ function FolderGroupBy
 			# Clear any Common Dialog views
 			Get-ChildItem -Path "HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\*\Shell" -Recurse | Where-Object -FilterScript {$_.PSChildName -eq "{885A186E-A440-4ADA-812B-DB871B942259}"} | Remove-Item -Force
 
+			# https://learn.microsoft.com/en-us/windows/win32/properties/props-system-null
 			if (-not (Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}"))
 			{
 				New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Force
 			}
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name ColumnList -PropertyType String -Value "prop:0(34)System.ItemNameDisplay;0System.DateModified;0System.ItemTypeText;0System.Size;1System.DateCreated;1System.Author;1System.Category;1System.Keywords;1System.Title" -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name ColumnList -PropertyType String -Value "System.Null" -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name GroupBy -PropertyType String -Value "System.Null" -Force
 			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name LogicalViewMode -PropertyType DWord -Value 1 -Force
 			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name Name -PropertyType String -Value NoName -Force
 			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name Order -PropertyType DWord -Value 0 -Force
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name PrimaryProperty -PropertyType String -Value "System.ItemNameDisplay" -Force
 			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}\TopViews\{00000000-0000-0000-0000-000000000000}" -Name SortByList -PropertyType String -Value "prop:System.ItemNameDisplay" -Force
 		}
 		"Default"
 		{
 			Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FolderTypes\{885a186e-a440-4ada-812b-db871b942259}" -Recurse -Force -ErrorAction Ignore
+		}
+	}
+}
+
+<#
+	.SYNOPSIS
+	Expand to current folder in navigation pane
+
+	.PARAMETER Disable
+	Do not expand to open folder on navigation pane (default value)
+
+	.PARAMETER Enable
+	Expand to open folder on navigation pane
+
+	.EXAMPLE
+	NavigationPaneExpand -Disable
+
+	.EXAMPLE
+	NavigationPaneExpand -Enable
+
+	.NOTES
+	Current user
+#>
+function NavigationPaneExpand
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Disable"
+		{
+			Remove-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name NavPaneExpandToCurrentFolder -Force -ErrorAction Ignore
+		}
+		"Enable"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name NavPaneExpandToCurrentFolder -PropertyType DWord -Value 1 -Force
 		}
 	}
 }
@@ -3816,13 +3884,19 @@ function FolderGroupBy
 	Uninstall OneDrive
 
 	.PARAMETER Install
-	Install OneDrive 64-bit
+	Install OneDrive 64-bit depending which installer is triggered
+
+	.PARAMETER Install -AllUsers
+	Install OneDrive 64-bit for all users to %ProgramFiles% depending which installer is triggered
 
 	.EXAMPLE
 	OneDrive -Uninstall
 
 	.EXAMPLE
 	OneDrive -Install
+
+	.EXAMPLE
+	OneDrive -Install -AllUsers
 
 	.NOTES
 	The OneDrive user folder won't be removed
@@ -3846,49 +3920,65 @@ function OneDrive
 			ParameterSetName = "Install"
 		)]
 		[switch]
-		$Install
+		$Install,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Install"
+		)]
+		[switch]
+		$AllUsers
 	)
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
 		"Uninstall"
 		{
-			[xml]$Uninstall = Get-Package -Name "Microsoft OneDrive" -ProviderName Programs -ErrorAction Ignore | ForEach-Object -Process {$_.SwidTagText}
-			[xml]$Uninstall = $Uninstall.SoftwareIdentity.InnerXml
-			[string]$UninstallString = $Uninstall.Meta.UninstallString
-			if ($UninstallString)
+			[string]$UninstallString = Get-Package -Name "Microsoft OneDrive" -ProviderName Programs -ErrorAction Ignore | ForEach-Object -Process {$_.Meta.Attributes["UninstallString"]}
+			if (-not $UninstallString)
 			{
-				Write-Information -MessageData "" -InformationAction Continue
-				Write-Verbose -Message $Localization.OneDriveUninstalling -Verbose
+				# OneDrive is not installed
+				return
+			}
 
-				Stop-Process -Name OneDrive, OneDriveSetup, FileCoAuth -Force -ErrorAction Ignore
+			# Check if user is logged into OneDrive account (Microsoft account)
+			$UserEmail = Get-ItemProperty -Path HKCU:\Software\Microsoft\OneDrive\Accounts\Personal -Name UserEmail -ErrorAction Ignore
+			if ($UserEmail)
+			{
+				return
+			}
 
-				# Getting link to the OneDriveSetup.exe and its' argument(s)
-				[string[]]$OneDriveSetup = ($UninstallString -Replace("\s*/", ",/")).Split(",").Trim()
-				if ($OneDriveSetup.Count -eq 2)
+			Write-Information -MessageData "" -InformationAction Continue
+			Write-Verbose -Message $Localization.OneDriveUninstalling -Verbose
+
+			Stop-Process -Name OneDrive, OneDriveSetup, FileCoAuth -Force -ErrorAction Ignore
+
+			# Getting link to the OneDriveSetup.exe and its' argument(s)
+			[string[]]$OneDriveSetup = ($UninstallString -Replace("\s*/", ",/")).Split(",").Trim()
+			if ($OneDriveSetup.Count -eq 2)
+			{
+				Start-Process -FilePath $OneDriveSetup[0] -ArgumentList $OneDriveSetup[1..1] -Wait
+			}
+			else
+			{
+				Start-Process -FilePath $OneDriveSetup[0] -ArgumentList $OneDriveSetup[1..2] -Wait
+			}
+
+			# Get the OneDrive user folder path and remove it if it doesn't contain any user files
+			if (Test-Path -Path $env:OneDrive)
+			{
+				if ((Get-ChildItem -Path $env:OneDrive -ErrorAction Ignore | Measure-Object).Count -eq 0)
 				{
-					Start-Process -FilePath $OneDriveSetup[0] -ArgumentList $OneDriveSetup[1..1] -Wait
-				}
-				else
-				{
-					Start-Process -FilePath $OneDriveSetup[0] -ArgumentList $OneDriveSetup[1..2] -Wait
-				}
+					Remove-Item -Path $env:OneDrive -Recurse -Force -ErrorAction Ignore
 
-				# Get the OneDrive user folder path and remove it if it doesn't contain any user files
-				if (Test-Path -Path $env:OneDrive)
-				{
-					if ((Get-ChildItem -Path $env:OneDrive -ErrorAction Ignore | Measure-Object).Count -eq 0)
-					{
-						Remove-Item -Path $env:OneDrive -Recurse -Force -ErrorAction Ignore
-
-						# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
-						# The system does not move the file until the operating system is restarted
-						# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
-						$Signature = @{
-							Namespace        = "WinAPI"
-							Name             = "DeleteFiles"
-							Language         = "CSharp"
-							MemberDefinition = @"
+					# https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexa
+					# The system does not move the file until the operating system is restarted
+					# The system moves the file immediately after AUTOCHK is executed, but before creating any paging files
+					$Script:Signature = @{
+						Namespace        = "WinAPI"
+						Name             = "DeleteFiles"
+						Language         = "CSharp"
+						MemberDefinition = @"
 public enum MoveFileFlags
 {
 	MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
@@ -3902,162 +3992,174 @@ public static bool MarkFileDelete (string sourcefile)
 	return MoveFileEx(sourcefile, null, MoveFileFlags.MOVEFILE_DELAY_UNTIL_REBOOT);
 }
 "@
-						}
-
-						# If there are some files or folders left in %OneDrive%
-						if ((Get-ChildItem -Path $env:OneDrive -ErrorAction Ignore | Measure-Object).Count -ne 0)
-						{
-							if (-not ("WinAPI.DeleteFiles" -as [type]))
-							{
-								Add-Type @Signature
-							}
-
-							try
-							{
-								Remove-Item -Path $env:OneDrive -Recurse -Force -ErrorAction Stop
-							}
-							catch
-							{
-								# If files are in use remove them at the next boot
-								Get-ChildItem -Path $env:OneDrive -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
-							}
-						}
 					}
-					else
-					{
-						Start-Process -FilePath explorer -ArgumentList $env:OneDrive
-					}
-				}
 
-				Remove-ItemProperty -Path HKCU:\Environment -Name OneDrive, OneDriveConsumer -Force -ErrorAction Ignore
-				Remove-Item -Path HKCU:\Software\Microsoft\OneDrive, HKLM:\SOFTWARE\WOW6432Node\Microsoft\OneDrive, "$env:ProgramData\Microsoft OneDrive", $env:SystemDrive\OneDriveTemp -Recurse -Force -ErrorAction Ignore
-				Unregister-ScheduledTask -TaskName *OneDrive* -Confirm:$false -ErrorAction Ignore
-
-				# Getting the OneDrive folder path
-				$OneDriveFolder = Split-Path -Path (Split-Path -Path $OneDriveSetup[0] -Parent)
-
-				# Save all opened folders in order to restore them after File Explorer restarting
-				Clear-Variable -Name OpenedFolders -Force -ErrorAction Ignore
-				$Script:OpenedFolders = {(New-Object -ComObject Shell.Application).Windows() | ForEach-Object -Process {$_.Document.Folder.Self.Path}}.Invoke()
-
-				# Terminate the File Explorer process
-				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoRestartShell -PropertyType DWord -Value 0 -Force
-				Stop-Process -Name explorer -Force
-				Start-Sleep -Seconds 3
-				New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoRestartShell -PropertyType DWord -Value 1 -Force
-
-				# Attempt to unregister FileSyncShell64.dll and remove
-				$FileSyncShell64dlls = Get-ChildItem -Path "$OneDriveFolder\*\FileSyncShell64.dll" -Force
-				foreach ($FileSyncShell64dll in $FileSyncShell64dlls.FullName)
-				{
-					Start-Process -FilePath regsvr32.exe -ArgumentList "/u /s $FileSyncShell64dll" -Wait
-					Remove-Item -Path $FileSyncShell64dll -Force -ErrorAction Ignore
-
-					if (Test-Path -Path $FileSyncShell64dll)
+					# If there are some files or folders left in %OneDrive%
+					if ((Get-ChildItem -Path $env:OneDrive -ErrorAction Ignore | Measure-Object).Count -ne 0)
 					{
 						if (-not ("WinAPI.DeleteFiles" -as [type]))
 						{
 							Add-Type @Signature
 						}
 
-						# If files are in use remove them at the next boot
-						Get-ChildItem -Path $FileSyncShell64dll -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
+						try
+						{
+							Remove-Item -Path $env:OneDrive -Recurse -Force -ErrorAction Stop
+						}
+						catch
+						{
+							# If files are in use remove them at the next boot
+							Get-ChildItem -Path $env:OneDrive -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
+						}
 					}
 				}
-
-				Start-Sleep -Seconds 1
-
-				# Start the File Explorer process
-				Start-Process -FilePath explorer
-
-				# Restoring closed folders
-				foreach ($OpenedFolder in $OpenedFolders)
+				else
 				{
-					if (Test-Path -Path $OpenedFolder)
-					{
-						Start-Process -FilePath explorer -ArgumentList $OpenedFolder
-					}
+					Start-Process -FilePath explorer -ArgumentList $env:OneDrive
 				}
-
-				Remove-Item -Path $OneDriveFolder, $env:LOCALAPPDATA\OneDrive, $env:LOCALAPPDATA\Microsoft\OneDrive, "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk" -Recurse -Force -ErrorAction Ignore
 			}
+
+			Remove-ItemProperty -Path HKCU:\Environment -Name OneDrive, OneDriveConsumer -Force -ErrorAction Ignore
+			$Path = @(
+				"HKCU:\Software\Microsoft\OneDrive",
+				"$env:ProgramData\Microsoft OneDrive",
+				"$env:SystemDrive\OneDriveTemp"
+			)
+			Remove-Item -Path $Path -Recurse -Force -ErrorAction Ignore
+			Unregister-ScheduledTask -TaskName *OneDrive* -Confirm:$false -ErrorAction Ignore
+
+			# Getting the OneDrive folder path
+			$OneDriveFolder = Split-Path -Path (Split-Path -Path $OneDriveSetup[0] -Parent)
+
+			# Terminate the File Explorer process
+			New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoRestartShell -PropertyType DWord -Value 0 -Force
+			Stop-Process -Name explorer -Force
+			Start-Sleep -Seconds 3
+			New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoRestartShell -PropertyType DWord -Value 1 -Force
+
+			# Attempt to unregister FileSyncShell64.dll and remove
+			$FileSyncShell64dlls = Get-ChildItem -Path "$OneDriveFolder\*\FileSyncShell64.dll" -Force
+			foreach ($FileSyncShell64dll in $FileSyncShell64dlls.FullName)
+			{
+				Start-Process -FilePath regsvr32.exe -ArgumentList "/u /s $FileSyncShell64dll" -Wait
+				Remove-Item -Path $FileSyncShell64dll -Force -ErrorAction Ignore
+
+				if (Test-Path -Path $FileSyncShell64dll)
+				{
+					if (-not ("WinAPI.DeleteFiles" -as [type]))
+					{
+						Add-Type @Signature
+					}
+
+					# If files are in use remove them at the next boot
+					Get-ChildItem -Path $FileSyncShell64dll -Recurse -Force | ForEach-Object -Process {[WinAPI.DeleteFiles]::MarkFileDelete($_.FullName)}
+				}
+			}
+
+			Start-Sleep -Seconds 1
+
+			# Start the File Explorer process
+			Start-Process -FilePath explorer
+
+			$Path = @(
+				$OneDriveFolder,
+				"$env:LOCALAPPDATA\OneDrive",
+				"$env:LOCALAPPDATA\Microsoft\OneDrive",
+				"$env:APPDATA\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+			)
+			Remove-Item -Path $Path -Recurse -Force -ErrorAction Ignore
 		}
 		"Install"
 		{
 			$OneDrive = Get-Package -Name "Microsoft OneDrive" -ProviderName Programs -Force -ErrorAction Ignore
-			if (-not $OneDrive)
+			if ($OneDrive)
 			{
-				if (Test-Path -Path $env:SystemRoot\SysWOW64\OneDriveSetup.exe)
-				{
-					Write-Information -MessageData "" -InformationAction Continue
-					Write-Verbose -Message $Localization.OneDriveInstalling -Verbose
+				return
+			}
 
-					Start-Process -FilePath $env:SystemRoot\SysWOW64\OneDriveSetup.exe
+			if (Test-Path -Path $env:SystemRoot\System32\OneDriveSetup.exe)
+			{
+				Write-Information -MessageData "" -InformationAction Continue
+				Write-Verbose -Message $Localization.OneDriveInstalling -Verbose
+
+				if ($AllUsers)
+				{
+					# Install OneDrive for all users
+					Start-Process -FilePath $env:SystemRoot\System32\OneDriveSetup.exe -ArgumentList "/allusers" -Wait
 				}
 				else
 				{
-					try
-					{
-						# Check the internet connection
-						$Parameters = @{
-							Uri              = "https://www.google.com"
-							Method           = "Head"
-							SslProtocol      = "Tls13"
-							DisableKeepAlive = $true
-							UseBasicParsing  = $true
-						}
-						if (-not (Invoke-WebRequest @Parameters).StatusDescription)
-						{
-							return
-						}
-
-						# Downloading the latest OneDrive installer 64-bit
-						Write-Information -MessageData "" -InformationAction Continue
-						Write-Verbose -Message $Localization.OneDriveDownloading -Verbose
-
-						# Parse XML to get the URL
-						# https://go.microsoft.com/fwlink/p/?LinkID=844652
-						$Parameters = @{
-							Uri             = "https://g.live.com/1rewlive5skydrive/OneDriveProductionV2"
-							SslProtocol     = "Tls13"
-							UseBasicParsing = $true
-							Verbose         = $true
-						}
-						$Content = Invoke-RestMethod @Parameters
-
-						# Remove invalid chars
-						[xml]$OneDriveXML = $Content -replace "ï»¿", ""
-
-						$OneDriveURL = ($OneDriveXML).root.update.amd64binary.url
-						$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-						$Parameters = @{
-							Uri             = $OneDriveURL
-							OutFile         = "$DownloadsFolder\OneDriveSetup.exe"
-							SslProtocol     = "Tls13"
-							UseBasicParsing = $true
-							Verbose         = $true
-						}
-						Invoke-WebRequest @Parameters
-
-						Start-Process -FilePath "$DownloadsFolder\OneDriveSetup.exe" -Wait
-
-						Remove-Item -Path "$DownloadsFolder\OneDriveSetup.exe" -Force
-					}
-					catch [System.Net.WebException]
-					{
-						Write-Warning -Message $Localization.NoInternetConnection
-						Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
-
-						Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
-					}
+					Start-Process -FilePath $env:SystemRoot\System32\OneDriveSetup.exe -Wait
 				}
-
-				# Save screenshots by pressing Win+PrtScr in the Pictures folder
-				Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{B7BEDE81-DF94-4682-A7D8-57A52620B86F}" -Force -ErrorAction Ignore
-
-				Get-ScheduledTask -TaskName "Onedrive* Update*" | Enable-ScheduledTask
-				Get-ScheduledTask -TaskName "Onedrive* Update*" | Start-ScheduledTask
 			}
+			else
+			{
+				try
+				{
+					# Check the internet connection
+					$Parameters = @{
+						Uri              = "https://www.google.com"
+						Method           = "Head"
+						DisableKeepAlive = $true
+						UseBasicParsing  = $true
+					}
+					if (-not (Invoke-WebRequest @Parameters).StatusDescription)
+					{
+						return
+					}
+
+					# Downloading the latest OneDrive installer 64-bit
+					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.OneDriveDownloading -Verbose
+
+					# Parse XML to get the URL
+					# https://go.microsoft.com/fwlink/p/?LinkID=844652
+					$Parameters = @{
+						Uri             = "https://g.live.com/1rewlive5skydrive/OneDriveProductionV2"
+						UseBasicParsing = $true
+						Verbose         = $true
+					}
+					$Content = Invoke-RestMethod @Parameters
+
+					# Remove invalid chars
+					[xml]$OneDriveXML = $Content -replace "ï»¿", ""
+
+					$OneDriveURL = ($OneDriveXML).root.update.amd64binary.url
+					$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+					$Parameters = @{
+						Uri             = $OneDriveURL
+						OutFile         = "$DownloadsFolder\OneDriveSetup.exe"
+						UseBasicParsing = $true
+						Verbose         = $true
+					}
+					Invoke-WebRequest @Parameters
+
+					if ($AllUsers)
+					{
+						# Install OneDrive for all users to %ProgramFiles%
+						Start-Process -FilePath $env:SystemRoot\SysWOW64\OneDriveSetup.exe -ArgumentList "/allusers" -Wait
+					}
+					else
+					{
+						Start-Process -FilePath $env:SystemRoot\SysWOW64\OneDriveSetup.exe
+					}
+
+					Remove-Item -Path "$DownloadsFolder\OneDriveSetup.exe" -Force
+				}
+				catch [System.Net.WebException]
+				{
+					Write-Warning -Message $Localization.NoInternetConnection
+					Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+					Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+				}
+			}
+
+			# Save screenshots by pressing Win+PrtScr in the Pictures folder
+			Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{B7BEDE81-DF94-4682-A7D8-57A52620B86F}" -Force -ErrorAction Ignore
+
+			Get-ScheduledTask -TaskName "Onedrive* Update*" | Enable-ScheduledTask
+			Get-ScheduledTask -TaskName "Onedrive* Update*" | Start-ScheduledTask
 		}
 	}
 }
@@ -5748,59 +5850,6 @@ function PowerPlan
 
 <#
 	.SYNOPSIS
-	The the latest installed .NET runtime for all apps usage
-
-	.PARAMETER Enable
-	Use the latest installed .NET runtime for all apps
-
-	.PARAMETER Disable
-	Do not use the latest installed .NET runtime for all apps
-
-	.EXAMPLE
-	LatestInstalled.NET -Enable
-
-	.EXAMPLE
-	LatestInstalled.NET -Disable
-
-	.NOTES
-	Machine-wide
-#>
-function LatestInstalled.NET
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Disable"
-		)]
-		[switch]
-		$Disable
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Enable"
-		{
-			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\.NETFramework -Name OnlyUseLatestCLR -PropertyType DWord -Value 1 -Force
-			New-ItemProperty -Path HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework -Name OnlyUseLatestCLR -PropertyType DWord -Value 1 -Force
-		}
-		"Disable"
-		{
-			Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\.NETFramework -Name OnlyUseLatestCLR -Force -ErrorAction Ignore
-			Remove-ItemProperty -Path HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework -Name OnlyUseLatestCLR -Force -ErrorAction Ignore
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
 	Network adapters power management
 
 	.PARAMETER Disable
@@ -5892,11 +5941,17 @@ function NetworkAdaptersSavePower
 	.PARAMETER Enable
 	Enable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections if your ISP supports it
 
+	.PARAMETER PreferIPv4overIPv6
+	Enable the Internet Protocol Version 6 (TCP/IPv6) component for all network connections if your ISP supports it. Prefer IPv4 over IPv6
+
 	.EXAMPLE
 	IPv6Component -Disable
 
 	.EXAMPLE
 	IPv6Component -Enable
+
+	.EXAMPLE
+	IPv6Component -PreferIPv4overIPv6
 
 	.NOTES
 	Before invoking the function, a check will be run whether your ISP supports the IPv6 protocol using https://ipv6-test.com
@@ -5920,7 +5975,14 @@ function IPv6Component
 			ParameterSetName = "Enable"
 		)]
 		[switch]
-		$Enable
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "PreferIPv4overIPv6"
+		)]
+		[switch]
+		$PreferIPv4overIPv6
 	)
 
 	try
@@ -5978,6 +6040,7 @@ function IPv6Component
 	{
 		"Disable"
 		{
+
 			if ($IPVersion -ne "ipv6")
 			{
 				Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6
@@ -5988,6 +6051,14 @@ function IPv6Component
 			if ($IPVersion -eq "ipv6")
 			{
 				Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6
+			}
+		}
+		"PreferIPv4overIPv6"
+		{
+			if ($IPVersion -eq "ipv6")
+			{
+				Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6
+				New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters -Name DisabledComponents -PropertyType DWord -Value 32 -Force
 			}
 		}
 	}
@@ -6386,7 +6457,6 @@ public static string GetString(uint strId)
 		{
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Verbose -Message $Localization.RetrievingDrivesList -Verbose
-			Write-Information -MessageData "" -InformationAction Continue
 
 			# Store all drives letters to use them within ShowMenu function
 			$DriveLetters = @((Get-Disk | Where-Object -FilterScript {$_.BusType -ne "USB"} | Get-Partition | Get-Volume | Where-Object -FilterScript {$null -ne $_.DriveLetter}).DriveLetter | Sort-Object)
@@ -6410,8 +6480,6 @@ public static string GetString(uint strId)
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			Write-Information -MessageData "" -InformationAction Continue
-
 			$Title = ""
 			$Message       = $Localization.UserFolderRequest -f $DesktopLocalizedString
 			$No            = $Localization.No
@@ -6429,8 +6497,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6442,8 +6510,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $DocumentsLocalizedString
@@ -6462,8 +6528,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6475,8 +6541,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $DownloadsLocalizedString
@@ -6495,8 +6559,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6508,8 +6572,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $MusicLocalizedString
@@ -6528,8 +6590,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6541,8 +6603,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $PicturesLocalizedString
@@ -6561,8 +6621,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6574,8 +6634,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderRequest -f $VideosLocalizedString
@@ -6594,8 +6652,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 		}
@@ -6607,8 +6665,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DesktopLocalizedString
@@ -6639,8 +6695,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6650,8 +6706,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DocumentsLocalizedString
@@ -6682,8 +6736,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6693,8 +6747,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $DownloadsLocalizedString
@@ -6725,8 +6777,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6736,8 +6788,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $MusicLocalizedString
@@ -6768,8 +6818,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6779,8 +6829,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $PicturesLocalizedString
@@ -6811,8 +6859,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6822,8 +6870,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserFolderSelect -f $VideosLocalizedString
@@ -6854,8 +6900,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 		}
@@ -6867,8 +6913,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DesktopLocalizedString
@@ -6886,8 +6930,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6897,8 +6941,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DocumentsLocalizedString
@@ -6916,8 +6958,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6927,8 +6969,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $DownloadsLocalizedString
@@ -6958,8 +6998,6 @@ public static string GetString(uint strId)
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			Write-Information -MessageData "" -InformationAction Continue
-
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $MusicLocalizedString
 			$Yes           = $Localization.Yes
@@ -6976,8 +7014,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -6987,8 +7025,6 @@ public static string GetString(uint strId)
 
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			Write-Information -MessageData "" -InformationAction Continue
 
 			$Title         = ""
 			$Message       = $Localization.UserDefaultFolder -f $PicturesLocalizedString
@@ -7006,8 +7042,8 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
 
@@ -7036,10 +7072,63 @@ public static string GetString(uint strId)
 				}
 				"1"
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
 					Write-Information -MessageData "" -InformationAction Continue
+					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
 			}
+		}
+	}
+}
+
+<#
+	.SYNOPSIS
+	The the latest installed .NET runtime for all apps usage
+
+	.PARAMETER Enable
+	Use the latest installed .NET runtime for all apps
+
+	.PARAMETER Disable
+	Do not use the latest installed .NET runtime for all apps
+
+	.EXAMPLE
+	LatestInstalled.NET -Enable
+
+	.EXAMPLE
+	LatestInstalled.NET -Disable
+
+	.NOTES
+	Machine-wide
+#>
+function LatestInstalled.NET
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Enable"
+		{
+			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\.NETFramework -Name OnlyUseLatestCLR -PropertyType DWord -Value 1 -Force
+			New-ItemProperty -Path HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework -Name OnlyUseLatestCLR -PropertyType DWord -Value 1 -Force
+		}
+		"Disable"
+		{
+			Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\.NETFramework -Name OnlyUseLatestCLR -Force -ErrorAction Ignore
+			Remove-ItemProperty -Path HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework -Name OnlyUseLatestCLR -Force -ErrorAction Ignore
 		}
 	}
 }
@@ -7094,7 +7183,8 @@ function WinPrtScrFolder
 			$PresetName = (Get-PSCallStack).Position | Where-Object -FilterScript {
 				(($_.File -match ".ps1") -and ($_.File -notmatch "Functions.ps1")) -and (($_.Text -eq "WinPrtScrFolder -Desktop") -or ($_.Text -match "Invoke-Expression"))
 			}
-			if ($null -ne $PresetName)
+
+			if ($PresetName)
 			{
 				# Get the name of a preset (e.g Sophia.ps1) regardless it was named
 				$PresetName = Split-Path -Path $PresetName.File -Leaf
@@ -7196,6 +7286,10 @@ function RecommendedTroubleshooting
 	}
 
 	# Set the OS level of diagnostic data gathering to "Optional diagnostic data"
+	if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
+	{
+		New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
+	}
 	New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 3 -Force
 	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 	New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
@@ -8695,10 +8789,14 @@ function InstallVCRedist
 			return
 		}
 
-		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
+		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller -ErrorAction Ignore).Version -ge [System.Version]"1.17")
 		{
+			# https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/VCRedist/2015%2B
 			winget install --id=Microsoft.VCRedist.2015+.x86 --exact --accept-source-agreements
 			winget install --id=Microsoft.VCRedist.2015+.x64 --exact --accept-source-agreements
+
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			Get-ChildItem -Path "$env:TEMP\WinGet" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
 		}
 		else
 		{
@@ -8724,7 +8822,13 @@ function InstallVCRedist
 			Start-Process -FilePath "$DownloadsFolder\VC_redist.x64.exe" -ArgumentList "/install /passive /norestart" -Wait
 
 			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
-			Get-ChildItem -Path "$DownloadsFolder\VC_redist.x86.exe", "$DownloadsFolder\VC_redist.x64.exe", "$env:TEMP\dd_vcredist_amdx86_*.log", "$env:TEMP\dd_vcredist_amd64_*.log" -Force | Remove-Item -Recurse -Force -ErrorAction Ignore
+			$Paths = @(
+				"$DownloadsFolder\VC_redist.x86.exe",
+				"$DownloadsFolder\VC_redist.x64.exe",
+				"$env:TEMP\dd_vcredist_x86_*.log",
+				"$env:TEMP\dd_vcredist_amd64_*.log"
+			)
+			Get-ChildItem -Path $Paths -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Ignore
 		}
 	}
 	catch [System.Net.WebException]
@@ -8765,17 +8869,22 @@ function InstallDotNetRuntimes
 			return
 		}
 
-		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller).Version -ge [System.Version]"1.17")
+		if ([System.Version](Get-AppxPackage -Name Microsoft.DesktopAppInstaller -ErrorAction Ignore).Version -ge [System.Version]"1.17")
 		{
+			# https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/DotNet/DesktopRuntime/6
 			# .NET Desktop Runtime 6 x86
 			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x86 --exact --accept-source-agreements
-			# .NET Desktop Runtime 7 x64
+			# .NET Desktop Runtime 6 x64
 			winget install --id=Microsoft.DotNet.DesktopRuntime.6 --architecture x64 --exact --accept-source-agreements
 
+			# https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/DotNet/DesktopRuntime/7
 			# .NET Desktop Runtime 7 x86
 			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x86 --exact --accept-source-agreements
 			# .NET Desktop Runtime 7 x64
 			winget install --id=Microsoft.DotNet.DesktopRuntime.7 --architecture x64 --exact --accept-source-agreements
+
+			# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+			Get-ChildItem -Path "$env:TEMP\WinGet" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
 		}
 		else
 		{
@@ -9047,6 +9156,116 @@ function WSA
 		}
 	}
 }
+
+<#
+	.SYNOPSIS
+	Desktop shortcut creation upon Microsoft Edge update
+
+	.PARAMETER Channels
+	List Microsoft Edge channels to prevent desktop shortcut creation upon its' update
+
+	.PARAMETER Disable
+	Do not prevent desktop shortcut creation upon Microsoft Edge update
+
+	.EXAMPLE
+	PreventEdgeShortcutCreation -Channels Stable, Beta, Dev, Canary
+
+	.EXAMPLE
+	PreventEdgeShortcutCreation -Disable
+
+	.NOTES
+	Machine-wide
+#>
+function PreventEdgeShortcutCreation
+{
+	[CmdletBinding()]
+	param
+	(
+		[Parameter(
+			Mandatory = $false,
+			ParameterSetName = "Channels"
+		)]
+		[ValidateSet("Stable", "Beta", "Dev", "Canary")]
+		[string[]]
+		$Channels,
+
+		[Parameter(
+			Mandatory = $false,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	if (($null -eq (Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore)) -or ([System.Version](Get-Package -Name "Microsoft Edge Update" -ProviderName Programs).Version -lt [System.Version]"1.3.128.0"))
+	{
+		(Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore).Version
+
+		return
+	}
+
+	foreach ($Channel in $Channels)
+	{
+		switch ($Channel)
+		{
+			Stable
+			{
+				if (Get-Package -Name "Microsoft Edge" -ProviderName Programs -ErrorAction Ignore)
+				{
+					if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate))
+					{
+						New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Force
+					}
+					New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name "CreateDesktopShortcut{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" -PropertyType DWord -Value 0 -Force
+				}
+			}
+			Beta
+			{
+				if (Get-Package -Name "Microsoft Edge Beta" -ProviderName Programs -ErrorAction Ignore)
+				{
+					if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate))
+					{
+						New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Force
+					}
+					New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name "CreateDesktopShortcut{2CD8A007-E189-409D-A2C8-9AF4EF3C72AA}" -PropertyType DWord -Value 0 -Force
+				}
+			}
+			Dev
+			{
+				if (Get-Package -Name "Microsoft Edge Dev" -ProviderName Programs -ErrorAction Ignore)
+				{
+					if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate))
+					{
+						New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Force
+					}
+					New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name "CreateDesktopShortcut{0D50BFEC-CD6A-4F9A-964C-C7416E3ACB10}" -PropertyType DWord -Value 0 -Force
+				}
+			}
+			Canary
+			{
+				if (Get-Package -Name "Microsoft Edge Canary" -ProviderName Programs -ErrorAction Ignore)
+				{
+					if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate))
+					{
+						New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Force
+					}
+					New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name "CreateDesktopShortcut{65C35B14-6C1D-4122-AC46-7148CC9D6497}" -PropertyType DWord -Value 0 -Force
+				}
+			}
+		}
+	}
+
+	if ($Disable)
+	{
+		$Names = @(
+			"CreateDesktopShortcut{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}",
+			"CreateDesktopShortcut{2CD8A007-E189-409D-A2C8-9AF4EF3C72AA}",
+			"CreateDesktopShortcut{0D50BFEC-CD6A-4F9A-964C-C7416E3ACB10}",
+			"CreateDesktopShortcut{65C35B14-6C1D-4122-AC46-7148CC9D6497}"
+		)
+		Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name $Names -Force -ErrorAction Ignore
+	}
+}
 #endregion System
 
 #region WSL
@@ -9054,11 +9273,11 @@ function WSA
 	.SYNOPSIS
 	Windows Subsystem for Linux (WSL)
 
-	.PARAMETER Install
+	.PARAMETER
 	Enable Windows Subsystem for Linux (WSL), install the latest WSL Linux kernel version, and a Linux distribution using a pop-up form
 
 	.EXAMPLE
-	WSL
+	Install-WSL
 
 	.NOTES
 	The "Receive updates for other Microsoft products" setting will be enabled automatically to receive kernel updates
@@ -9066,8 +9285,21 @@ function WSA
 	.NOTES
 	Machine-wide
 #>
-function WSL
+function Install-WSL
 {
+	[System.Console]::OutputEncoding = [System.Text.Encoding]::Unicode
+
+	$wsl = wsl --list --online
+	# We need to get the string number where the "FRIENDLY NAME" header begins to truncate all other unnecessary strings in the beginning
+	$LineNumber = ($wsl | Select-String -Pattern "FRIENDLY NAME" -CaseSensitive).LineNumber
+	# Remove first strings in output from the first to the $LineNumber
+	$Distros = ($wsl).Replace("  ", "").Replace("* ", "")[($LineNumber)..(($wsl).Count)] | ForEach-Object -Process {
+		[PSCustomObject]@{
+			"Distro" = $_ -split " ", 2 | Select-Object -Last 1
+			"Alias"  = $_ -split " ", 2 | Select-Object -First 1
+		}
+	}
+
 	Add-Type -AssemblyName PresentationCore, PresentationFramework
 
 	#region Variables
@@ -9081,19 +9313,12 @@ function WSL
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		Name="Window"
 		Title="WSL"
-		MinHeight="400" MinWidth="350"
+		MinHeight="460" MinWidth="350"
 		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"
 		TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True"
 		FontFamily="Candara" FontSize="16" ShowInTaskbar="True"
 		Background="#F1F1F1" Foreground="#262626">
 		<Window.Resources>
-			<Style TargetType="StackPanel" x:Key="PanelContainerStyle">
-				<Setter Property="Grid.Row" Value="0"/>
-				<Setter Property="Orientation" Value="Vertical"/>
-			</Style>
-			<Style TargetType="StackPanel" x:Key="PanelElementStyle">
-				<Setter Property="Orientation" Value="Horizontal"/>
-			</Style>
 			<Style TargetType="RadioButton">
 				<Setter Property="VerticalAlignment" Value="Center"/>
 				<Setter Property="Margin" Value="10"/>
@@ -9113,47 +9338,7 @@ function WSL
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<StackPanel Name="PanelContainer" Style="{StaticResource PanelContainerStyle}">
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonUbuntu" GroupName="NixNames" Tag="Ubuntu"/>
-					<TextBlock Text="Ubuntu"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonDebian" GroupName="NixNames" Tag="Debian"/>
-					<TextBlock Text="Debian GNU/Linux"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonKali" GroupName="NixNames" Tag="kali-linux"/>
-					<TextBlock Text="Kali Linux Rolling"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonOpenSuse" GroupName="NixNames" Tag="openSUSE-42"/>
-					<TextBlock Text="openSUSE Leap 42"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonSuse" GroupName="NixNames" Tag="SLES-12"/>
-					<TextBlock Text="SUSE Linux Enterprise Server v12"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonUbuntu16" GroupName="NixNames" Tag="Ubuntu-16.04"/>
-					<TextBlock Text="Ubuntu 16.04 LTS"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonUbuntu18" GroupName="NixNames" Tag="Ubuntu-18.04"/>
-					<TextBlock Text="Ubuntu 18.04 LTS"/>
-				</StackPanel>
-
-				<StackPanel Style="{StaticResource PanelElementStyle}">
-					<RadioButton Name="RadioButtonUbuntu20" GroupName="NixNames" Tag="Ubuntu-20.04"/>
-					<TextBlock Text="Ubuntu 20.04 LTS"/>
-				</StackPanel>
-			</StackPanel>
+			<StackPanel Name="PanelContainer" Grid.Row="0"/>
 			<Button Name="ButtonInstall" Content="Install" Grid.Row="2"/>
 		</Grid>
 	</Window>
@@ -9163,7 +9348,7 @@ function WSL
 	#region Functions
 	function RadioButtonChecked
 	{
-		$Global:CommandTag = $_.OriginalSource.Tag
+		$Script:CommandTag = $_.OriginalSource.Tag
 		if (-not $ButtonInstall.IsEnabled)
 		{
 			$ButtonInstall.IsEnabled = $true
@@ -9172,7 +9357,17 @@ function WSL
 
 	function ButtonInstallClicked
 	{
-		Start-Process -FilePath wsl.exe -ArgumentList "--install --distribution $Global:CommandTag" -Wait
+		Write-Warning -Message $Script:CommandTag
+
+		Start-Process -FilePath wsl.exe -ArgumentList "--install --distribution $Script:CommandTag" -Wait
+
+		$Form.Close()
+
+		# Receive updates for other Microsoft products when you update Windows
+		(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+		# Trigger Windows Update for detecting new updates
+		(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
 	}
 	#endregion
 
@@ -9180,12 +9375,24 @@ function WSL
 	$XAML.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]") | ForEach-Object -Process {
 		$control = $Form.FindName($_.Name)
 		Set-Variable -Name ($_.Name) -Value $control
-		if ($Control.Template.TargetType.Name -eq "RadioButton")
-		{
-			$Control.add_Checked({RadioButtonChecked})
-		}
 	}
-	$ButtonInstall.add_Click({ButtonInstallClicked})
+
+	foreach ($Distro in $Distros)
+	{
+		$Panel = New-Object -TypeName System.Windows.Controls.StackPanel
+		$RadioButton = New-Object -TypeName System.Windows.Controls.RadioButton
+		$TextBlock = New-Object -TypeName System.Windows.Controls.TextBlock
+		$Panel.Orientation = "Horizontal"
+		$RadioButton.GroupName = "WslDistro"
+		$RadioButton.Tag = $Distro.Alias
+		$RadioButton.Add_Checked({RadioButtonChecked})
+		$TextBlock.Text = $Distro.Distro
+		$Panel.Children.Add($RadioButton) | Out-Null
+		$Panel.Children.Add($TextBlock) | Out-Null
+		$PanelContainer.Children.Add($Panel) | Out-Null
+	}
+
+	$ButtonInstall.Add_Click({ButtonInstallClicked})
 
 	#region Sendkey function
 	# Emulate the Backspace key sending to prevent the console window to freeze
@@ -9231,9 +9438,6 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	# Force move the WPF form to the foreground
 	$Window.Add_Loaded({$Window.Activate()})
 	$Form.ShowDialog() | Out-Null
-
-	# Receive updates for other Microsoft products when you update Windows
-	(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
 }
 #endregion WSL
 
@@ -9252,7 +9456,7 @@ function UnpinAllStartApps
 {
 	Remove-Item "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start*.bin" -Force -ErrorAction Ignore
 
-	# https://gist.github.com/radtkedev
+	# https://gist.github.com/rad1ke
 	$HexString = "E27AE14B01FC4D1B9C00810BDE6E51854E5A5F47005BB1498A5C92AF9084F95E9BDB91E2EEDDD701300B000067DEFA31529529B3D32D8092A6EB66C8D5EADB19CF9B13518AAB9
 3275D9CEEF37E62C3574C036F327D1110AB0977996D67A2F8FA897D7207BEE85586B8CE6AD4F9736AA2154E3DCC9D082996984B76F1C73067F124F92A41F2B2CA83EF35436670979556FAE85AB10EA1
 6C932C3AECE1D45DA06D64BC42F4565AD0FCB8C63CDE7F6BB97ACE300198C3EACA3E1C974F547B1A7CF5B9C6A912448AB38A3BE2D6F0230A4A9AACC710C3E75088754CC2FB054B55B1D6ED7AD41EB8B
@@ -10282,10 +10486,10 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	Open Microsoft Store "HEVC Video Extensions from Device Manufacturer" page to install the extension manually
 
 	.EXAMPLE
-	HEIF -Install
+	HEVC -Install
 
 	.EXAMPLE
-	HEIF -Manually
+	HEVC -Manually
 
 	.LINK
 	https://www.microsoft.com/store/productId/9n4wgh0z6vhq
@@ -10299,7 +10503,7 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 	.NOTES
 	Current user
 #>
-function HEIF
+function HEVC
 {
 	param
 	(
@@ -10553,7 +10757,7 @@ function CheckUWPAppsUpdates
 {
 	Write-Information -MessageData "" -InformationAction Continue
 	Write-Verbose -Message $Localization.Patient -Verbose
-	Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
+	Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 }
 #endregion UWP apps
 
@@ -10719,7 +10923,7 @@ function SetAppGraphicsPerformance
 							New-Item -Path HKCU:\Software\Microsoft\DirectX\UserGpuPreferences -Force
 						}
 						New-ItemProperty -Path HKCU:\Software\Microsoft\DirectX\UserGpuPreferences -Name $OpenFileDialog.FileName -PropertyType String -Value "GpuPreference=2;" -Force
-						Write-Verbose -Message ("{0}" -f $OpenFileDialog.FileName) -Verbose
+						Write-Verbose -Message $OpenFileDialog.FileName -Verbose
 					}
 				}
 				"1"
@@ -10854,6 +11058,30 @@ function CleanupTask
 			)
 			{
 				return
+			}
+
+			# Checking if we're trying to create the task when it was already created as another user
+			if (Get-ScheduledTask -TaskPath "\Sophia\" -TaskName "Windows Cleanup" -ErrorAction Ignore)
+			{
+				# Also we can parse "$env:SystemRoot\System32\Tasks\Sophia\Windows Cleanup" to check if the task was created
+				$ScheduleService = New-Object -ComObject Schedule.Service
+				$ScheduleService.Connect()
+				$ScheduleService.GetFolder("\Sophia").GetTasks(0) | Where-Object -FilterScript {$_.Name -eq "Windows Cleanup"} | Foreach-Object {
+					# Get user's SID the task was created as
+					$Script:SID = ([xml]$_.xml).Task.Principals.Principal.UserID
+				}
+
+				# Convert SID to username
+				$TaskUserAccount = (New-Object System.Security.Principal.SecurityIdentifier($SID)).Translate([System.Security.Principal.NTAccount]).Value -split "\\" | Select-Object -Last 1
+
+				if ($TaskUserAccount -ne $env:USERNAME)
+				{
+					Write-Verbose -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -Verbose
+					Write-Error -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -ErrorAction SilentlyContinue
+					Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+					return
+				}
 			}
 
 			# Remove all old tasks
@@ -11046,6 +11274,8 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 				Description = $Localization.CleanupNotificationTaskDescription
 			}
 			Register-ScheduledTask @Parameters -Force
+
+			$Script:ScheduledTasks = $true
 		}
 		"Delete"
 		{
@@ -11132,6 +11362,29 @@ function SoftwareDistributionTask
 	{
 		"Register"
 		{
+			# Checking if we're trying to create the task when it was already created as another user
+			if (Get-ScheduledTask -TaskPath "\Sophia\" -TaskName SoftwareDistribution -ErrorAction Ignore)
+			{
+				# Also we can parse $env:SystemRoot\System32\Tasks\Sophia\SoftwareDistribution to check if the task was created
+				$ScheduleService = New-Object -ComObject Schedule.Service
+				$ScheduleService.Connect()
+				$ScheduleService.GetFolder("\Sophia").GetTasks(0) | Where-Object -FilterScript {$_.Name -eq "SoftwareDistribution"} | Foreach-Object {
+					# Get user's SID the task was created as
+					$Script:SID = ([xml]$_.xml).Task.Principals.Principal.UserID
+				}
+				# Convert SID to username
+				$TaskUserAccount = (New-Object System.Security.Principal.SecurityIdentifier($SID)).Translate([System.Security.Principal.NTAccount]).Value -split "\\" | Select-Object -Last 1
+
+				if ($TaskUserAccount -ne $env:USERNAME)
+				{
+					Write-Verbose -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -Verbose
+					Write-Error -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -ErrorAction SilentlyContinue
+					Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+					return
+				}
+			}
+
 			# Remove all old tasks
 			# We have to use -ErrorAction Ignore in both cases, unless we get an error
 			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
@@ -11206,6 +11459,8 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 				Description = $Localization.FolderTaskDescription -f "%SystemRoot%\SoftwareDistribution\Download"
 			}
 			Register-ScheduledTask @Parameters -Force
+
+			$Script:ScheduledTasks = $true
 		}
 		"Delete"
 		{
@@ -11287,6 +11542,30 @@ function TempTask
 	{
 		"Register"
 		{
+			# Checking if we're trying to create the task when it was already created as another user
+			if (Get-ScheduledTask -TaskPath "\Sophia\" -TaskName Temp -ErrorAction Ignore)
+			{
+				# Also we can parse $env:SystemRoot\System32\Tasks\Sophia\Temp to check if the task was created
+				$ScheduleService = New-Object -ComObject Schedule.Service
+				$ScheduleService.Connect()
+				$ScheduleService.GetFolder("\Sophia").GetTasks(0) | Where-Object -FilterScript {$_.Name -eq "Temp"} | Foreach-Object {
+					# Get user's SID the task was created as
+					$Script:SID = ([xml]$_.xml).Task.Principals.Principal.UserID
+				}
+
+				# Convert SID to username
+				$TaskUserAccount = (New-Object System.Security.Principal.SecurityIdentifier($SID)).Translate([System.Security.Principal.NTAccount]).Value -split "\\" | Select-Object -Last 1
+
+				if ($TaskUserAccount -ne $env:USERNAME)
+				{
+					Write-Verbose -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -Verbose
+					Write-Error -Message ($Localization.ScheduledTaskPresented -f $MyInvocation.Line, $TaskUserAccount) -ErrorAction SilentlyContinue
+					Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+					return
+				}
+			}
+
 			# Remove all old tasks
 			# We have to use -ErrorAction Ignore in both cases, unless we get an error
 			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
@@ -11360,6 +11639,8 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 				Description = $Localization.FolderTaskDescription -f "%TEMP%"
 			}
 			Register-ScheduledTask @Parameters -Force
+
+			$Script:ScheduledTasks = $true
 		}
 		"Delete"
 		{
@@ -13257,9 +13538,10 @@ function UpdateLGPEPolicies
 }
 #endregion Update Policies
 
-#region Refresh Environment
-function RefreshEnvironment
+#region Post Actions
+function PostActions
 {
+	#region Refresh Environment
 	$UpdateEnvironment = @{
 		Namespace        = "WinAPI"
 		Name             = "UpdateEnvironment"
@@ -13318,7 +13600,9 @@ public static void PostMessage()
 
 	# Restart the Start menu
 	Stop-Process -Name StartMenuExperienceHost -Force -ErrorAction Ignore
+	#endregion Refresh Environment
 
+	#region Other actions
 	# Turn on Controlled folder access if it was turned off
 	if ($Script:DefenderEnabled)
 	{
@@ -13350,9 +13634,48 @@ public static void PostMessage()
 	# Determines whether the app can be seen in Settings where the user can turn notifications on or off
 	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
-	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
-	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
+	[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+	[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
+	# Apply policies found in registry to re-build database database due to gpedit.msc relies in its' own database
+	if ((Test-Path -Path "$env:TEMP\Computer.txt") -or (Test-Path -Path "$env:TEMP\User.txt"))
+	{
+		if (Test-Path -Path "$env:TEMP\Computer.txt")
+		{
+			& "$PSScriptRoot\..\bin\LGPO.exe" /t "$env:TEMP\Computer.txt"
+		}
+		if (Test-Path -Path "$env:TEMP\User.txt")
+		{
+			& "$PSScriptRoot\..\bin\LGPO.exe" /t "$env:TEMP\User.txt"
+		}
+
+		gpupdate /force
+	}
+
+	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
+	Get-ChildItem -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
+
+	Stop-Process -Name explorer -Force
+	Start-Sleep -Seconds 3
+
+	# Restoring closed folders
+	foreach ($Script:OpenedFolder in $Script:OpenedFolders)
+	{
+		if (Test-Path -Path $Script:OpenedFolder)
+		{
+			Start-Process -FilePath explorer -ArgumentList $Script:OpenedFolder
+		}
+	}
+
+	# Check if any of scheduled tasks were created. Unless open Task Scheduler
+	if ($Script:ScheduledTasks)
+	{
+		# Open Task Scheduler
+		Start-Process -FilePath taskschd.msc
+	}
+	#endregion Other actions
+
+	#region Toast notifications
 	# Telegram group
 	[xml]$ToastTemplate = @"
 <toast duration="Long" scenario="reminder">
@@ -13433,37 +13756,11 @@ public static void PostMessage()
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
 	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
-
-	if ((Test-Path -Path "$env:TEMP\Computer.txt") -or (Test-Path -Path "$env:TEMP\User.txt"))
-	{
-		if (Test-Path -Path "$env:TEMP\Computer.txt")
-		{
-			& "$PSScriptRoot\..\bin\LGPO.exe" /t "$env:TEMP\Computer.txt"
-		}
-		if (Test-Path -Path "$env:TEMP\User.txt")
-		{
-			& "$PSScriptRoot\..\bin\LGPO.exe" /t "$env:TEMP\User.txt"
-		}
-
-		gpupdate /force
-	}
-
-	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
-	Get-ChildItem -Path "$env:TEMP\Computer.txt", "$env:TEMP\User.txt" -Force -ErrorAction Ignore | Remove-Item -Recurse -Force -ErrorAction Ignore
-
-	Stop-Process -Name explorer -Force
-	Start-Sleep -Seconds 3
-
-	# Restoring closed folders
-	foreach ($Script:OpenedFolder in $Script:OpenedFolders)
-	{
-		if (Test-Path -Path $Script:OpenedFolder)
-		{
-			Start-Process -FilePath explorer -ArgumentList $Script:OpenedFolder
-		}
-	}
+	#endregion Toast notifications
 }
+#endregion Post Actions
 
+#region Errors
 function Errors
 {
 	if ($Global:Error)
@@ -13486,29 +13783,29 @@ function Errors
 	Write-Information -MessageData "" -InformationAction Continue
 	Write-Warning -Message $Localization.RestartWarning
 }
-#endregion Refresh Environment
+#endregion Errors
 
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxDXscp+JKRwINWDuTgw1IcQq
-# 3AygghYNMIIDAjCCAeqgAwIBAgIQEpJorqcKlJdB/15LVIAQJTANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAxMDgxNTQ1NDla
-# Fw0yNTAxMDgxNTU1MTRaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqOuXe0pOmP5FOxyCFZCEZYUMW4uq
-# xuTI92bjM2vEErLGUehk5o0ZRGkUe39GaciScgY8HnBLdcmFsQtBkfu+hDwTWwPh
-# NAUEHajDFfjuYG3vYHFy2i0vm+6HN48tlAMETEL137MdCyMmDX/6At/qUryPxGX3
-# 97SGcKYJpPnaLXQCxz0W8xwqD4XT9neYsOhIYzZKd1huhhoGBik60xJaHQLz/mjs
-# /V+HYk9APfh/akp5qaZsvn0fcJHp/YU7reLHhNEWxBFOMaS2/zCw9vxoZVdutZn3
-# +LCci1ErH8DqL7BUTj/sgDB+m6C6TiCAJRXE5NYPRKjWpxVB/ub0RT4CaQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzP1ACCTPQ/cSuPzUVYOtxta7
+# rWagghYNMIIDAjCCAeqgAwIBAgIQLwqKcRh2AIdMcsPC6T5WYjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAyMTExODE5MDBa
+# Fw0yNTAyMTExODI4MzlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA67st1m0OKI+3jTsfo1FWbnQar8+s
+# U5O3AdzyrsTrJ42GyQXp+lfst6T7r4zU94hvDRT7uSVYINsVP70dGFt1zEpFWu8+
+# I4Xf2HE3lFuzAtuCaT2hOGK1FJ3kmS0lmtoVFcaXBDOaQD/F4QpHoeKUNDIRHgnD
+# MEyEj3jfnApaN0ejKAj3a/Cbtt0pbzlNSRo15wOTYQDbr/3buOheObM1BXp8pKUf
+# Rte36AOkmfJ3uSCqj7xfFzDqOz0tWwAWd+bp8Z7rFMnM4cxT5voLdNUMEa27EBC7
+# oh5PfPRoEa6LbvOhhPtlifDiu4h63u2JsHrXq4kBY1vSwp8RIgX6bZSzdQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFFXAZeksV/ORhtTyTq/r976yQu8gMA0GCSqGSIb3DQEBCwUAA4IBAQCdrFq2
-# IZvPIvu8qsjnguS3hlofrKIBN2W72rYDf1XKZ1ZbKtPEUkUaw7KVfYuCO3R9+5Qj
-# dJs8BSKXndpcccWP8abgTpbIYlWiZTYmefw8szGtx3hWDXLxJoqPDrBPnDMi3DYG
-# 83oH/ffYRJEnAe1hARiH/52IE9r5oUmTDlRKjr5xyzx2qg7ageFPZibpVRWXKeaR
-# e8w/0j2+vDX6XeY6hsE0L5Do0wfeOMcW4nZU6vM5ISOsHDqs+ieUAD1BsAUIt30K
-# rNt8ZQpng5nsgxacuPnWl+gh0RnstZGAaLgswFzw6e45IsaVk4nZ7NFSk7ROkG/N
-# NmcUTIyzCiFwRyM/MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFMiV4bmcsVAn31zjZlqT1GNwTp2mMA0GCSqGSIb3DQEBCwUAA4IBAQBiVpyH
+# GbW7Y7e0nFu5cbnbtQuxnabDBGgNRtxopnYnXpw3yTOorUkM1DvgDzLZC4ENWspm
+# FP9m65e/qQJSEHSpHin9zCq6S4Z7groK7xf1cadVkasL+l8V6JQG4kAS9A9ne0Hb
+# z0nvow4RVMCGp18ofJ4d7niVI3wbl1o4JAl0wNhhHOetMOhMbmi37xRlGkeCZYcN
+# 3Mri8iHgHnbATY3xIt2RI0nw7pRGRIB0JS9MLHm4gljLSh3c9XXNwE47rM24rufT
+# +bz1Dku2jIl081ttoI5xoBi+U4UDrfv4XsTkxsagxRDcC/KWVJeLtXGdTOL5FDhe
+# e3oo+fPTFIo1J2wwMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13610,31 +13907,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhASkmiupwqUl0H/XktUgBAlMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAvCopxGHYAh0xyw8LpPlZiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBQR3DVWiyaO7ujBVDm9RB7P+P5v6TANBgkqhkiG9w0BAQEF
-# AASCAQCJ14tK29tYmX6+/rV8TdOVf36Xn/5YtbktYrhJUwDg1otSyAO9W1KZqVzY
-# ie6rWPtP5nhhJAqnaJv6EVKkEYR1h7ZlZOvw+JbwQ+a8A73SvghJzHsGJW9TRgmZ
-# YtFl70BeweEAA+AVJq2c48kK1p7hhfkXm+0E6+Gs2aXBM4eQNFkRQE9fXkS/jzHq
-# 4hVsj1BZRQQ3FyRbBW+ox7+2VA/5Vy148VAtEhqaQB8BuXTbV3RNw+gqzPdqYA+7
-# BzwzxQyNmsR2rypSz95JZ1lev2/Z2HEhbF9tNEBpOPVNiWt/YhpLSHZYYhHFnQ+F
-# wgoYmbVmF4qbn7fdql/ek2g8JkiBoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBRiFTHs7768RRVdKFQD1a2TcS4WejANBgkqhkiG9w0BAQEF
+# AASCAQB2owGgCq0Pxk5MuMQyHCMgQ+S9ILCy86hZHDx02GEAEnzdR0pHLsgWSYS5
+# 393HC8am21DMW2uOTBcxUf4i5rHl1llUfHNxKts3OMwQQyIhnpxIK+Wm8hwGPsjJ
+# q8pXC1Ot8E6xCZUJyM38Jc6Lk32ugA3spkAPpQ6BthMtbD9CW4OyXVYFIZj/0qsT
+# E9zcXUoX9BDKzygR1J9LXtROENjPjj+6bcOZDdoaKOyxsm/t0wPjIsKNFzOvby1F
+# KUXL/qhw05Dm1t2QRFemnm8f4AEHjBhvtakkJPc4Xrkd9YgAPC80oQVJjdvwLf2x
+# pzogMLxrSxb1gE6+kqIncOeDAVb+oYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEwODE1
-# NTYwMVowLwYJKoZIhvcNAQkEMSIEIFYf+uv/JyXEwDTTw32HzldswcKqAxZL8oeN
-# AgCpwrGFMA0GCSqGSIb3DQEBAQUABIICAMNev7vUTPShmgRwbruEVZWUWv4cWI3S
-# mdzHsemGZzTSuPsjnF31r2Uc8iBl24ndJeJc8IOqCChhCOfpDyKCgAifJN1a8lFr
-# lcMnv2sEamEc5gLEt5pa5aJwr48HEZJc9H2YtSyY7tXu/rgqnj7utbq+I6gPkTRT
-# sQ5Io1XpWl9UUWj4lF3vy/YunrpzjWwIPrycvA99/RYvq8IfoYpQi5QdKQaaA+To
-# UTL0bmeNE3PIeGk4+/ayGkLy9TWICi+HusTnaDXWBpNJ1i6k44aQr05+B6dc++Ld
-# NHX0MZwPETAxxSvYqcRuZN10OTrEh5p94WLBrrODEyNN0JgY77bse9sDHyp6JQUA
-# G5jyGJyI7+VjXCcYew4q3S3MDweOwiUfGk0KsyzFe+zGvHt8ppX2XvUD8lkEMu66
-# w06G5s+uP+sdCQ1eOzFPdChMMvUqGMxdYgaa7hX39erwBtzQua9wIgJ57wl74KaO
-# 7MboIPtwNQDdQdHJPSUulCE1gLHZQe4vpAms1cSO4D5XBQPZWNOBsAFvh5aWhgIW
-# 5iRglIcXOlf0M5TzArJEhjUDPsAqFG97u7Vm9lnxX4k08EhGYEJs3OYD0B92Ps2b
-# 9cXvzpQ/VPY8VeH54HeirDCKHpYXeWD21DM3io8f6QZeTm0wTyY4vXw9WH7IDBzP
-# noOZbPCe++26
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDIxMTE4
+# MjkwN1owLwYJKoZIhvcNAQkEMSIEIKeKHT2QwfalA1bDpRqgHOH5eq2ZLOSdHz9g
+# 4dIbHkJhMA0GCSqGSIb3DQEBAQUABIICAIToOdNPTkof0u1fGtNoGKonmHpP7A5O
+# kN7IkUFNXahykVfZNgUOULrzZqd/JiVkbAKR1jSSYft74km1CC4OCZpP5hxHF4gg
+# SOsd8KNE1y42A9yXgDQMjlJyykjawVKQs+snd9MRaf3y4od4JRUVLUlK1W8kW8FB
+# 7+Us2XJ8sfLQf+mJwDiLuLlCxoXmPuVaLGs+sUOsQpT5SxpRcadPYOB0QBc7ulLZ
+# uenBojvF//iSV5szrlP5Ri8WkigBBD1sCVY7OI0y1kA+rpQ1hypEwGYQ0nolzyia
+# JHhffyyQbY4xmHR4oUi0JScucncvply1zuYhJshK/3Au0ZsWISN+u3G7Sz7kniAl
+# WUD77QzO6FsgJQno4zic3tNQQojonEgAvmVLJrUbehj3QLqiKdHnFLK2fXwAVPj0
+# tu9qzEQWcHL8lSvnzNrGEJoaZrLcetjtKVzGUOxHHiwXcjB1AvxSG14EazgCq6v7
+# QVsfa0+adM045dnRXyRrst15r7DjCerZpPNRO0+J4XWayK0vK7VercC1UM/aZtCR
+# zIS1wes4EcZeCcQ4h8J6D7CqKNFM19NLjo2X5A1FllUx2/YiBqTKDhaNjV6Cxins
+# KYVhNpmBPisr4Vh88UH6Wy96Df37zMbk3Q4RJ6gWVtNxc3WpGF6sHfva8RpBlThU
+# PbzGM4wWyDVX
 # SIG # End signature block

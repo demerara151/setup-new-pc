@@ -39,6 +39,7 @@ UWPAppsTitle                              = UWP アプリ
 HEVCDownloading                           = デバイスの製造元から HEVC ビデオ拡張機能をダウンロードしています... ~2.8 MB
 GraphicsPerformanceTitle                  = グラフィックパフォーマンスの設定
 GraphicsPerformanceRequest                = お好みのアプリのグラフィックパフォーマンス設定を「高パフォーマンス」に設定しますか？
+ScheduledTaskPresented                    = "{0}" 関数は既に "{1}" として作成されています。
 CleanupTaskNotificationTitle              = Windows クリーンアップ
 CleanupTaskNotificationEvent              = Windows の使われてないファイルとアップデートのクリーンアップタスクを実行しますか
 CleanupTaskDescription                    = ビルトインのディスククリーンアップアプリを使用して、Windows の使われてないファイルとアップデートをクリーンアップします
@@ -80,4 +81,3 @@ TelegramChannelTitle                      = 私たちの公式 Telegram チャ�
 DiscordChannelTitle                       = 私たちの公式 Discord チャンネルに参加してください
 Uninstall                                 = アンインストール
 '@
-

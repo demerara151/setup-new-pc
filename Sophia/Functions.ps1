@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	The TAB completion for functions and their arguments
 
-	Version: v6.2.7
-	Date: 07.01.2023
+	Version: v6.3.2
+	Date: 11.02.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -44,13 +44,13 @@ function Sophia
 		Invoke-Expression -Command $Function
 	}
 
-	# The "RefreshEnvironment" and "Errors" functions will be executed at the end
-	Invoke-Command -ScriptBlock {RefreshEnvironment; Errors}
+	# The "PostActions" and "Errors" functions will be executed at the end
+	Invoke-Command -ScriptBlock {PostActions; Errors}
 }
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.2.7 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.3.2 | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -85,6 +85,25 @@ $Parameters = @{
 		foreach ($Command in $Commands)
 		{
 			$ParameterSets = (Get-Command -Name $Command).Parametersets.Parameters | Where-Object -FilterScript {$null -eq $_.Attributes.AliasNames}
+
+			# If a module command is OneDrive
+			if ($Command -eq "OneDrive")
+			{
+				(Get-Command -Name $Command).Name | Where-Object -FilterScript {$_ -like "*$wordToComplete*"}
+
+				# Get all command arguments, excluding defaults
+				foreach ($ParameterSet in $ParameterSets.Name)
+				{
+					# If an argument is AllUsers
+					if ($ParameterSet -eq "AllUsers")
+					{
+						# The "OneDrive -Install -AllUsers" construction
+						"OneDrive" + " " + "-Install" + " " + "-" + $ParameterSet | Where-Object -FilterScript {$_ -like "*$wordToComplete*"} | ForEach-Object -Process {"`"$_`""}
+					}
+
+					continue
+				}
+			}
 
 			# If a module command is UnpinTaskbarShortcuts
 			if ($Command -eq "UnpinTaskbarShortcuts")
@@ -182,24 +201,24 @@ Write-Verbose -Message "`"Set-Association -ProgramPath ```"%ProgramFiles%\Notepa
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3ug8/kjeRQNEZwRsKt65+ytf
-# pFOgghYNMIIDAjCCAeqgAwIBAgIQEpJorqcKlJdB/15LVIAQJTANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAxMDgxNTQ1NDla
-# Fw0yNTAxMDgxNTU1MTRaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqOuXe0pOmP5FOxyCFZCEZYUMW4uq
-# xuTI92bjM2vEErLGUehk5o0ZRGkUe39GaciScgY8HnBLdcmFsQtBkfu+hDwTWwPh
-# NAUEHajDFfjuYG3vYHFy2i0vm+6HN48tlAMETEL137MdCyMmDX/6At/qUryPxGX3
-# 97SGcKYJpPnaLXQCxz0W8xwqD4XT9neYsOhIYzZKd1huhhoGBik60xJaHQLz/mjs
-# /V+HYk9APfh/akp5qaZsvn0fcJHp/YU7reLHhNEWxBFOMaS2/zCw9vxoZVdutZn3
-# +LCci1ErH8DqL7BUTj/sgDB+m6C6TiCAJRXE5NYPRKjWpxVB/ub0RT4CaQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaHjU/wN+9EykMC7BLzGoaFRt
+# 13OgghYNMIIDAjCCAeqgAwIBAgIQLwqKcRh2AIdMcsPC6T5WYjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAyMTExODE5MDBa
+# Fw0yNTAyMTExODI4MzlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA67st1m0OKI+3jTsfo1FWbnQar8+s
+# U5O3AdzyrsTrJ42GyQXp+lfst6T7r4zU94hvDRT7uSVYINsVP70dGFt1zEpFWu8+
+# I4Xf2HE3lFuzAtuCaT2hOGK1FJ3kmS0lmtoVFcaXBDOaQD/F4QpHoeKUNDIRHgnD
+# MEyEj3jfnApaN0ejKAj3a/Cbtt0pbzlNSRo15wOTYQDbr/3buOheObM1BXp8pKUf
+# Rte36AOkmfJ3uSCqj7xfFzDqOz0tWwAWd+bp8Z7rFMnM4cxT5voLdNUMEa27EBC7
+# oh5PfPRoEa6LbvOhhPtlifDiu4h63u2JsHrXq4kBY1vSwp8RIgX6bZSzdQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFFXAZeksV/ORhtTyTq/r976yQu8gMA0GCSqGSIb3DQEBCwUAA4IBAQCdrFq2
-# IZvPIvu8qsjnguS3hlofrKIBN2W72rYDf1XKZ1ZbKtPEUkUaw7KVfYuCO3R9+5Qj
-# dJs8BSKXndpcccWP8abgTpbIYlWiZTYmefw8szGtx3hWDXLxJoqPDrBPnDMi3DYG
-# 83oH/ffYRJEnAe1hARiH/52IE9r5oUmTDlRKjr5xyzx2qg7ageFPZibpVRWXKeaR
-# e8w/0j2+vDX6XeY6hsE0L5Do0wfeOMcW4nZU6vM5ISOsHDqs+ieUAD1BsAUIt30K
-# rNt8ZQpng5nsgxacuPnWl+gh0RnstZGAaLgswFzw6e45IsaVk4nZ7NFSk7ROkG/N
-# NmcUTIyzCiFwRyM/MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFMiV4bmcsVAn31zjZlqT1GNwTp2mMA0GCSqGSIb3DQEBCwUAA4IBAQBiVpyH
+# GbW7Y7e0nFu5cbnbtQuxnabDBGgNRtxopnYnXpw3yTOorUkM1DvgDzLZC4ENWspm
+# FP9m65e/qQJSEHSpHin9zCq6S4Z7groK7xf1cadVkasL+l8V6JQG4kAS9A9ne0Hb
+# z0nvow4RVMCGp18ofJ4d7niVI3wbl1o4JAl0wNhhHOetMOhMbmi37xRlGkeCZYcN
+# 3Mri8iHgHnbATY3xIt2RI0nw7pRGRIB0JS9MLHm4gljLSh3c9XXNwE47rM24rufT
+# +bz1Dku2jIl081ttoI5xoBi+U4UDrfv4XsTkxsagxRDcC/KWVJeLtXGdTOL5FDhe
+# e3oo+fPTFIo1J2wwMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -301,31 +320,31 @@ Write-Verbose -Message "`"Set-Association -ProgramPath ```"%ProgramFiles%\Notepa
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhASkmiupwqUl0H/XktUgBAlMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAvCopxGHYAh0xyw8LpPlZiMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBQkR5dCyl3meGHJcItZkTpESKy+rjANBgkqhkiG9w0BAQEF
-# AASCAQAIcFGrDEQjGJBcn6p8KOH1eDH9Pyq0icc0h12T0NLJsYxPX8j1dQ0MWdUU
-# grUt6BQz0aIR+0ZPixDu+ftPslK+/EGI1hCMFOD/DTKbaBBZRaXIWwRhZ248ELsf
-# uDeQT+SSRL4gk4rknGtezTQDm7OiXZvSU6SuTA7Z4A2OjLCw9Bayf5ic9pN5jFW2
-# uLLRzM0WgZ7w7GXiBGXbd2Ghl+L4usQkQ4o6SkO4xDUQhaAkx2JCJUI24B0chtE3
-# ivEBGGEu+KhfrSdsxOJpcckZUs6o6cB+HPwEpgJBhgE7XiRW877d1aOZXLUllotg
-# UNXqz1PrHldU9oR3y9TOg8nTVALXoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSjmncQRKdONN+lnfM7it/YOOPxrjANBgkqhkiG9w0BAQEF
+# AASCAQBQ5S53iEdr9WyeL7SWVU2An7PDkSKqLWeKdLY82FE7GKu2/YZWhb72w42x
+# in64QetSZ7okME7HqsOi9NHMc9a7MVt8mvqUaEsz8OUtqsg/vcCjo02dCXFOCUF7
+# aPh93SpGnURkGJahHSsCncaZvFo9wjkA7eBKZgw6dkxm7Kqv00WN74gNUsgZhORt
+# DlGfH9kwcToKHiieVgwmlewSEXEzFn/Nb/UeKMFBdzTVxOP035CVM85fgoLaLqto
+# 94cuDy5xRIuM7CYitNY42Dp/g9oeAC+Sl18mP20M5KMP23nr3LgvFi3+WI1ADk1t
+# XHdwhcR9QZHAEVAU55SfyaA2uZshoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDEwODE1
-# NTU1OVowLwYJKoZIhvcNAQkEMSIEIC9eTQHWyUqGE4bn3J8krTyfeHOuKdsy0JR7
-# +qW+qL+xMA0GCSqGSIb3DQEBAQUABIICAJB1GF1vfej2WW0+KUcqL+o0Gsi+NKEc
-# PNJL4ee++CINAcklzx/+7SyngzTFIAWA1DX77ap0dmHI28XpIu3GobkO832vZe1c
-# X8H77+AdjRurl3p7YmWXqqGeEUkwkcJi1VB/vSlj/nADIlwmV6t0/DtceomRWGIg
-# sDCGAKKzXqortLVMYs5qbVpfq3PPBX5IbpKAYXuPvQZ2HpkEOzELh208IClZXW18
-# jV7nZaVLTGc8bZlIO5Xv2m9IIgrs8iZTzWlM+Xau7Wp7ui7pPnMNval4d0LJKv3Q
-# a3X/BcJ6QG9YMHMMm+ge7ykJbm5RBuAztFSVgV7O89U00pJ9oq+ozciunKcgpP8c
-# IJxDyaBZtdTsZrrQ5BBl/a+8btQYwpo8GpmD7msVW9+QJqyo0QbxU0YdZppuN8QL
-# Mr/jgxvBn3EFMAfakLYIFA1wUPEjC2jUvaJqFJT+5VOPwUj0J9mFOzpZnGwWVtw9
-# biOgDofZb54lj65ndkSNDFnEvYga/r5vfvD4asLfBDzinfCQ57x3drhUvI1ub1mM
-# cfHxQNkDusOkiV/RtdQghciw1MuNQhXuW7nk7fDqW5RvtONavfZo2O9mfhFjLFbw
-# E8gu9lR+c4Sfse5a3Gp4d5qCkxO6FsDOyukyeoplp9LlIdUzFI7yKtaCSwM/xZ3m
-# HBnfBiZsIEmW
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDIxMTE4
+# MjkwNlowLwYJKoZIhvcNAQkEMSIEIENi393ze4C1PPOkmsMOS4nBvvswl8Sq+Px3
+# FOB3GgmJMA0GCSqGSIb3DQEBAQUABIICAHr8Upz5+OdB8Mjw5ratMyZ/hfqKfgaC
+# R/zUvMY6xO4TCPGmOCKBDyUKbUJXF3O6khzlOCF5A2p9zTNZ0SQtiS7l+gCoA53O
+# /TM6+nR0+osofAus9D8JbhpD/DIMGKRd5LAHWjnAhyw0cyvykSAd5OGfMyYdAgsw
+# j/J2wu9Yyh/EkUGxjMZGEKWB37y0ti3Ih9EIrns9bJqn0QjcOYy9947cMPPtE1Gb
+# 1Afp1c2aTc5z4RMunnNY4cGBtxmbNLTwjlw71DDnBbMlGaCZYEgMQ0fvUuWorQn/
+# wRZPC/s0FTwrC4C4HT42KCZEcWeSrC9Zmjc2OPvNpHoH8S1UTnAAISdO55WTwouY
+# h0qd1napuZXiQejtKl/kuckhOdk0nXlKsnrf37BZhIUtccClMHzq3FzbdTdmb9am
+# 0Jnq1w9EK7cku+/QYaR3ZSj3M1Cb1kU0vNHsa5bsA0t0ulxLCXVlQK2qz+0zF3WX
+# zEBwcGFvk7iZhyOjjDE9/ZpW8v2NF2coJCOgzCTJRevoZNX8ws4ykDmZm8zoTIZB
+# cCaSi+II+ioObwoyG/Gh0h0doy5j86TXgQaL3ixshJxCfA9Ea9q+2U6OE65Jc1j3
+# f3W9eWhL6u6nrJ48rPrtHFXSYMNFqUuZfqDQ/6O0w0CdvD3LKf5wRrCur8xQ2Gw+
+# 9RET3XSmbQ65
 # SIG # End signature block
