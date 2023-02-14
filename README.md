@@ -42,6 +42,7 @@
     -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
 -   [AutoHotkey](#autohotkey)
 -   [日本語フォント](#日本語フォント)
+-   [TODO](#todo)
 
 ---
 
@@ -103,7 +104,7 @@ git clone https://github.com/demerara151/setup-new-pc.git
 
     メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
 
--   [installAll.ps1](/installAll.ps1)
+-   [installAll.ps1](/scripts/installAll.ps1)
     <!-- TODO: Write examples. -->
 
     メモ帳で開き、不要なアプリが含まれていないか確認する。不要なアプリ名を削除、もしくは、各行のコマンドの先頭に `#` を付けることでコマンドの実行を防ぐ
@@ -309,6 +310,11 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 必要に応じて手動でインストール
 
 -   [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll): 現在 `foobar2000` のプレイリストにフォント適用中
+
+## TODO
+
+-   [privacy.sexy](https://privacy.sexy) の利用方法の追加
+-   [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を `README.md` に追加
 
 <!-- Link Reference -->
 
