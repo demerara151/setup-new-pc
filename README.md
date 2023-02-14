@@ -17,31 +17,31 @@
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Requirements](#requirements)
-- [Dependencies](#dependencies)
-- [Before Get Started](#before-get-started)
-  - [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
-- [Installation](#installation)
-  - [スクリプトの編集](#スクリプトの編集)
-- [Usage](#usage)
-  - [Sophia Script for Windows 11](#sophia-script-for-windows-11)
-  - [メインスクリプトの実行](#メインスクリプトの実行)
-  - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
-- [Personal Settings](#personal-settings)
-  - [各種設定ファイルの配置](#各種設定ファイルの配置)
-  - [不要なサービスの停止](#不要なサービスの停止)
-  - [Hyper-V の有効化](#hyper-v-の有効化)
-- [Note](#note)
-- [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
-  - [Installation](#installation-1)
-  - [Update](#update)
-  - [拡張機能の導入](#拡張機能の導入)
-  - [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
-    - [追加フィルタ（Optional）](#追加フィルタoptional)
-  - [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
-- [AutoHotkey](#autohotkey)
-- [日本語フォント](#日本語フォント)
+-   [Table of Contents](#table-of-contents)
+-   [Requirements](#requirements)
+-   [Dependencies](#dependencies)
+-   [Before Get Started](#before-get-started)
+    -   [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
+-   [Installation](#installation)
+    -   [スクリプトの編集](#スクリプトの編集)
+-   [Usage](#usage)
+    -   [Sophia Script for Windows 11](#sophia-script-for-windows-11)
+    -   [メインスクリプトの実行](#メインスクリプトの実行)
+    -   [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
+-   [Personal Settings](#personal-settings)
+    -   [各種設定ファイルの配置](#各種設定ファイルの配置)
+    -   [不要なサービスの停止](#不要なサービスの停止)
+    -   [Hyper-V の有効化](#hyper-v-の有効化)
+-   [Note](#note)
+-   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+    -   [Installation](#installation-1)
+    -   [Update](#update)
+    -   [拡張機能の導入](#拡張機能の導入)
+    -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
+        -   [追加フィルタ（Optional）](#追加フィルタoptional)
+    -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
+-   [AutoHotkey](#autohotkey)
+-   [日本語フォント](#日本語フォント)
 
 ---
 
@@ -137,7 +137,7 @@ sudo ~/setup-new-pc/Sophia/Sophia.ps1
 PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプトを実行
 
 ```powershell
-~/setup-new-pc/installAll.ps1
+~/setup-new-pc/scripts/installAll.ps1
 
 ```
 
@@ -198,7 +198,7 @@ chezmoi apply
 -   Xbox gaming
 
 ```powershell
-sudo ~/setup-new-pc/stopService.ps1
+sudo ~/setup-new-pc/scripts/stopService.ps1
 
 ```
 
@@ -209,7 +209,7 @@ sudo ~/setup-new-pc/stopService.ps1
 BIOS で「ハードウェアの仮想化サポート」が有効になっている前提で、
 
 ```Powershell
-sudo ~/setup-new-pc/hyper-v/hv.bat
+sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
 
 ```
 
