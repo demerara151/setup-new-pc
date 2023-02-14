@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2023-02-14
 
--   [privacy.sexy](https://privacy.sexy) の利用方法の追加
--   `ShutUp10` が `Freeware` であることへの懸念
+### Fixed
+
+-   fix path for running scripts in README
 
 ## 2022-12-22
 
