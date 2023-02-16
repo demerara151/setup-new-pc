@@ -4,25 +4,17 @@ Clean and simple instruction to start development in Rust on Windows with VSCode
 
 ## Installation
 
-Install Rust toolchain via scoop.
+Install Rust toolchain called `rustup` via scoop.
 
-There's two options to install rust with MSVC toolchain.
+Install `rustup` via scoop and install `MSVC toolchain` manually from microsoft.
 
-1. Install rust with MSVC toolchain. No need to install additional dependencies.
+```powershell
+scoop install rustup
+```
 
-  ```powershell
-  scoop install rust-msvc
-  ```
-  
-  However, this toolchain doesn't have some core component like clippy or rust_fmt.
+You have to install `Visual Studio Installer` to install `Visual Studio Build Tools` from [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 
-2. Install rustup via scoop and install MSVC manually from microsoft. This is recommended.
-
-  ```powershell
-  scoop install rustup-msvc
-  ```
-
-  This command will install only Rust. You should install MSVC toolchain from [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+Then install `MSVC Build tools` and `Windows SDK` in `C/C++ desktop development` section.
 
 ## Create your first Rust project
 
