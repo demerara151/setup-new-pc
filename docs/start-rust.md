@@ -16,6 +16,8 @@ You have to install `Visual Studio Installer` to install `Visual Studio Build To
 
 Then install `MSVC Build tools` and `Windows SDK` in `C/C++ desktop development` section.
 
+![build_tools](https://user-images.githubusercontent.com/54271767/219233838-0b5c43b0-97f6-4c4a-8c1c-b5e7edfb06f5.png)
+
 ## Create your first Rust project
 
 Run `cargo new [Your-Project-Name]` in terminal. Then cd to it and open vscode.
