@@ -11,7 +11,7 @@
 
 ### Screenshot
 
-![](assets/img/taskmgr.png)
+![taskmgr](https://user-images.githubusercontent.com/54271767/219234992-6b27ac3e-009f-4414-a7d1-57456196df07.png)
 
 ---
 
