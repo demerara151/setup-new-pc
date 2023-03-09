@@ -1,6 +1,6 @@
 ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = このスクリプトは Windows 11 21H2 かそれ以上のバージョンをサポートしています
-UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22000.1335, 22621.963 かそれ以上です。Windows Update を実行してから再度お試しください。
+UnsupportedOSBuild                        = このスクリプトは Windows 11 22H2 かそれ以上のバージョンをサポートしています
+UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22621.1344 かそれ以上です。Windows Update を実行してから再度お試しください。
 UnsupportedLanguageMode                   = PowerShell は限られた言語モードで実行されています
 LoggedInUserNotAdmin                      = ログオンしているユーザーには管理者権限がありません
 UnsupportedPowerShell                     = PowerShell {0}.{1} でスクリプトを実行しようとしています。適切な PowerShell のバージョンで実行してください
@@ -13,7 +13,7 @@ bin                                       = bin フォルダーの中にファ�
 RebootPending                             = PC は再起動の待機中です
 UnsupportedRelease                        = 新しいバージョンが見つかりました
 CustomizationWarning                      = \nSophia Script を実行する前に {0} プリセットファイル内の各機能を好みに合わせて変更しましたか？
-WindowsBroken                             = 一部の Windows コンポーネントが破損している可能性があります
+DefenderBroken                            = Microsoft Defenderが破損している、または OS から削除されている可能性があります
 UpdateDefender                            = Microsoft Defender の定義が最新ではありません。Windows Update を実行してから再度お試しください。
 ControlledFolderAccessDisabled            = 制御されたフォルダー アクセスが無効になっています
 ScheduledTasks                            = スケジュールされたタスク

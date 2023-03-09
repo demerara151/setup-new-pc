@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.3.2
-	Date: 11.02.2023
+	Version: v6.4.0
+	Date: 07.03.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -12,8 +12,8 @@
 
 	.NOTES
 	Supported Windows 11 versions
-	Versions: 21H2/22H2/23H2+
-	Builds: 22000.1335+, 22621.963+
+	Versions: 22H2/23H2+
+	Builds: 22621.1344+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -60,48 +60,73 @@ function Checks
 	{
 		{$_ -eq 22000}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1335)
-			{
-				# Check whether the OS minor build version is 1335 minimum
-				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
-				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
-				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
-
-				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
-
-				Start-Process -FilePath "https://t.me/sophia_chat"
-
-				# Enable receiving updates for other Microsoft products when you update Windows
-				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-				Start-Sleep -Seconds 1
-
-				# Check for UWP apps updates
-				Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
-
-				# Open the "Windows Update" page
-				Start-Process -FilePath "ms-settings:windowsupdate"
-
-				# Check for updates
-				Start-Process -FilePath "ms-settings:windowsupdate-action"
-
-				Start-Sleep -Seconds 1
-
-				# Trigger Windows Update for detecting new updates
-				(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
-
-				exit
+			# Download PC Health Check app
+			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+			$Parameters = @{
+				Uri             = "https://aka.ms/GetPCHealthCheckApp"
+				OutFile         = "$DownloadsFolder\WindowsPCHealthCheckSetup.msi"
+				UseBasicParsing = $true
+				Verbose         = $true
 			}
+			Invoke-WebRequest @Parameters
+
+			# Extract WindowsPCHealthCheckSetup.msi without installing
+			$Arguments = @(
+				"/a `"$DownloadsFolder\WindowsPCHealthCheckSetup.msi`"",
+				"TARGETDIR=`"$DownloadsFolder\WindowsPCHealthCheckSetup`"",
+				"/qb"
+			)
+			Start-Process -FilePath "msiexec" -ArgumentList $Arguments -Wait
+			Remove-Item -Path "$DownloadsFolder\WindowsPCHealthCheckSetup.msi" -Force
+			Start-Process -FilePath "$DownloadsFolder\WindowsPCHealthCheckSetup\PCHealthCheck\PCHealthCheck.exe"
+
+			# Download Windows 11 Installation Assistant
+			# https://www.microsoft.com/software-download/windows11
+			$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+			$Parameters = @{
+				Uri             = "https://go.microsoft.com/fwlink/?linkid=2171764"
+				OutFile         = "$DownloadsFolder\Windows11InstallationAssistant.exe"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			Invoke-WebRequest @Parameters
+			Start-Process -FilePath "$DownloadsFolder\Windows11InstallationAssistant.exe" -ArgumentList "/SkipEULA"
+
+			$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
+			$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
+			Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
+
+			Start-Process -FilePath "https://t.me/sophia_chat"
+
+			# Enable receiving updates for other Microsoft products when you update Windows
+			(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+			Start-Sleep -Seconds 1
+
+			# Check for UWP apps updates
+			Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+
+			# Open the "Windows Update" page
+			Start-Process -FilePath "ms-settings:windowsupdate"
+
+			# Check for updates
+			Start-Process -FilePath "ms-settings:windowsupdate-action"
+
+			Start-Sleep -Seconds 1
+
+			# Trigger Windows Update for detecting new updates
+			(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+
+			exit
 		}
 		{$_ -ge 22621}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 963)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1344)
 			{
-				# Check whether the OS minor build version is 1335 minimum
+				# Check whether the OS minor build version is 1344 minimum
 				# https://docs.microsoft.com/en-us/windows/release-health/windows11-release-information
 				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
 				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
-
 				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
 
 				Start-Process -FilePath "https://t.me/sophia_chat"
@@ -112,7 +137,7 @@ function Checks
 				Start-Sleep -Seconds 1
 
 				# Check for UWP apps updates
-				Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+				Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 
 				# Open the "Windows Update" page
 				Start-Process -FilePath "ms-settings:windowsupdate"
@@ -286,13 +311,13 @@ function Checks
 	# Checking whether WMI is corrupted
 	try
 	{
-		Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender -ErrorAction Stop | Out-Null
+		Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender -ErrorAction Stop | Out-Null
 	}
 	catch [Microsoft.Management.Infrastructure.CimException]
 	{
 		# Provider Load Failure exception
 		Write-Warning -Message $Global:Error.Exception.Message | Select-Object -First 1
-		Write-Warning -Message $Localization.WindowsBroken
+		Write-Warning -Message $Localization.DefenderBroken
 
 		Start-Process -FilePath "https://t.me/sophia_chat"
 
@@ -302,7 +327,7 @@ function Checks
 	# Check Microsoft Defender state
 	if ($null -eq (Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct -ErrorAction Ignore))
 	{
-		Write-Warning -Message $Localization.WindowsBroken
+		Write-Warning -Message $Localization.DefenderBroken
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
@@ -314,7 +339,7 @@ function Checks
 	}
 	catch [Microsoft.PowerShell.Commands.ServiceCommandException]
 	{
-		Write-Warning -Message $Localization.WindowsBroken
+		Write-Warning -Message $Localization.DefenderBroken
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		exit
 	}
@@ -333,7 +358,7 @@ function Checks
 	}
 
 	# Specify whether Antispyware protection is enabled
-	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AntispywareEnabled)
+	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).AntispywareEnabled)
 	{
 		$Script:DefenderAntispywareEnabled = $true
 	}
@@ -347,7 +372,7 @@ function Checks
 	{
 		if ($Script:DefenderproductState)
 		{
-			if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).ProductStatus -eq 1)
+			if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).ProductStatus -eq 1)
 			{
 				$Script:DefenderProductStatus = $false
 			}
@@ -387,7 +412,7 @@ function Checks
 	}
 
 	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
-	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/microsoft/windows/defender).AMEngineVersion -eq "0.0.0.0")
+	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).AMEngineVersion -eq "0.0.0.0")
 	{
 		$Script:DefenderAMEngineVersion = $false
 	}
@@ -500,6 +525,15 @@ function Checks
 				continue
 			}
 		}
+	}
+
+	# Enable back the SysMain service if it was disabled by harmful tweakers
+	if ((Get-Service -Name SysMain).Status -eq "Stopped")
+	{
+		Get-Service -Name SysMain | Set-Service -StartupType Automatic
+		Get-Service -Name SysMain | Start-Service
+
+		Start-Process -FileName "https://www.outsidethebox.ms/19318/"
 	}
 
 	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
@@ -643,7 +677,7 @@ $($Type):$($Value)`n
 		$Path = "$env:TEMP\User.txt"
 	}
 
-	Add-Content -Path $Path -Value $Policy -Encoding Default -Force
+	Add-Content -Path $Path -Value $Policy -Encoding utf8 -Force
 }
 #endregion Set GPO
 
@@ -1007,7 +1041,7 @@ function ScheduledTasks
 
 	#region XAML Markup
 	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -1059,7 +1093,7 @@ function ScheduledTasks
 			<Button Name="Button" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion XAML Markup
 
 	$Reader = (New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML)
@@ -2578,19 +2612,28 @@ function TaskbarAlignment
 
 <#
 	.SYNOPSIS
-	The search icon on the taskbar
+	Search on the taskbar
 
 	.PARAMETER Hide
-	Hide the search icon on the taskbar
+	Hide the search on the taskbar
 
-	.PARAMETER Show
+	.PARAMETER SearchIcon
 	Show the search icon on the taskbar
+
+	.PARAMETER SearchBox
+	Show the search box on the taskbar
 
 	.EXAMPLE
 	TaskbarSearch -Hide
 
 	.EXAMPLE
-	TaskbarSearch -Show
+	TaskbarSearch -SearchIcon
+
+	.EXAMPLE
+	TaskbarSearch -SearchIconLabel
+
+	.EXAMPLE
+	TaskbarSearch -SearchBox
 
 	.NOTES
 	Current user
@@ -2608,10 +2651,24 @@ function TaskbarSearch
 
 		[Parameter(
 			Mandatory = $true,
-			ParameterSetName = "Show"
+			ParameterSetName = "SearchIcon"
 		)]
 		[switch]
-		$Show
+		$SearchIcon,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "SearchIconLabel"
+		)]
+		[switch]
+		$SearchIconLabel,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "SearchBox"
+		)]
+		[switch]
+		$SearchBox
 	)
 
 	switch ($PSCmdlet.ParameterSetName)
@@ -2620,9 +2677,17 @@ function TaskbarSearch
 		{
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -PropertyType DWord -Value 0 -Force
 		}
-		"Show"
+		"SearchIcon"
 		{
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -PropertyType DWord -Value 1 -Force
+		}
+		"SearchIconLabel"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -PropertyType DWord -Value 3 -Force
+		}
+		"SearchBox"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Search -Name SearchboxTaskbarMode -PropertyType DWord -Value 2 -Force
 		}
 	}
 }
@@ -3995,7 +4060,7 @@ public static bool MarkFileDelete (string sourcefile)
 					}
 
 					# If there are some files or folders left in %OneDrive%
-					if ((Get-ChildItem -Path $env:OneDrive -ErrorAction Ignore | Measure-Object).Count -ne 0)
+					if ((Get-ChildItem -Path $env:OneDrive -Force -ErrorAction Ignore | Measure-Object).Count -ne 0)
 					{
 						if (-not ("WinAPI.DeleteFiles" -as [type]))
 						{
@@ -5104,7 +5169,7 @@ function WindowsFeatures
 
 	#region XAML Markup
 	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -5156,7 +5221,7 @@ function WindowsFeatures
 			<Button Name="Button" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion XAML Markup
 
 	$Reader = (New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML)
@@ -5456,7 +5521,7 @@ function WindowsCapabilities
 
 	#region XAML Markup
 	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -5508,7 +5573,7 @@ function WindowsCapabilities
 			<Button Name="Button" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion XAML Markup
 
 	$Reader = (New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML)
@@ -5925,6 +5990,7 @@ function NetworkAdaptersSavePower
 			Get-NetAdapter -Physical -Name $PhysicalAdaptersStatusUp | Where-Object -FilterScript {($_.Status -eq "Disconnected") -and $_.MacAddress}
 		)
 		{
+			Write-Information -MessageData "" -InformationAction Continue
 			Write-Verbose -Message $Localization.Patient -Verbose
 			Start-Sleep -Seconds 2
 		}
@@ -6328,7 +6394,7 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			# Removing old desktop.ini
 			if ($RemoveDesktopINI.IsPresent)
 			{
-				Remove-Item -Path "$CurrentUserFolderPath\desktop.ini" -Force
+				Remove-Item -Path "$CurrentUserFolderPath\desktop.ini" -Force -ErrorAction Ignore
 			}
 
 			KnownFolderPath -KnownFolder $UserFolder -Path $FolderPath
@@ -7996,6 +8062,15 @@ function Set-Association
 
 	$ProgramPath = [System.Environment]::ExpandEnvironmentVariables($ProgramPath)
 
+	if (-not (Test-Path -Path $ProgramPath))
+	{
+		Write-Verbose -Message $Localization.Skipped -Verbose
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+
+		return
+	}
+
 	if ($Icon)
 	{
 		$Icon = [System.Environment]::ExpandEnvironmentVariables($Icon)
@@ -8201,7 +8276,7 @@ namespace RegistryUtils
 }
 '@
 
-	if (-not('RegistryUtils.Action' -as [type]))
+	if (-not ('RegistryUtils.Action' -as [type]))
 	{
 		Add-Type -TypeDefinition $RegistryUtils
 	}
@@ -8291,23 +8366,27 @@ namespace RegistryUtils
 			$Extension
 		)
 
-		$OrigProgID = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore)."(default)"
-		if ($OrigProgID)
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if ((Test-Path -Path "HKLM:\SOFTWARE\Classes\$Extension") -and (Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore))
 		{
-			# Save possible ProgIds history with extension
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts" -Name "$ProgID_$Extension" -PropertyType DWord -Value 0 -Force
+			if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore)."(default)")
+			{
+				# Save possible ProgIds history with extension
+				New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts -Name "$($ProgID)_$($Extension)" -PropertyType DWord -Value 0 -Force
+			}
 		}
 
-		$Name = "{0}_$Extension" -f (Split-Path -Path $ProgId -Leaf)
-		New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts" -Name $Name -PropertyType DWord -Value 0 -Force
+		$Name = "{0}_$($Extension)" -f (Split-Path -Path $ProgId -Leaf)
+		New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts -Name $Name -PropertyType DWord -Value 0 -Force
 
-		if ("$ProgId_$Extension" -ne $Name)
+		if ("$($ProgID)_$($Extension)" -ne $Name)
 		{
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts" -Name "$ProgId_$Extension" -PropertyType DWord -Value 0 -Force
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts -Name "$($ProgID)_$($Extension)" -PropertyType DWord -Value 0 -Force
 		}
 
 		# If ProgId doesn't exist set the specified ProgId for the extensions
-		if (-not $OrigProgID)
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if (-not (Get-Variable -Name OrigProgID -ErrorAction Ignore))
 		{
 			if (-not (Test-Path -Path "HKCU:\Software\Classes\$Extension"))
 			{
@@ -8324,7 +8403,8 @@ namespace RegistryUtils
 		New-ItemProperty -Path "HKCU:\Software\Classes\$Extension\OpenWithProgids" -Name $ProgId -PropertyType None -Value ([byte[]]@()) -Force
 
 		# Set the system ProgId to the extension parameters for the File Explorer to the possible options for the assignment, and if absent set the specified ProgId
-		if ($OrigProgID)
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if (Get-Variable -Name OrigProgID -ErrorAction Ignore)
 		{
 			if (-not (Test-Path -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$Extension\OpenWithProgids"))
 			{
@@ -8382,13 +8462,17 @@ namespace RegistryUtils
 		)
 
 		# If there is the system extension ProgId, write it to the already configured by default
-		if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore)."(default)")
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if ((Test-Path -Path "HKLM:\SOFTWARE\Classes\$Extension") -and (Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore))
 		{
-			if (-not (Test-Path -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds))
+			if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\$Extension" -Name "(default)" -ErrorAction Ignore)."(default)")
 			{
-				New-Item -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds -Force
+				if (-not (Test-Path -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds))
+				{
+					New-Item -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds -Force
+				}
+				New-ItemProperty -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds -Name "_$($Extension)" -PropertyType DWord -Value 1 -Force
 			}
-			New-ItemProperty -Path Registry::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\FileAssociations\ProgIds -Name "_$Extension" -PropertyType DWord -Value 1 -Force
 		}
 
 		# Setting 'NoOpenWith' for all registered the extension ProgIDs
@@ -8416,12 +8500,24 @@ namespace RegistryUtils
 			}
 		}
 
-		$picture = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\KindMap" -Name $Extension -ErrorAction Ignore).$Extension
-		$PBrush = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Classes\PBrush\CLSID" -Name "(default)" -ErrorAction Ignore)."(default)"
-
-		if (($picture -eq "picture") -and $PBrush)
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if (Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\KindMap -Name $Extension -ErrorAction Ignore)
 		{
-			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts" -Name "PBrush_$Extension" -PropertyType DWord -Value 0 -Force
+			$picture = (Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\KindMap -Name $Extension -ErrorAction Ignore).$Extension
+		}
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if ((Test-Path -Path HKLM:\SOFTWARE\Classes\PBrush\CLSID) -and (Get-ItemProperty -Path HKLM:\SOFTWARE\Classes\PBrush\CLSID -Name "(default)" -ErrorAction Ignore))
+		{
+			$PBrush = (Get-ItemProperty -Path HKLM:\SOFTWARE\Classes\PBrush\CLSID -Name "(default)" -ErrorAction Ignore)."(default)"
+		}
+
+		# Due to "Set-StrictMode -Version Latest" we have to check everything
+		if (Get-Variable -Name picture -ErrorAction Ignore)
+		{
+			if (($picture -eq "picture") -and $PBrush)
+			{
+				New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\ApplicationAssociationToasts -Name "PBrush_$($Extension)" -PropertyType DWord -Value 0 -Force
+			}
 		}
 	}
 
@@ -8668,6 +8764,7 @@ namespace FileAssoc
 		MemberDefinition = @"
 [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = false)]
 private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
+
 public static void Refresh()
 {
 	// Update desktop icons
@@ -9036,13 +9133,7 @@ function RKNBypass
 
 <#
 	.SYNOPSIS
-	Enable the latest Windows Subsystem for Android™ with Amazon Appstore
-
-	.EXAMPLE Enable all necessary dependencies (reboot may require) and open Microsoft Store WSA page to install it manually
-	WSA -Enable
-
-	.EXAMPLE Disable all necessary dependencies (reboot may require) and uninstall Windows Subsystem for Android™ with Amazon Appstore
-	WSA -Disable
+	Enable all necessary dependencies (reboot may require) and open Microsoft Store WSA page to install it manually
 
 	.LINK
 	https://support.microsoft.com/en-us/windows/install-mobile-apps-and-the-amazon-appstore-f8d0abb5-44ad-47d8-b9fb-ad6b1459ff6c
@@ -9051,109 +9142,70 @@ function RKNBypass
 	https://docs.microsoft.com/en-us/windows/android/wsa/
 
 	.LINK
-	https://www.microsoft.com/store/productId/9P3395VX91NR
+	https://apps.microsoft.com/store/detail/windows-subsystem-for-android™-with-amazon-appstore/9P3395VX91NR
 
 	.NOTES
 	Machine-wide
 #>
-function WSA
+function Install-WSA
 {
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Disable"
-		)]
-		[switch]
-		$Disable
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
+	# Enable Virtual Machine Platform
+	if ((Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State -eq "Disabled")
 	{
-		"Enable"
-		{
-			# Check if Windows 11 is installed on an SSD
-			$DiskNumber = (Get-Disk | Where-Object -FilterScript {$_.Isboot -and $_.IsSystem -and ($_.OperationalStatus -eq "Online")}).Number
-			if (Get-PhysicalDisk -DeviceNumber $DiskNumber | Where-Object -FilterScript {$_.MediaType -ne "SSD"})
-			{
-				Write-Warning -Message $Localization.SSDRequired
+		Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
 
-				return
-			}
+		Write-Warning -Message $Localization.RestartWarning
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 
-			# Enable Windows Subsystem for Android (WSA)
-			if ((Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux).State -eq "Disabled")
-			{
-				Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+		return
+	}
 
-				Write-Warning -Message $Localization.RestartWarning
-				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
+	if (Get-AppxPackage -Name MicrosoftCorporationII.WindowsSubsystemForAndroid)
+	{
+		return
+	}
 
-				return
-			}
+	# Check if Windows 11 is installed on an SSD
+	$DiskNumber = (Get-Disk | Where-Object -FilterScript {$_.Isboot -and $_.IsSystem -and ($_.OperationalStatus -eq "Online")}).Number
+	if (Get-PhysicalDisk -DeviceNumber $DiskNumber | Where-Object -FilterScript {$_.MediaType -ne "SSD"})
+	{
+		Write-Warning -Message $Localization.SSDRequired
 
-			# Enable Virtual Machine Platform
-			if ((Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform).State -eq "Disabled")
-			{
-				Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
+		return
+	}
 
-				Write-Warning -Message $Localization.RestartWarning
-				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
-
-				return
-			}
-
-			if (Get-AppxPackage -Name MicrosoftCorporationII.WindowsSubsystemForAndroid)
-			{
-				return
-			}
-
-			try
-			{
-				# Check the internet connection
-				$Parameters = @{
-					Uri              = "https://www.google.com"
-					Method           = "Head"
-					DisableKeepAlive = $true
-					UseBasicParsing  = $true
-				}
-				if (-not (Invoke-WebRequest @Parameters).StatusDescription)
-				{
-					return
-				}
-
-				if (((Get-WinHomeLocation).GeoId -ne "244"))
-				{
-					# Set Windows region to USA
-					$Script:Region = (Get-WinHomeLocation).GeoId
-					Set-WinHomeLocation -GeoId 244
-
-					$Script:RegionChanged = $true
-				}
-
-				# Open Misrosoft Store WSA page to install it manually
-				Start-Process -FilePath ms-windows-store://pdp/?ProductId=9P3395VX91NR
-			}
-			catch [System.Net.WebException]
-			{
-				Write-Warning -Message $Localization.NoInternetConnection
-				Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
-
-				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
-			}
+	try
+	{
+		# Check the internet connection
+		$Parameters = @{
+			Uri              = "https://www.google.com"
+			Method           = "Head"
+			DisableKeepAlive = $true
+			UseBasicParsing  = $true
 		}
-		"Disable"
+		if (-not (Invoke-WebRequest @Parameters).StatusDescription)
 		{
-			Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
-			Get-AppxPackage -Name MicrosoftCorporationII.WindowsSubsystemForAndroid | Remove-AppxPackage
+			return
 		}
+
+		if (((Get-WinHomeLocation).GeoId -ne "244"))
+		{
+			# Set Windows region to USA
+			$Script:Region = (Get-WinHomeLocation).GeoId
+			Set-WinHomeLocation -GeoId 244
+
+			$Script:RegionChanged = $true
+		}
+
+		# Open Misrosoft Store WSA page to install it manually
+		Start-Process -FilePath ms-windows-store://pdp/?ProductId=9P3395VX91NR
+	}
+	catch [System.Net.WebException]
+	{
+		Write-Warning -Message $Localization.NoInternetConnection
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
+
+		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line) -ErrorAction SilentlyContinue
 	}
 }
 
@@ -9197,10 +9249,8 @@ function PreventEdgeShortcutCreation
 		$Disable
 	)
 
-	if (($null -eq (Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore)) -or ([System.Version](Get-Package -Name "Microsoft Edge Update" -ProviderName Programs).Version -lt [System.Version]"1.3.128.0"))
+	if (($null -eq (Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore)) -or ([System.Version](Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore).Version -lt [System.Version]"1.3.128.0"))
 	{
-		(Get-Package -Name "Microsoft Edge Update" -ProviderName Programs -ErrorAction Ignore).Version
-
 		return
 	}
 
@@ -9266,6 +9316,60 @@ function PreventEdgeShortcutCreation
 		Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate -Name $Names -Force -ErrorAction Ignore
 	}
 }
+
+<#
+	.SYNOPSIS
+	Internal SATA drives up as removeable media in the taskbar notification area
+
+	.PARAMETER Disable
+	Prevent all internal SATA drives from showing up as removable media in the taskbar notification area
+
+	.PARAMETER Default
+	Show up all internal SATA drives as removeable media in the taskbar notification area
+
+	.PARAMETER Show
+	Show more recommendations on Start
+
+	.EXAMPLE
+	SATADrivesRemovableMedia -Disable
+
+	.EXAMPLE
+	SATADrivesRemovableMedia -Default
+
+	.NOTES
+	Machine-wide
+#>
+function SATADrivesRemovableMedia
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Default"
+		)]
+		[switch]
+		$Default
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Disable"
+		{
+			New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\storahci\Parameters\Device -Name TreatAsInternalPort -Value @(0, 1, 2, 3, 4, 5) -Type MultiString -Force
+		}
+		"Default"
+		{
+			Remove-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\storahci\Parameters\Device -Name TreatAsInternalPort -Force -ErrorAction Ignore
+		}
+	}
+}
 #endregion System
 
 #region WSL
@@ -9293,10 +9397,10 @@ function Install-WSL
 	# We need to get the string number where the "FRIENDLY NAME" header begins to truncate all other unnecessary strings in the beginning
 	$LineNumber = ($wsl | Select-String -Pattern "FRIENDLY NAME" -CaseSensitive).LineNumber
 	# Remove first strings in output from the first to the $LineNumber
-	$Distros = ($wsl).Replace("  ", "").Replace("* ", "")[($LineNumber)..(($wsl).Count)] | ForEach-Object -Process {
+	$Distros = ($wsl).Replace("* ", "")[($LineNumber)..(($wsl).Count)] | ForEach-Object -Process {
 		[PSCustomObject]@{
-			"Distro" = $_ -split " ", 2 | Select-Object -Last 1
-			"Alias"  = $_ -split " ", 2 | Select-Object -First 1
+			"Distro" = ($_ -split " ", 2 | Select-Object -Last 1).Trim()
+			"Alias"  = ($_ -split " ", 2 | Select-Object -First 1).Trim()
 		}
 	}
 
@@ -9307,7 +9411,7 @@ function Install-WSL
 	#endregion
 
 	#region Xaml Markup
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9342,7 +9446,7 @@ function Install-WSL
 			<Button Name="ButtonInstall" Content="Install" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion
 
 	#region Functions
@@ -9512,61 +9616,6 @@ BDEE24B1E5E4ED6CC9D5A337908BE5303E477736C8A75051A8FBD4E3CB6360D8F0A992A48F333434
 
 <#
 	.SYNOPSIS
-	How to run the Windows PowerShell shortcut
-
-	.PARAMETER Elevated
-	Run the Windows PowerShell shortcut from the Start menu as Administrator
-
-	.PARAMETER NonElevated
-	Run the Windows PowerShell shortcut from the Start menu as user
-
-	.EXAMPLE
-	RunPowerShellShortcut -Elevated
-
-	.EXAMPLE
-	RunPowerShellShortcut -NonElevated
-
-	.NOTES
-	Current user
-#>
-function RunPowerShellShortcut
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Elevated"
-		)]
-		[switch]
-		$Elevated,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "NonElevated"
-		)]
-		[switch]
-		$NonElevated
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Elevated"
-		{
-			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -AsByteStream -Raw
-			$bytes[0x15] = $bytes[0x15] -bor 0x20
-			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -AsByteStream -Force
-		}
-		"NonElevated"
-		{
-			[byte[]]$bytes = Get-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -AsByteStream -Raw
-			$bytes[0x15] = $bytes[0x15] -bxor 0x20
-			Set-Content -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk" -Value $bytes -AsByteStream -Force
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
 	Configure Start layout
 
 	.PARAMETER Default
@@ -9586,9 +9635,6 @@ function RunPowerShellShortcut
 
 	.EXAMPLE
 	StartLayout -ShowMoreRecommendations
-
-	.NOTES
-	For Windows 11 22H2+
 
 	.NOTES
 	Current user
@@ -9619,25 +9665,22 @@ function StartLayout
 		$ShowMoreRecommendations
 	)
 
-	if ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber -ge 22621)
+	switch ($PSCmdlet.ParameterSetName)
 	{
-		switch ($PSCmdlet.ParameterSetName)
+		"Default"
 		{
-			"Default"
-			{
-				# Default
-				New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 0 -Force
-			}
-			"ShowMorePins"
-			{
-				# Show More Pins
-				New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 1 -Force
-			}
-			"ShowMoreRecommendations"
-			{
-				# Show More Recommendations
-				New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 2 -Force
-			}
+			# Default
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 0 -Force
+		}
+		"ShowMorePins"
+		{
+			# Show More Pins
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 1 -Force
+		}
+		"ShowMoreRecommendations"
+		{
+			# Show More Recommendations
+			New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name Start_Layout -PropertyType DWord -Value 2 -Force
 		}
 	}
 }
@@ -9780,7 +9823,7 @@ function UninstallUWPApps
 	#region Variables
 	#region XAML Markup
 	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9847,7 +9890,7 @@ function UninstallUWPApps
 			<Button Name="ButtonUninstall" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion XAML Markup
 
 	$Reader = (New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML)
@@ -10160,7 +10203,7 @@ function RestoreUWPApps
 	#region Variables
 	#region XAML Markup
 	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = '
+	[xml]$XAML = @"
 	<Window
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10223,7 +10266,7 @@ function RestoreUWPApps
 			<Button Name="ButtonRestore" Grid.Row="2"/>
 		</Grid>
 	</Window>
-	'
+"@
 	#endregion XAML Markup
 
 	$Reader = (New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML)
@@ -10523,7 +10566,7 @@ function HEVC
 	)
 
 	# Check whether the extension is already installed
-	if (-not (Get-AppxPackage -Name Microsoft.Windows.Photos))
+	if ((-not (Get-AppxPackage -Name Microsoft.Windows.Photos)) -or (Get-AppxPackage -Name Microsoft.HEVCVideoExtension))
 	{
 		return
 	}
@@ -10593,6 +10636,7 @@ function HEVC
 					# Installing "HEVC Video Extensions from Device Manufacturer"
 					if ([System.Version]$HEVCPackageName -gt [System.Version](Get-AppxPackage -Name Microsoft.HEVCVideoExtension).Version)
 					{
+						Write-Information -MessageData "" -InformationAction Continue
 						Write-Verbose -Message $Localization.Patient -Verbose
 						Write-Verbose -Message $Localization.HEVCDownloading -Verbose
 
@@ -10757,7 +10801,7 @@ function CheckUWPAppsUpdates
 {
 	Write-Information -MessageData "" -InformationAction Continue
 	Write-Verbose -Message $Localization.Patient -Verbose
-	Get-CimInstance -Namespace root\cimv2\mdm\dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+	Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 }
 #endregion UWP apps
 
@@ -11184,11 +11228,11 @@ while (`$true)
 			Namespace = """WinAPI"""
 			Name = """Win32ShowWindowAsync"""
 			Language = """CSharp"""
-			MemberDefinition = @'
+			MemberDefinition = @"""
 [DllImport("""user32.dll""")]
 public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-'@
-	}
+"""@
+		}
 
 		if (-not ("""WinAPI.Win32ShowWindowAsync""" -as [type]))
 		{
@@ -11228,39 +11272,143 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 			}
 			Register-ScheduledTask @Parameters -Force
 
+			# We have to call PowerShell script via another VBS script silently because VBS has appropriate feature to suppress console appearing (none of other workarounds work)
+			# powershell.exe process wakes up system anyway even from turned on Focus Assist mode (not a notification toast)
+			# https://github.com/DCourtel/Windows_10_Focus_Assist/blob/master/FocusAssistLibrary/FocusAssistLib.cs
+			# https://redplait.blogspot.com/2018/07/wnf-ids-from-perfntcdll-adk-version.html
 			$ToastNotification = @"
+# https://github.com/farag2/Sophia-Script-for-Windows
+# https://t.me/sophia_chat
+
+# Get Focus Assist status
+# https://github.com/DCourtel/Windows_10_Focus_Assist/blob/master/FocusAssistLibrary/FocusAssistLib.cs
+# https://redplait.blogspot.com/2018/07/wnf-ids-from-perfntcdll-adk-version.html
+
+`$Focus = @{
+	Namespace        = "WinAPI"
+	Name             = "Focus"
+	Language         = "CSharp"
+	MemberDefinition = @""
+[DllImport("NtDll.dll", SetLastError = true)]
+private static extern uint NtQueryWnfStateData(IntPtr pStateName, IntPtr pTypeId, IntPtr pExplicitScope, out uint nChangeStamp, out IntPtr pBuffer, ref uint nBufferSize);
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_TYPE_ID
+{
+	public Guid TypeId;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_STATE_NAME
+{
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public uint[] Data;
+
+	public WNF_STATE_NAME(uint Data1, uint Data2) : this()
+	{
+		uint[] newData = new uint[2];
+		newData[0] = Data1;
+		newData[1] = Data2;
+		Data = newData;
+	}
+}
+
+public enum FocusAssistState
+{
+	NOT_SUPPORTED = -2,
+	FAILED = -1,
+	OFF = 0,
+	PRIORITY_ONLY = 1,
+	ALARMS_ONLY = 2
+};
+
+// Returns the state of Focus Assist if available on this computer
+public static FocusAssistState GetFocusAssistState()
+{
+	try
+	{
+		WNF_STATE_NAME WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED = new WNF_STATE_NAME(0xA3BF1C75, 0xD83063E);
+		uint nBufferSize = (uint)Marshal.SizeOf(typeof(IntPtr));
+		IntPtr pStateName = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(WNF_STATE_NAME)));
+		Marshal.StructureToPtr(WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED, pStateName, false);
+
+		uint nChangeStamp = 0;
+		IntPtr pBuffer = IntPtr.Zero;
+		bool success = NtQueryWnfStateData(pStateName, IntPtr.Zero, IntPtr.Zero, out nChangeStamp, out pBuffer, ref nBufferSize) == 0;
+		Marshal.FreeHGlobal(pStateName);
+
+		if (success)
+		{
+			return (FocusAssistState)pBuffer;
+		}
+	}
+	catch {}
+
+	return FocusAssistState.FAILED;
+}
+""@
+}
+
+if (-not ("WinAPI.Focus" -as [type]))
+{
+	Add-Type @Focus
+}
+
+while ([WinAPI.Focus]::GetFocusAssistState() -ne "OFF")
+{
+	Start-Sleep -Seconds 600
+}
+
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
-[xml]`$ToastTemplate = @"""
-<toast duration="""Long""">
+[xml]`$ToastTemplate = @""
+<toast duration="Long">
 	<visual>
-		<binding template="""ToastGeneric""">
+		<binding template="ToastGeneric">
 			<text>$($Localization.CleanupTaskNotificationTitle)</text>
 			<group>
 				<subgroup>
-					<text hint-style="""body""" hint-wrap="""true""">$($Localization.CleanupTaskNotificationEvent)</text>
+					<text hint-style="body" hint-wrap="true">$($Localization.CleanupTaskNotificationEvent)</text>
 				</subgroup>
 			</group>
 		</binding>
 	</visual>
-	<audio src="""ms-winsoundevent:notification.default""" />
+	<audio src="ms-winsoundevent:notification.default" />
 	<actions>
-		<action content="""$($Localization.Run)""" arguments="""WindowsCleanup:""" activationType="""protocol"""/>
-		<action content="""""" arguments="""dismiss""" activationType="""system"""/>
+		<action content="$($Localization.Run)" arguments="WindowsCleanup:" activationType="protocol"/>
+		<action content="" arguments="dismiss" activationType="system"/>
 	</actions>
 </toast>
-"""@
+""@
 
 `$ToastXml = [Windows.Data.Xml.Dom.XmlDocument]::New()
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show(`$ToastMessage)
 "@
 
+			# Save script to be able to call them from VBS file
+			if (-not (Test-Path -Path $env:SystemRoot\System32\Tasks\Sophia))
+			{
+				New-Item -Path $env:SystemRoot\System32\Tasks\Sophia -ItemType Directory -Force
+			}
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.ps1" -Value $ToastNotification -Encoding Default -Force
+			# Replace here-string double quotes with single ones
+			(Get-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.ps1" -Encoding Default).Replace('@""', '@"').Replace('""@', '"@') | Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.ps1" -Encoding Default -Force
+
+			# Create vbs script that will help us calling PS1 script silently, without interrupting system from Focus Assist mode turned on, when a powershell.exe console pops up
+			$ToastNotification = @"
+' https://github.com/farag2/Sophia-Script-for-Windows
+' https://t.me/sophia_chat
+
+CreateObject("Wscript.Shell").Run "powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -WindowStyle Hidden -File %SystemRoot%\System32\Tasks\Sophia\Windows_Cleanup_Notification.ps1", 0
+"@
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.vbs" -Value $ToastNotification -Encoding Default -Force
+
 			# Create the "Windows Cleanup Notification" task
-			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $ToastNotification"
+			$Action    = New-ScheduledTaskAction -Execute wscript.exe -Argument "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.vbs"
 			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
 			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
 			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 30 -At 9pm
@@ -11279,6 +11427,9 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 		}
 		"Delete"
 		{
+			# Remove files first unless we cannot remove folder if there's no more tasks there
+			Remove-Item -Path "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.vbs", "$env:SystemRoot\System32\Tasks\Sophia\Windows_Cleanup_Notification.ps1" -Force -ErrorAction Ignore
+
 			# Remove all old tasks
 			# We have to use -ErrorAction Ignore in both cases, unless we get an error
 			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
@@ -11419,33 +11570,138 @@ function SoftwareDistributionTask
 			# Determines whether the app can be seen in Settings where the user can turn notifications on or off
 			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
+			# We have to call PowerShell script via another VBS script silently because VBS has appropriate feature to suppress console appearing (none of other workarounds work)
+			# powershell.exe process wakes up system anyway even from turned on Focus Assist mode (not a notification toast)
+			# https://github.com/DCourtel/Windows_10_Focus_Assist/blob/master/FocusAssistLibrary/FocusAssistLib.cs
+			# https://redplait.blogspot.com/2018/07/wnf-ids-from-perfntcdll-adk-version.html
 			$SoftwareDistributionTask = @"
+# https://github.com/farag2/Sophia-Script-for-Windows
+# https://t.me/sophia_chat
+
+# Get Focus Assist status
+# https://github.com/DCourtel/Windows_10_Focus_Assist/blob/master/FocusAssistLibrary/FocusAssistLib.cs
+# https://redplait.blogspot.com/2018/07/wnf-ids-from-perfntcdll-adk-version.html
+
+`$Focus = @{
+	Namespace        = "WinAPI"
+	Name             = "Focus"
+	Language         = "CSharp"
+	MemberDefinition = @""
+[DllImport("NtDll.dll", SetLastError = true)]
+private static extern uint NtQueryWnfStateData(IntPtr pStateName, IntPtr pTypeId, IntPtr pExplicitScope, out uint nChangeStamp, out IntPtr pBuffer, ref uint nBufferSize);
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_TYPE_ID
+{
+	public Guid TypeId;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_STATE_NAME
+{
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public uint[] Data;
+
+	public WNF_STATE_NAME(uint Data1, uint Data2) : this()
+	{
+		uint[] newData = new uint[2];
+		newData[0] = Data1;
+		newData[1] = Data2;
+		Data = newData;
+	}
+}
+
+public enum FocusAssistState
+{
+	NOT_SUPPORTED = -2,
+	FAILED = -1,
+	OFF = 0,
+	PRIORITY_ONLY = 1,
+	ALARMS_ONLY = 2
+};
+
+// Returns the state of Focus Assist if available on this computer
+public static FocusAssistState GetFocusAssistState()
+{
+	try
+	{
+		WNF_STATE_NAME WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED = new WNF_STATE_NAME(0xA3BF1C75, 0xD83063E);
+		uint nBufferSize = (uint)Marshal.SizeOf(typeof(IntPtr));
+		IntPtr pStateName = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(WNF_STATE_NAME)));
+		Marshal.StructureToPtr(WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED, pStateName, false);
+
+		uint nChangeStamp = 0;
+		IntPtr pBuffer = IntPtr.Zero;
+		bool success = NtQueryWnfStateData(pStateName, IntPtr.Zero, IntPtr.Zero, out nChangeStamp, out pBuffer, ref nBufferSize) == 0;
+		Marshal.FreeHGlobal(pStateName);
+
+		if (success)
+		{
+			return (FocusAssistState)pBuffer;
+		}
+	}
+	catch {}
+
+	return FocusAssistState.FAILED;
+}
+""@
+}
+
+if (-not ("WinAPI.Focus" -as [type]))
+{
+	Add-Type @Focus
+}
+
+# Wait until it will be "OFF" (0)
+while ([WinAPI.Focus]::GetFocusAssistState() -ne "OFF")
+{
+	Start-Sleep -Seconds 600
+}
+
+# Run the task
 (Get-Service -Name wuauserv).WaitForStatus('Stopped', '01:00:00')
 Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -Force | Remove-Item -Recurse -Force
 
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
-[xml]`$ToastTemplate = @"""
-<toast duration="""Long""">
+[xml]`$ToastTemplate = @""
+<toast duration="Long">
 	<visual>
-		<binding template="""ToastGeneric""">
+		<binding template="ToastGeneric">
 			<text>$($Localization.SoftwareDistributionTaskNotificationEvent)</text>
 		</binding>
 	</visual>
-	<audio src="""ms-winsoundevent:notification.default""" />
+	<audio src="ms-winsoundevent:notification.default" />
 </toast>
-"""@
+""@
 
 `$ToastXml = [Windows.Data.Xml.Dom.XmlDocument]::New()
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show(`$ToastMessage)
 "@
+			# Save script to be able to call them from VBS file
+			if (-not (Test-Path -Path $env:SystemRoot\System32\Tasks\Sophia))
+			{
+				New-Item -Path $env:SystemRoot\System32\Tasks\Sophia -ItemType Directory -Force
+			}
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.ps1" -Value $SoftwareDistributionTask -Encoding Default -Force
+			# Replace here-string double quotes with single ones
+			(Get-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.ps1" -Encoding Default).Replace('@""', '@"').Replace('""@', '"@') | Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.ps1" -Encoding Default -Force
+
+			# Create vbs script that will help us calling PS1 script silently, without interrupting system from Focus Assist mode turned on, when a powershell.exe console pops up
+			$SoftwareDistributionTask = @"
+' https://github.com/farag2/Sophia-Script-for-Windows
+' https://t.me/sophia_chat
+
+CreateObject("Wscript.Shell").Run "powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -WindowStyle Hidden -File %SystemRoot%\System32\Tasks\Sophia\SoftwareDistributionTask.ps1", 0
+"@
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.vbs" -Value $SoftwareDistributionTask -Encoding Default -Force
 
 			# Create the "SoftwareDistribution" task
-			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $SoftwareDistributionTask"
+			$Action    = New-ScheduledTaskAction -Execute wscript.exe -Argument "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.vbs"
 			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
 			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
 			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 90 -At 9pm
@@ -11464,6 +11720,9 @@ Get-ChildItem -Path `$env:SystemRoot\SoftwareDistribution\Download -Recurse -For
 		}
 		"Delete"
 		{
+			# Remove files first unless we cannot remove folder if there's no more tasks there
+			Remove-Item -Path "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.vbs", "$env:SystemRoot\System32\Tasks\Sophia\SoftwareDistributionTask.ps1" -Force -ErrorAction Ignore
+
 			# Remove all old tasks
 			# We have to use -ErrorAction Ignore in both cases, unless we get an error
 			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
@@ -11600,32 +11859,135 @@ function TempTask
 			# Determines whether the app can be seen in Settings where the user can turn notifications on or off
 			New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
 
+			# We have to call PowerShell script via another VBS script silently because VBS has appropriate feature to suppress console appearing (none of other workarounds work)
+			# powershell.exe process wakes up system anyway even from turned on Focus Assist mode (not a notification toast)
 			$TempTask = @"
+# https://github.com/farag2/Sophia-Script-for-Windows
+# https://t.me/sophia_chat
+
+# Get Focus Assist status
+# https://github.com/DCourtel/Windows_10_Focus_Assist/blob/master/FocusAssistLibrary/FocusAssistLib.cs
+# https://redplait.blogspot.com/2018/07/wnf-ids-from-perfntcdll-adk-version.html
+
+`$Focus = @{
+	Namespace        = "WinAPI"
+	Name             = "Focus"
+	Language         = "CSharp"
+	MemberDefinition = @""
+[DllImport("NtDll.dll", SetLastError = true)]
+private static extern uint NtQueryWnfStateData(IntPtr pStateName, IntPtr pTypeId, IntPtr pExplicitScope, out uint nChangeStamp, out IntPtr pBuffer, ref uint nBufferSize);
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_TYPE_ID
+{
+	public Guid TypeId;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct WNF_STATE_NAME
+{
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public uint[] Data;
+
+	public WNF_STATE_NAME(uint Data1, uint Data2) : this()
+	{
+		uint[] newData = new uint[2];
+		newData[0] = Data1;
+		newData[1] = Data2;
+		Data = newData;
+	}
+}
+
+public enum FocusAssistState
+{
+	NOT_SUPPORTED = -2,
+	FAILED = -1,
+	OFF = 0,
+	PRIORITY_ONLY = 1,
+	ALARMS_ONLY = 2
+};
+
+// Returns the state of Focus Assist if available on this computer
+public static FocusAssistState GetFocusAssistState()
+{
+	try
+	{
+		WNF_STATE_NAME WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED = new WNF_STATE_NAME(0xA3BF1C75, 0xD83063E);
+		uint nBufferSize = (uint)Marshal.SizeOf(typeof(IntPtr));
+		IntPtr pStateName = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(WNF_STATE_NAME)));
+		Marshal.StructureToPtr(WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED, pStateName, false);
+
+		uint nChangeStamp = 0;
+		IntPtr pBuffer = IntPtr.Zero;
+		bool success = NtQueryWnfStateData(pStateName, IntPtr.Zero, IntPtr.Zero, out nChangeStamp, out pBuffer, ref nBufferSize) == 0;
+		Marshal.FreeHGlobal(pStateName);
+
+		if (success)
+		{
+			return (FocusAssistState)pBuffer;
+		}
+	}
+	catch {}
+
+	return FocusAssistState.FAILED;
+}
+""@
+}
+
+if (-not ("WinAPI.Focus" -as [type]))
+{
+	Add-Type @Focus
+}
+
+# Wait until it will be "OFF" (0)
+while ([WinAPI.Focus]::GetFocusAssistState() -ne "OFF")
+{
+	Start-Sleep -Seconds 600
+}
+
+# Run the task
 Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
-[xml]`$ToastTemplate = @"""
-<toast duration="""Long""">
+[xml]`$ToastTemplate = @""
+<toast duration="Long">
 	<visual>
-		<binding template="""ToastGeneric""">
+		<binding template="ToastGeneric">
 			<text>$($Localization.TempTaskNotificationEvent)</text>
 		</binding>
 	</visual>
-	<audio src="""ms-winsoundevent:notification.default""" />
+	<audio src="ms-winsoundevent:notification.default" />
 </toast>
-"""@
+""@
 
 `$ToastXml = [Windows.Data.Xml.Dom.XmlDocument]::New()
 `$ToastXml.LoadXml(`$ToastTemplate.OuterXml)
 
 `$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New(`$ToastXML)
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("""Sophia""").Show(`$ToastMessage)
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show(`$ToastMessage)
 "@
+			# Save script to be able to call them from VBS file
+			if (-not (Test-Path -Path $env:SystemRoot\System32\Tasks\Sophia))
+			{
+				New-Item -Path $env:SystemRoot\System32\Tasks\Sophia -ItemType Directory -Force
+			}
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\TempTask.ps1" -Value $TempTask -Encoding Default -Force
+			# Replace here-string double quotes with single ones
+			(Get-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\TempTask.ps1" -Encoding Default).Replace('@""', '@"').Replace('""@', '"@') | Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\TempTask.ps1" -Encoding Default -Force
+
+			# Create vbs script that will help us calling PS1 script silently, without interrupting system from Focus Assist mode turned on, when a powershell.exe console pops up
+			$TempTask = @"
+' https://github.com/farag2/Sophia-Script-for-Windows
+' https://t.me/sophia_chat
+
+CreateObject("Wscript.Shell").Run "powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -WindowStyle Hidden -File %SystemRoot%\System32\Tasks\Sophia\TempTask.ps1", 0
+"@
+			Set-Content -Path "$env:SystemRoot\System32\Tasks\Sophia\TempTask.vbs" -Value $TempTask -Encoding Default -Force
 
 			# Create the "Temp" task
-			$Action    = New-ScheduledTaskAction -Execute powershell.exe -Argument "-WindowStyle Hidden -Command $TempTask"
+			$Action    = New-ScheduledTaskAction -Execute wscript.exe -Argument "$env:SystemRoot\System32\Tasks\Sophia\TempTask.vbs"
 			$Settings  = New-ScheduledTaskSettingsSet -Compatibility Win8 -StartWhenAvailable
 			$Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
 			$Trigger   = New-ScheduledTaskTrigger -Daily -DaysInterval 60 -At 9pm
@@ -11644,6 +12006,9 @@ Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_
 		}
 		"Delete"
 		{
+			# Remove files first unless we cannot remove folder if there's no more tasks there
+			Remove-Item -Path "$env:SystemRoot\System32\Tasks\Sophia\TempTask.vbs", "$env:SystemRoot\System32\Tasks\Sophia\TempTask.ps1" -Force -ErrorAction Ignore
+
 			# Remove all old tasks
 			# We have to use -ErrorAction Ignore in both cases, unless we get an error
 			Get-ScheduledTask -TaskPath "\Sophia Script\", "\SophiApp\" -ErrorAction Ignore | ForEach-Object -Process {
@@ -12474,17 +12839,17 @@ function DNSoverHTTPS
 
 				foreach ($InterfaceGuid in $InterfaceGuids)
 				{
-					if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
+					if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
 					{
-						New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
+						New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
 					}
-					if (-not (Test-Path -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
+					if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
 					{
-						New-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
+						New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
 					}
 					# Encrypted preffered, unencrypted allowed
-					New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
-					New-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+					New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+					New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
 				}
 			}
 		}
@@ -12506,7 +12871,7 @@ function DNSoverHTTPS
 
 				foreach ($InterfaceGuid in $InterfaceGuids)
 				{
-					Remove-Item -Path "HKLM:\SYSTEM\ControlSet001\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh" -Recurse -Force -ErrorAction Ignore
+					Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh" -Recurse -Force -ErrorAction Ignore
 				}
 			}
 		}
@@ -12833,7 +13198,7 @@ function EditWithClipchampContext
 		$Show
 	)
 
-	if (((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber -ge 22621) -and (Get-AppxPackage -Name Clipchamp.Clipchamp))
+	if (Get-AppxPackage -Name Clipchamp.Clipchamp)
 	{
 		switch ($PSCmdlet.ParameterSetName)
 		{
@@ -13416,6 +13781,7 @@ function UpdateLGPEPolicies
 		Write-Verbose -Message ([string]($_.FriendlyName, '|', $_.MediaType, '|', $_.BusType)) -Verbose
 	}
 
+	Write-Information -MessageData "" -InformationAction Continue
 	Write-Verbose -Message $Localization.Patient -Verbose
 	Write-Verbose -Message $Localization.GPOUpdate -Verbose
 	Write-Verbose -Message HKLM -Verbose
@@ -13618,25 +13984,6 @@ public static void PostMessage()
 		Set-WinHomeLocation -GeoId $Script:Region
 	}
 
-	# Persist Sophia notifications to prevent to immediately disappear from Action Center
-	if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
-	{
-		New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
-	}
-	New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
-
-	if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
-	{
-		New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
-	}
-	# Register app
-	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
-	# Determines whether the app can be seen in Settings where the user can turn notifications on or off
-	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
-
-	[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-	[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
-
 	# Apply policies found in registry to re-build database database due to gpedit.msc relies in its' own database
 	if ((Test-Path -Path "$env:TEMP\Computer.txt") -or (Test-Path -Path "$env:TEMP\User.txt"))
 	{
@@ -13670,12 +14017,41 @@ public static void PostMessage()
 	# Check if any of scheduled tasks were created. Unless open Task Scheduler
 	if ($Script:ScheduledTasks)
 	{
+		# Find and close taskschd.msc by its' argument
+		$taskschd_Process_ID = (Get-CimInstance -ClassName CIM_Process | Where-Object -FilterScript {$_.Name -eq "mmc.exe"} | Where-Object -FilterScript {
+			$_.CommandLine -match "taskschd.msc"
+		}).Handle
+		# Due to "Set-StrictMode -Version Latest" we have to check before executing
+		if ($taskschd_Process_ID)
+		{
+			Get-Process -Id $taskschd_Process_ID | Stop-Process -Force
+		}
+
 		# Open Task Scheduler
 		Start-Process -FilePath taskschd.msc
 	}
 	#endregion Other actions
 
 	#region Toast notifications
+	# Persist Sophia notifications to prevent to immediately disappear from Action Center
+	if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia))
+	{
+		New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Force
+	}
+	New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Sophia -Name ShowInActionCenter -PropertyType DWord -Value 1 -Force
+
+	if (-not (Test-Path -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia))
+	{
+		New-Item -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Force
+	}
+	# Register app
+	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name DisplayName -Value Sophia -PropertyType String -Force
+	# Determines whether the app can be seen in Settings where the user can turn notifications on or off
+	New-ItemProperty -Path Registry::HKEY_CLASSES_ROOT\AppUserModelId\Sophia -Name ShowInSettings -Value 0 -PropertyType DWord -Force
+
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\WinRT.Runtime.dll"
+	Add-Type -AssemblyName "$PSScriptRoot\..\bin\Microsoft.Windows.SDK.NET.dll"
+
 	# Telegram group
 	[xml]$ToastTemplate = @"
 <toast duration="Long" scenario="reminder">
@@ -13701,7 +14077,8 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
+	# PowerShell 7.3 doesn't support yet using own caller app toast notifications. Fixed in PowerShell 7.4.0-preview.1
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier().Show($ToastMessage)
 
 	# Telegram channel
 	[xml]$ToastTemplate = @"
@@ -13728,7 +14105,8 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
+	# PowerShell 7.3 doesn't support yet using own caller app toast notifications. Fixed in PowerShell 7.4.0-preview.1
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier().Show($ToastMessage)
 
 	# Discord group
 	[xml]$ToastTemplate = @"
@@ -13755,7 +14133,8 @@ public static void PostMessage()
 	$ToastXml.LoadXml($ToastTemplate.OuterXml)
 
 	$ToastMessage = [Windows.UI.Notifications.ToastNotification]::New($ToastXML)
-	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("Sophia").Show($ToastMessage)
+	# PowerShell 7.3 doesn't support yet using own caller app toast notifications. Fixed in PowerShell 7.4.0-preview.1
+	[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier().Show($ToastMessage)
 	#endregion Toast notifications
 }
 #endregion Post Actions
@@ -13788,24 +14167,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzP1ACCTPQ/cSuPzUVYOtxta7
-# rWagghYNMIIDAjCCAeqgAwIBAgIQLwqKcRh2AIdMcsPC6T5WYjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAyMTExODE5MDBa
-# Fw0yNTAyMTExODI4MzlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA67st1m0OKI+3jTsfo1FWbnQar8+s
-# U5O3AdzyrsTrJ42GyQXp+lfst6T7r4zU94hvDRT7uSVYINsVP70dGFt1zEpFWu8+
-# I4Xf2HE3lFuzAtuCaT2hOGK1FJ3kmS0lmtoVFcaXBDOaQD/F4QpHoeKUNDIRHgnD
-# MEyEj3jfnApaN0ejKAj3a/Cbtt0pbzlNSRo15wOTYQDbr/3buOheObM1BXp8pKUf
-# Rte36AOkmfJ3uSCqj7xfFzDqOz0tWwAWd+bp8Z7rFMnM4cxT5voLdNUMEa27EBC7
-# oh5PfPRoEa6LbvOhhPtlifDiu4h63u2JsHrXq4kBY1vSwp8RIgX6bZSzdQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUP9g5SBRolE62Q5SeW42MUOFm
+# U+igghYNMIIDAjCCAeqgAwIBAgIQbavYmFy2CZNJLKCFrqb2rzANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAzMDgxOTIxMTRa
+# Fw0yNTAzMDgxOTMwNDRaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Ms3all7BPves/RVET5zATGsyhNs
+# KEn3b/+TFlKXQjfb7WcZBbwnTscwxc4tDlvE9FvMGVA4YXkdOEyO3vcENhJYv76t
+# 3EJUPMsxGjlT8eAaciZa+D44Zx6xUQqXWg4VWbjbVLSyLySvjistRrkH8mnrK3iH
+# Q+LJdJxn1jYG8x4yQNW4N6Quo6z6uR/IsqZhxHyIcZGDIhPOgSgqW2+TbGMSx4ct
+# RligduoYASGLzpqZOxl/69kGZI5xM6aOFOFx/DBTBZqZCC61iqN7pnzo9+6Rm7wC
+# xIJhUlcD8GifeSnOdkdWABVn9cV8/OPRQswfQX9IH+NYp7hD8W5bndaJ6QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFMiV4bmcsVAn31zjZlqT1GNwTp2mMA0GCSqGSIb3DQEBCwUAA4IBAQBiVpyH
-# GbW7Y7e0nFu5cbnbtQuxnabDBGgNRtxopnYnXpw3yTOorUkM1DvgDzLZC4ENWspm
-# FP9m65e/qQJSEHSpHin9zCq6S4Z7groK7xf1cadVkasL+l8V6JQG4kAS9A9ne0Hb
-# z0nvow4RVMCGp18ofJ4d7niVI3wbl1o4JAl0wNhhHOetMOhMbmi37xRlGkeCZYcN
-# 3Mri8iHgHnbATY3xIt2RI0nw7pRGRIB0JS9MLHm4gljLSh3c9XXNwE47rM24rufT
-# +bz1Dku2jIl081ttoI5xoBi+U4UDrfv4XsTkxsagxRDcC/KWVJeLtXGdTOL5FDhe
-# e3oo+fPTFIo1J2wwMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFP1Ykd5cz4vbHIhjQyeNAlJ/JHeVMA0GCSqGSIb3DQEBCwUAA4IBAQAnI6Ec
+# qiEUY4w+x1m4xdzgMxqEnWOlObxiJQ7nAN0A3qBt4MCC6VelaoFG054VBVONm924
+# XDeaLVBXk8WoMECmCfAYX76zCoexPGmv2GIbKksG6ryr2Pz2owMaN8+WBrS0nxxW
+# j7V7kp4r7Vmplrasqje7komKpe12OXxe5RV/yjbjOLkLkkIs21t7vWXpSXejHVp6
+# aq/8kuCkq+rmDg6qX0sjA0R3dUcCAEzznc9CwkvOC5FzbJIhd8IAPMDXGGO2DPJJ
+# CusINc7Z6M734m4DCZaK0fdMFi/69U1Y29L767kdvsJX/NVieTUY953nm+2scCkY
+# eZANAh3GRXvpTvf3MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -13907,31 +14286,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAvCopxGHYAh0xyw8LpPlZiMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBtq9iYXLYJk0ksoIWupvavMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRiFTHs7768RRVdKFQD1a2TcS4WejANBgkqhkiG9w0BAQEF
-# AASCAQB2owGgCq0Pxk5MuMQyHCMgQ+S9ILCy86hZHDx02GEAEnzdR0pHLsgWSYS5
-# 393HC8am21DMW2uOTBcxUf4i5rHl1llUfHNxKts3OMwQQyIhnpxIK+Wm8hwGPsjJ
-# q8pXC1Ot8E6xCZUJyM38Jc6Lk32ugA3spkAPpQ6BthMtbD9CW4OyXVYFIZj/0qsT
-# E9zcXUoX9BDKzygR1J9LXtROENjPjj+6bcOZDdoaKOyxsm/t0wPjIsKNFzOvby1F
-# KUXL/qhw05Dm1t2QRFemnm8f4AEHjBhvtakkJPc4Xrkd9YgAPC80oQVJjdvwLf2x
-# pzogMLxrSxb1gE6+kqIncOeDAVb+oYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSJEUF/NMY2dVUr0yXbMYViui3xlDANBgkqhkiG9w0BAQEF
+# AASCAQAFoPptLV+sg8DjAFBmACJ5w7/dbYHk937TmZwTsFTH5JLoYOpZ6jjYDgdv
+# Lyrh0LKlTKht/zsgYgyXBlKAHOWKyRNKStIO4pDxtcEWiLRYVnsJJ6uOrLBBdjKO
+# YgExm5IiB5WjsL3pwthlevFNuuHI8wDTvzpBeouSHSGO0D822NTNjGXI9/Newk85
+# gqnRR2/Aq8igw/RhE6pneYp3K2SJo0EvIT9QOAYoHkQ1eHa8Z1b4bzMFdBYK0c1V
+# 4hUJVXMA0gqI7p+2rU+UiM8IcmZ+sQcZOTwAO3VTX5N9yZ5XHeagqNCOGmljQCt/
+# 6FzsXDuSfaKDYy5l+vzkD1EcNP6koYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDIxMTE4
-# MjkwN1owLwYJKoZIhvcNAQkEMSIEIKeKHT2QwfalA1bDpRqgHOH5eq2ZLOSdHz9g
-# 4dIbHkJhMA0GCSqGSIb3DQEBAQUABIICAIToOdNPTkof0u1fGtNoGKonmHpP7A5O
-# kN7IkUFNXahykVfZNgUOULrzZqd/JiVkbAKR1jSSYft74km1CC4OCZpP5hxHF4gg
-# SOsd8KNE1y42A9yXgDQMjlJyykjawVKQs+snd9MRaf3y4od4JRUVLUlK1W8kW8FB
-# 7+Us2XJ8sfLQf+mJwDiLuLlCxoXmPuVaLGs+sUOsQpT5SxpRcadPYOB0QBc7ulLZ
-# uenBojvF//iSV5szrlP5Ri8WkigBBD1sCVY7OI0y1kA+rpQ1hypEwGYQ0nolzyia
-# JHhffyyQbY4xmHR4oUi0JScucncvply1zuYhJshK/3Au0ZsWISN+u3G7Sz7kniAl
-# WUD77QzO6FsgJQno4zic3tNQQojonEgAvmVLJrUbehj3QLqiKdHnFLK2fXwAVPj0
-# tu9qzEQWcHL8lSvnzNrGEJoaZrLcetjtKVzGUOxHHiwXcjB1AvxSG14EazgCq6v7
-# QVsfa0+adM045dnRXyRrst15r7DjCerZpPNRO0+J4XWayK0vK7VercC1UM/aZtCR
-# zIS1wes4EcZeCcQ4h8J6D7CqKNFM19NLjo2X5A1FllUx2/YiBqTKDhaNjV6Cxins
-# KYVhNpmBPisr4Vh88UH6Wy96Df37zMbk3Q4RJ6gWVtNxc3WpGF6sHfva8RpBlThU
-# PbzGM4wWyDVX
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMwODE5
+# MzEyOFowLwYJKoZIhvcNAQkEMSIEIMwbA155PBY+zuMejCMYs2HUN/5/PKjItqXk
+# 8PRHBojlMA0GCSqGSIb3DQEBAQUABIICAFHqdnjMSonAzZ3jIRfWRcUV4+ges0mD
+# KJ58XTJU1NIv5f7y6CAMNnkX8WR9zWlCFQCzq3r8hFkIvJaN/gON1IeBTPI/2rE+
+# tPPRcWSvLg8sNmbhHRNzvwFEeP0cjRKBrDI9TTBNM4kWHZajZgSDEWbGFur+/MQ8
+# tqtD6bADR3sY/0lU6ii0KZR7aURDjIGUHI5nj4142+LtjUkcgNMgEEz8SZykO70q
+# UQxVHriwn66UUAHvC/mQ+yCXF0cBUaZsGJCTwLDle5BwFex0q0RjcgqhTWV0Hqon
+# eKHj3nHrxwO3dt4qgYfpC7+6lMeJdYAV034VLLVaa0qwf2FqWdgvHuIFJ+2pueSJ
+# GliKDeDgmA6//gRU0tAn7XZ+xd87gp59MZcoseQRFP2K/TtlIW4I+Jcyolh1o+Fu
+# F7+OVrYiqVI6hi7HTT/Kt2rEfdDh0F7Wrl3pl+cWHJpt0YbdrXiIGycBzDsNuNfM
+# j/6PgJm63kkdSLQsyxWKJOQzUSUtWxly1CQhGAriyOOuiVJh8DcdxWmB7jHnUm2c
+# B08eo3MrznoSUmHqoV+uQkzQ+LcK8k/NaJ0La1uHD2xC+NrqRes+YKtiIPEruXo0
+# gd4nKyOgIndNGIZ/ks1e3/JS+w7cKMj/w6MD3TVQX0GGMcWMDChb1VrYvBdAXuLi
+# hRCntyVYfMwo
 # SIG # End signature block
