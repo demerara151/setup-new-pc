@@ -25,7 +25,7 @@ sudo scoop install windowsdesktop-runtime-lts
 scoop install brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
 
 # Privacy
-scoop install shutup10
+scoop install privacy.sexy shutup10
 
 # <# --- Optional from here. You can disable install by put `#` on top of each line or uncomment out both this line and end line. --- #
 
@@ -39,16 +39,16 @@ scoop install starship terminal-icons zoxide
 scoop install hyper
 
 # Utility (CLI)
-scoop install aria2 bat bottom broot chezmoi czkawka dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
+scoop install aria2 bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
-scoop install brotli deno gitui poetry python rustup-msvc so sqlitebrowser tldr
+scoop install brotli deno gitui poetry python rustup-msvc so sqlitestudio tldr
 
 # Editor
 scoop install helix neovim vscode zenhan
 
 # Security
-scoop install keepassxc gpg4win
+sudo scoop install keepassxc gpg4win
 
 # Network
 scoop install goodbyedpi

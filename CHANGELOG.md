@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2023-03-09
+
+### Added
+
+-   add `delta` to install
+-   add `privacy.sexy` to install
+
+### Changed
+
+-   change `sqlitebrowser` to `sqlitestudio`
+
+### Fixed
+
+-   `gpg4win` require admin privilege to install
+
 ## 2023-02-14
 
 ### Fixed
