@@ -11,7 +11,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.4.0 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.4.1 (PowerShell 7) | Made with $([char]::ConvertFromUtf32(0x1F497)) of Windows | $([char]0x00A9) farag & Inestic, 2014$([char]0x2013)2023"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -141,7 +141,7 @@ PowerPlan -Balanced
 NetworkAdaptersSavePower -Disable
 IPv6Component -Disable
 InputMethod -English
-SetUserShellFolderLocation -Root
+Set-UserShellFolderLocation -Root
 WinPrtScrFolder -Desktop
 RecommendedTroubleshooting -Automatically
 FoldersLaunchSeparateProcess -Enable
@@ -184,7 +184,7 @@ UninstallUWPApps -ForAllUsers
 XboxGameBar -Disable
 XboxGameTips -Disable
 GPUScheduling -Enable
-SetAppGraphicsPerformance
+Set-AppGraphicsPerformance
 
 #endregion Gaming
 

@@ -1,19 +1,19 @@
 ﻿ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = The script supports Windows 11 22H2 version and higher
-UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22621.1344 and higher. Run Windows Update and try again
-UnsupportedLanguageMode                   = The PowerShell session in running in a limited language mode
-LoggedInUserNotAdmin                      = The logged-on user doesn't have admin rights
-UnsupportedPowerShell                     = You're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version
-UnsupportedISE                            = The script doesn't support running via Windows PowerShell ISE
-Win10TweakerWarning                       = Probably your OS was infected via the Win 10 Tweaker backdoor
-SycnexWarning                             = The Windows stability may have been compromised by using Windows10Debloater script. Preventively, reinstall Windows
-Fs00Warning                               = The Windows stability may have been compromised by using "Windows 10 Bloat Remover and Tweaker". Preventively, reinstall Windows
-bin                                       = There are no files in the bin folder. Please, re-download the archive
-RebootPending                             = The PC is waiting to be restarted
-UnsupportedRelease                        = A new version found
+UnsupportedOSBuild                        = \nThe script supports Windows 11 22H2 version and higher
+UpdateWarning                             = \nYour Windows 11 build: {0}.{1}. Supported builds: 22621.1413 and higher. Run Windows Update and try again
+UnsupportedLanguageMode                   = \nThe PowerShell session in running in a limited language mode
+LoggedInUserNotAdmin                      = \nThe logged-on user doesn't have admin rights
+UnsupportedPowerShell                     = \nYou're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version
+UnsupportedISE                            = \nThe script doesn't support running via Windows PowerShell ISE
+Win10TweakerWarning                       = \nProbably your OS was infected via the Win 10 Tweaker backdoor
+SycnexWarning                             = \nThe Windows stability may have been compromised by using Windows10Debloater script. Preventively, reinstall Windows
+Fs00Warning                               = \nThe Windows stability may have been compromised by using "Windows 10 Bloat Remover and Tweaker". Preventively, reinstall Windows
+bin                                       = \nThere are no files in the bin folder. Please, re-download the archive
+RebootPending                             = \nThe PC is waiting to be restarted
+UnsupportedRelease                        = \nA new version found
 CustomizationWarning                      = \nHave you customized every function in the {0} preset file before running Sophia Script?
-DefenderBroken                            = Microsoft Defender broken or removed from the OS
-UpdateDefender                            = Microsoft Defender definitions are out-of-date. Run Windows Update and try again
+DefenderBroken                            = \nMicrosoft Defender broken or removed from the OS
+UpdateDefender                            = \nMicrosoft Defender definitions are out-of-date. Run Windows Update and try again
 ControlledFolderAccessDisabled            = Controlled folder access disabled
 ScheduledTasks                            = Scheduled tasks
 OneDriveUninstalling                      = Uninstalling OneDrive...
@@ -50,14 +50,9 @@ EventViewerCustomViewName                 = Process Creation
 EventViewerCustomViewDescription          = Process creation and command-line auditing events
 RestartWarning                            = Make sure to restart your PC
 ErrorsLine                                = Line
-ErrorsFile                                = File
 ErrorsMessage                             = Errors/Warnings
-Add                                       = Add
-AllFilesFilter                            = All Files (*.*)|*.*
-Browse                                    = Browse
 DialogBoxOpening                          = Displaying the dialog box...
 Disable                                   = Disable
-Enable                                    = Enable
 EXEFilesFilter                            = *.exe|*.exe|All Files (*.*)|*.*
 FolderSelect                              = Select a folder
 FilesWontBeMoved                          = Files will not be moved
@@ -66,13 +61,8 @@ NoData                                    = Nothing to display
 NoInternetConnection                      = No Internet connection
 RestartFunction                           = Please re-run the "{0}" function
 NoResponse                                = A connection could not be established with {0}
-No                                        = No
-Yes                                       = Yes
-Open                                      = Open
-Patient                                   = Please wait...
 Restore                                   = Restore
 Run                                       = Run
-SelectAll                                 = Select all
 Skipped                                   = Skipped
 GPOUpdate                                 = Updating GPO...
 TelegramGroupTitle                        = Join our official Telegram group
@@ -84,24 +74,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjHIJY/EmJwQja/uWUNKjgE/x
-# K22gghYNMIIDAjCCAeqgAwIBAgIQbavYmFy2CZNJLKCFrqb2rzANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAzMDgxOTIxMTRa
-# Fw0yNTAzMDgxOTMwNDRaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Ms3all7BPves/RVET5zATGsyhNs
-# KEn3b/+TFlKXQjfb7WcZBbwnTscwxc4tDlvE9FvMGVA4YXkdOEyO3vcENhJYv76t
-# 3EJUPMsxGjlT8eAaciZa+D44Zx6xUQqXWg4VWbjbVLSyLySvjistRrkH8mnrK3iH
-# Q+LJdJxn1jYG8x4yQNW4N6Quo6z6uR/IsqZhxHyIcZGDIhPOgSgqW2+TbGMSx4ct
-# RligduoYASGLzpqZOxl/69kGZI5xM6aOFOFx/DBTBZqZCC61iqN7pnzo9+6Rm7wC
-# xIJhUlcD8GifeSnOdkdWABVn9cV8/OPRQswfQX9IH+NYp7hD8W5bndaJ6QIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUfx9iVKZ1GVuvnYQ3v9XEoC6v
+# oMmgghYNMIIDAjCCAeqgAwIBAgIQNJML2go6DLtCOPzglwIH7DANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAzMTQyMDIxMjda
+# Fw0yNTAzMTQyMDMxMTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoZ84oqad51sEfzRMinFGNpSRdmTs
+# fnRE0k+dPfT7SwoUrqyvDmXRwp/LJ0sWNg63h04D72Dm3+dDzZD50rNI/fGbtbvl
+# td5cA6dVsjgWXpOs2YuqPPzWQZgtlL7D69OGat05K/H5SYerZHLPPhmmCd4S3b/7
+# Px4d8FuS1P5Tg8Q4y8GLeHTkOZLf4BpcWQrfB76O7nARhuL9m0dU3JLtdOOvBMDW
+# GhH+4sEUZFosZgynSWieyuZazNQ1i9dy52dGYKx5BW88roUWlaFVFaPAZ9cFoD25
+# envh1zSxuVNPfSe9ia202QJ1BBG0jp0k5oafIunrghSDRzsw2p+Xq7YIcQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFP1Ykd5cz4vbHIhjQyeNAlJ/JHeVMA0GCSqGSIb3DQEBCwUAA4IBAQAnI6Ec
-# qiEUY4w+x1m4xdzgMxqEnWOlObxiJQ7nAN0A3qBt4MCC6VelaoFG054VBVONm924
-# XDeaLVBXk8WoMECmCfAYX76zCoexPGmv2GIbKksG6ryr2Pz2owMaN8+WBrS0nxxW
-# j7V7kp4r7Vmplrasqje7komKpe12OXxe5RV/yjbjOLkLkkIs21t7vWXpSXejHVp6
-# aq/8kuCkq+rmDg6qX0sjA0R3dUcCAEzznc9CwkvOC5FzbJIhd8IAPMDXGGO2DPJJ
-# CusINc7Z6M734m4DCZaK0fdMFi/69U1Y29L767kdvsJX/NVieTUY953nm+2scCkY
-# eZANAh3GRXvpTvf3MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFAkRepBXH/r3YotoQWlIdC5h0jwmMA0GCSqGSIb3DQEBCwUAA4IBAQA030aW
+# wVtY85DNNo0xi1m//wT3nLVQN57pAB1ofP2B4WqOvs+ovdhRZJ0gM79Q4WJjQFCl
+# POXgZGNGpf8DcYmjBPdfkCWXOUIwNCcA/rZVYAmlQ/8seTZItzckVJQIJXdoakCB
+# o3CMmYBwMiGn2TFOYHCa1DNhlSwP+KzsLvOZphxXkj9fQWHfZ7nVcoEEMSYnJl5O
+# FLpzVM0juV0ZcZfGEc3BYuVru+5VlcxgNAe0MWUnbcCZIqVctnwqPOPt5W1SycyP
+# biwwDyo84j9ZLSUGVRX0ZmPx5OOfi6BqEpP9izwrZ3p/dmplHSoazFkMf7h+xkuZ
+# l/dnPGnv5GeX8YYNMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -203,31 +193,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBtq9iYXLYJk0ksoIWupvavMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhA0kwvaCjoMu0I4/OCXAgfsMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRcQU/z7eHcCDBKHzf6rbsq1AJeyTANBgkqhkiG9w0BAQEF
-# AASCAQCrkIIT0jVHxO/UCEqNBVyWv6RRcZ0UDFcQubHnKYImUC4eeAn10JdMKqiz
-# QOrN8vl8IfJ1vxdtCdOKaauh0DWbClnpek3id9eoRlhIFtsoSlfyYnIMeZdTcWeU
-# hXaOFm6GIZK6nsBduf144T1LJvFo7JXqUKtuGqfZ0w/oXuEyQQGiINldil+pXbe5
-# AMO70+JQByiH2ii1qY8TbA+mPmMMzi1XYe8VeWGagJHkSy8q47URpPQqmkUGTxgN
-# wb/bn8ZJDnVW0X7eSM/4LcU+f3V0OP4KeAepfUfE3eicIrm01GD54YMS36MR3OZc
-# 2RfXRmzplgUNrTsVlM0jXBNc4bVFoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBQvhl61c/OU2EkiFnAE2iL1wv6t7zANBgkqhkiG9w0BAQEF
+# AASCAQCgEcqyCJm6hD7Xve4SJkFlIcyej3dmellMrO9TKaeZ6RweMhDdNfEH3W6k
+# SbTrYzJIegT1RrVUkWyhBOybWKLeWBbuANnO5hTiltyGnICfKCMTW/nI53UxpF/G
+# /t7OjQq3xVGTxxSeH/QmH0nyI2Or+AuqtjiOvzESv9Z5O2C3ScpCguT5DrRYVIaq
+# B7D7uRjSFEIjzDNyzturUKiJKfQUrffO2vrn7sjaaIRV4EbVlCx41mee+xMjdnVW
+# rKPrgZEUWf68/GoeMYqrDJ4/XcrKSRR07EGBzT5zrnD6Tc5PgRnHY97RIue9LV7d
+# SILeTkueZ+2Xc2dIvPbAc9sLk8vGoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMwODE5
-# MzEyNlowLwYJKoZIhvcNAQkEMSIEIAQTCzDIewrIbj+a9PArcqJTa8hu7Tdz6/9y
-# LmDz1XHgMA0GCSqGSIb3DQEBAQUABIICALoErrD6LYQtjCwzh8/5hDsE3dT/pQA3
-# TRI5MiM11nuFSD6ISwxnXcxsxFPaXmMxCsJHEQaFOLbcsUEIHgIST7+S9FvXpTf3
-# hRyMK5Ot+wfRa3wdoCrq9Wij+6Nkr8a+ua+6DnT/tEp7fZyk/qik2eixCz38WeQW
-# uCZmIIvYd5ieVLLWd4O/dciMDgqqwZYeVb5Frc1u0YqNa1KNXrioOKkQk0+qAf8j
-# YNskD45L4nvb/hjkHkMvqPS3nNEx7/r0cVY9Zbeure6sXntKfe+hPe35N8lEuT7j
-# 7QVyMSHL1USeXYsH1O8hS2b8Yx+CDX47ICNMAa7jp/XPNL0B1/njk149DDs77eJS
-# xbL/sCnWF6n3Gzn+SVpra3GkhH2eZCQ/qgwVNwfqC2WDY8L97i19/gkZHimxIB1G
-# VHYXgOZyv7IPwwDthews+pyhnq8JkhYiABpZk8LyBL4PWFSkDCbouQZflZZiNNsl
-# 6IqQnHFjkduq69wcF14eYkT8Ow3GqXxqE0b5n2laoI15AHm+efxN9wuZjkJKR8aj
-# xU9XPfidXoMIAa5X8eThMnc8UWEnuf2Wmi7Ue/iD4pHVHh0KYPI+UgAB5cQXTMiV
-# y/L49FlbrfJTxv2pVObHhY1bnvg4G1OFW3CclmsVTDLKD2PJLbGw/UvtpVNpZO5H
-# ilCJw2GQoUq7
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMxNDIw
+# MzEzNFowLwYJKoZIhvcNAQkEMSIEICWLxAnirNR2LQcL+hI7VH2mtigPP2cYOYj+
+# klNAQR8nMA0GCSqGSIb3DQEBAQUABIICAAklxtDpWWj18HpzawzekD40rbFPO/Jf
+# QM/x3JORv50Rehty6cdIzyPlGwnN48QQnjsu/xGyE1dnqUNmaawnoBmKulcBSr4A
+# BsBTa2LFDBBmUhPyLJRgh7Je9eb8bwX0gSFcyahhebUqpNojPb8oOv9UF+m+922E
+# SyIdNo26wdXX2smZVXPS6FTZvHWJ5QzXktdLuCJYT1yfcLDsEEFy2QpI1beS2F6Q
+# SZ6HgZIAa1mOeLHPtkK5y3met90ssossAV6lhj8s14cByG/PgmfyR9lY+YH3gFms
+# S4O+en3SAl6jyBOcgLdEDrz7YD4MiaM9EPKYf2dQLPSN+wLynZVBbGA54jGIVETf
+# LGh7wEh1jSkyiUfJFXdfDGcOf7zba5TY4Qu9rAZ2s+EQkQnlL1h1Wzf1lxnqR6Vt
+# /GDsWPPUVZDr/YzfFBeJnRCmsmD/kDlvhRJJDtOWfkPlzyk3E37E7TZaJyDH2gYJ
+# RGkKD2lVy2gHKV65JLsic0slm+GJv1PjEP4oSty1ryKtnYqsb2ZSAkWX/4Nq/svb
+# s7R5krQ433m23rXYKhUQlICd6BM7J3YS6SMPfKX/aQdemapUKtkzVo1DfsHIfCzk
+# Od+hSPcQcFgJJi8y5FpTfWsJTq/6YijMZB1E/abaYGyWvCe/bqPMu96eROyB8ffv
+# 37G06CHBAJM/
 # SIG # End signature block
