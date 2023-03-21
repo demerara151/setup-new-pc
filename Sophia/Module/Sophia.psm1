@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.4.1
-	Date: 14.03.2023
+	Version: v6.4.2
+	Date: 20.03.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -235,45 +235,53 @@ function Checks
 		exit
 	}
 
-	# Check whether the script was run via PowerShell ISE
-	if ($Host.Name -match "ISE")
+	# Check whether the script was run in PowerShell ISE or VS Code
+	if (($Host.Name -match "ISE") -or ($env:TERM_PROGRAM -eq "vscode"))
 	{
-		Write-Warning -Message $Localization.UnsupportedISE
+		Write-Warning -Message ($Localization.UnsupportedHost -f $Host.Name.replace("Host", ""))
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
 		exit
 	}
 
-	# Check whether the OS was infected by the Win 10 Tweaker's trojan
-	# https://win10tweaker.ru
-	if ((Test-Path -Path "HKCU:\Software\Win 10 Tweaker") -or (Test-Path -Path "${env:ProgramFiles(x86)}\Win 10 Tweakеr"))
-	{
-		Write-Warning -Message $Localization.Win10TweakerWarning
-		Start-Process -FilePath "https://youtu.be/na93MS-1EkM"
-		Start-Process -FilePath "https://pikabu.ru/story/byekdor_v_win_10_tweaker_ili_sovremennyie_metodyi_borbyi_s_piratstvom_8227558"
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-		exit
+	# Check whether Windows was broken by 3rd party tweakers and trojans
+	$Tweakers = @{
+		# https://github.com/Sycnex/Windows10Debloater
+		Windows10Debloater  = "$env:SystemDrive\Temp\Windows10Debloater"
+		# https://github.com/Fs00/Win10BloatRemover
+		Win10BloatRemover   = "$env:TEMP\.net\Win10BloatRemover"
+		# https://github.com/arcadesdude/BRU
+		"Bloatware Removal" = "$env:SystemDrive\BRU\Bloatware-Removal*.log"
+		# https://www.youtube.com/GHOSTSPECTRE
+		"Ghost Toolbox"     = "$env:SystemRoot\System32\migwiz\dlmanifests\run.ghost.cmd"
+		# https://github.com/hellzerg/optimizer
+		Optimizer           = "$(Get-ItemPropertyValue -Path `"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders`" -Name `"{374DE290-123F-4565-9164-39C4925E467B}`")\OptimizerDownloads"
+		# https://win10tweaker.ru
+		"Win 10 Tweaker"    = "HKCU:\Software\Win 10 Tweaker"
+		# https://forum.ru-board.com/topic.cgi?forum=5&topic=50519
+		"Modern Tweaker"    = "Registry::HKEY_CLASSES_ROOT\.exts\shell\open\command"
+		# https://boosterx.ru
+		BoosterX            = "$env:ProgramFiles\GameModeX\GameModeX.exe"
 	}
-
-	# Check whether Windows was destroyed by Windows10Debloater
-	# https://github.com/Sycnex/Windows10Debloater
-	if (Test-Path -Path $env:SystemDrive\Temp\Windows10Debloater)
+	foreach ($Tweaker in $Tweakers.Keys)
 	{
-		Write-Warning -Message $Localization.SycnexWarning
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-		exit
-	}
+		if (Test-Path -Path $Tweakers[$Tweaker])
+		{
+			if ($Tweakers[$Tweaker] -eq "HKCU:\Software\Win 10 Tweaker")
+			{
+				Write-Warning -Message $Localization.Win10TweakerWarning
+				Start-Process -FilePath "https://youtu.be/na93MS-1EkM"
+				Start-Process -FilePath "https://pikabu.ru/story/byekdor_v_win_10_tweaker_ili_sovremennyie_metodyi_borbyi_s_piratstvom_8227558"
+				Start-Process -FilePath "https://t.me/sophia_chat"
+				Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+				exit
+			}
 
-	# Check whether Windows was destroyed by Win10BloatRemover
-	# https://github.com/Fs00/Win10BloatRemover
-	if (Test-Path -Path $env:TEMP\.net\Win10BloatRemover)
-	{
-		Write-Warning -Message $Localization.Fs00Warning
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-		exit
+			Write-Warning -Message ($Localization.TweakerWarning -f $Tweaker)
+			Start-Process -FilePath "https://t.me/sophia_chat"
+			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+			exit
+		}
 	}
 
 	# Check whether all necessary files exist in the bin folder
@@ -618,7 +626,7 @@ public static string GetString(uint strId)
 		Get-Service -Name SysMain | Set-Service -StartupType Automatic
 		Get-Service -Name SysMain | Start-Service
 
-		Start-Process -FileName "https://www.outsidethebox.ms/19318/"
+		Start-Process -FilePath "https://www.outsidethebox.ms/19318/"
 	}
 
 	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
@@ -2375,58 +2383,6 @@ function SnapAssist
 		}
 	}
 }
-
-<#
-	.SYNOPSIS
-	Snap layouts
-
-	.PARAMETER Enable
-	Show snap layouts when I hover over a windows's maximaze button
-
-	.PARAMETER Disable
-	Hide snap layouts when I hover over a windows's maximaze button
-
-	.EXAMPLE
-	SnapAssistFlyout -Enable
-
-	.EXAMPLE
-	SnapAssistFlyout -Disable
-
-	.NOTES
-	Current user
-#>
-function SnapAssistFlyout
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Disable"
-		)]
-		[switch]
-		$Disable
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Enable"
-		{
-			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name EnableSnapAssistFlyout -PropertyType DWord -Value 1 -Force
-		}
-		"Disable"
-		{
-			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name EnableSnapAssistFlyout -PropertyType DWord -Value 0 -Force
-		}
-	}
-}
-
 
 <#
 	.SYNOPSIS
@@ -7921,10 +7877,12 @@ function ThumbnailCacheRemoval
 	{
 		"Disable"
 		{
+			New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache" -Name Autorun -PropertyType DWord -Value 0 -Force
 			New-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache" -Name Autorun -PropertyType DWord -Value 0 -Force
 		}
 		"Enable"
 		{
+			New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache" -Name Autorun -PropertyType DWord -Value 3 -Force
 			New-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache" -Name Autorun -PropertyType DWord -Value 3 -Force
 		}
 	}
@@ -13025,6 +12983,78 @@ function DNSoverHTTPS
 	Clear-DnsClientCache
 	Register-DnsClient
 }
+
+<#
+	.SYNOPSIS
+	Local Security Authority
+
+	.PARAMETER Enable
+	Enable Local Security Authority to prevent code injection
+
+	.PARAMETER Disable
+	Disable Local Security Authority
+
+	.EXAMPLE
+	LocalSecurityAuthority -Enable
+
+	.EXAMPLE
+	LocalSecurityAuthority -Disable
+
+	.NOTES
+	Machine-wide
+#>
+function LocalSecurityAuthority
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Enable"
+		)]
+		[switch]
+		$Enable,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Disable"
+		)]
+		[switch]
+		$Disable
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Enable"
+		{
+			# Checking whether x86 virtualization is enabled in the firmware
+			if ((Get-CimInstance -ClassName CIM_Processor).VirtualizationFirmwareEnabled)
+			{
+				New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RunAsPPL -PropertyType DWord -Value 2 -Force
+				New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RunAsPPLBoot -PropertyType DWord -Value 2 -Force
+			}
+			else
+			{
+				try
+				{
+					# Determining whether Hyper-V is enabled
+					if ((Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
+					{
+						New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RunAsPPL -PropertyType DWord -Value 2 -Force
+						New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RunAsPPLBoot -PropertyType DWord -Value 2 -Force
+					}
+				}
+				catch [System.Exception]
+				{
+					Write-Error -Message $Localization.EnableHardwareVT -ErrorAction SilentlyContinue
+				}
+			}
+		}
+		"Disable"
+		{
+			Remove-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RunAsPPL, RunAsPPLBoot -Force -ErrorAction Ignore
+		}
+	}
+}
 #endregion Microsoft Defender & Security
 
 #region Context menu
@@ -13922,7 +13952,7 @@ function UpdateLGPEPolicies
 		return
 	}
 
-	Get-Partition | Where-Object -FilterScript{$_. DriveLetter -eq "C"} | Get-Disk | Get-PhysicalDisk | ForEach-Object -Process {
+	Get-Partition | Where-Object -FilterScript {$_.DriveLetter -eq $([System.Environment]::ExpandEnvironmentVariables($env:SystemDrive).Replace(":", ""))} | Get-Disk | Get-PhysicalDisk | ForEach-Object -Process {
 		Write-Verbose -Message ([string]($_.FriendlyName, '|', $_.MediaType, '|', $_.BusType)) -Verbose
 	}
 
@@ -14323,24 +14353,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUGpC0HokH73xCNlPwL8f6OTeH
-# T56gghYNMIIDAjCCAeqgAwIBAgIQNJML2go6DLtCOPzglwIH7DANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAzMTQyMDIxMjda
-# Fw0yNTAzMTQyMDMxMTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoZ84oqad51sEfzRMinFGNpSRdmTs
-# fnRE0k+dPfT7SwoUrqyvDmXRwp/LJ0sWNg63h04D72Dm3+dDzZD50rNI/fGbtbvl
-# td5cA6dVsjgWXpOs2YuqPPzWQZgtlL7D69OGat05K/H5SYerZHLPPhmmCd4S3b/7
-# Px4d8FuS1P5Tg8Q4y8GLeHTkOZLf4BpcWQrfB76O7nARhuL9m0dU3JLtdOOvBMDW
-# GhH+4sEUZFosZgynSWieyuZazNQ1i9dy52dGYKx5BW88roUWlaFVFaPAZ9cFoD25
-# envh1zSxuVNPfSe9ia202QJ1BBG0jp0k5oafIunrghSDRzsw2p+Xq7YIcQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUSZCtLNs4nIvl/jJvmwEQNWJe
+# cbagghYNMIIDAjCCAeqgAwIBAgIQYZd3ExJ2bbtEaB2WULyOsjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzAzMjAwODQ1NDFa
+# Fw0yNTAzMjAwODU1MThaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqRZfM1uPwOJGnufiDEdKxMr18sqr
+# 6Lw8CdjHCNeI25lzVSAxpusymmmTKOe/jnDnyHW+ciUfN6iuK/S/obtYYpwZbnVr
+# gLSe/Bt1y6MbS38OV+ir1eTzvJzIZFAx9PUpOLTZiiy0xtC8DaNyBsJUlf9iezEl
+# ySXfhejg57rhxE0WKBPvoYJyzAnEAWgijp5fDl3smpAH4AvmNlGQG0rmTJcnN6uh
+# dd4Ymuy5xthoQtc80bbSKIHMZda0VjXAIpJFpf9bv+esJonU46dFlRivkw5F921r
+# nhDhJjP5JywlOLDXs435C79FRVmULLJHEA3FipOXVR9up0Txdt9BQN2GeQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFAkRepBXH/r3YotoQWlIdC5h0jwmMA0GCSqGSIb3DQEBCwUAA4IBAQA030aW
-# wVtY85DNNo0xi1m//wT3nLVQN57pAB1ofP2B4WqOvs+ovdhRZJ0gM79Q4WJjQFCl
-# POXgZGNGpf8DcYmjBPdfkCWXOUIwNCcA/rZVYAmlQ/8seTZItzckVJQIJXdoakCB
-# o3CMmYBwMiGn2TFOYHCa1DNhlSwP+KzsLvOZphxXkj9fQWHfZ7nVcoEEMSYnJl5O
-# FLpzVM0juV0ZcZfGEc3BYuVru+5VlcxgNAe0MWUnbcCZIqVctnwqPOPt5W1SycyP
-# biwwDyo84j9ZLSUGVRX0ZmPx5OOfi6BqEpP9izwrZ3p/dmplHSoazFkMf7h+xkuZ
-# l/dnPGnv5GeX8YYNMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFMNIo/QkCNFNuvYOwQR5ReTLtWS6MA0GCSqGSIb3DQEBCwUAA4IBAQCag3eC
+# 2rWzm5qYowalBcf14aBi/sTU54PE3Tg369IG2/S5H9tgmUD9xP3LgIctMUVS7gxX
+# zl+ZJy7gdV7wRd2y0U/rI5V/lcXC3C5v17yx33NvsG2/xxkGpX6slfR7KG4sHvBs
+# CNmLwdzJsTXG3Pdv3JmlTbWfAUsfeNks2Ipln/vSJqR/XE1KJcGybwoXBJj/FhAv
+# Om33pnjXCdOWTtY3fxJqkdKH88FinQRrunJrV90ypSSItyH1WGi2QpwPOxHYCPw2
+# zCOT0vSPDrcMFNzcMTLUsPqfuiHQFUs5z46fZt4vkpXiCW85WD7J23IIIxxPqjNw
+# 9qHobW+OnjpoXi3qMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -14442,31 +14472,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhA0kwvaCjoMu0I4/OCXAgfsMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBhl3cTEnZtu0RoHZZQvI6yMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBRoxbCiBIA1bLpM4G13VAhntlUgEDANBgkqhkiG9w0BAQEF
-# AASCAQBiknSqJdhWTeAAwFyBeRCkD2oo/ldX2PU+nsfnO0LLatu7cyptNKesl0eC
-# ia08iLi59KC/ero83lyizI4ZEfHL3241P6JEjgMFgCCifNe74E7No5bhjruPAE+1
-# zQyBtyjEnsJQUAEFaQlcTQGpq0usl0RJ7qDN7aSrq4kScYbwqqE6W1TndNGlY75i
-# 85fom3iW8MKbaEf57uO1/MUWOdlaMhCo6NTMERRN/P615dYipfiZVgHOXsh3EOG7
-# V4ByCE2dTjNV1fzAnZegcU8JNnDGCeBSDMcZU3AlIrBKrhTuMNz2lhkNfCJmLWoD
-# 8euFKUQoXJJsPJCbV/VtMWjV9QhfoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBRdHrPfhgwPTi4hu6/Gs/5yAt3b5TANBgkqhkiG9w0BAQEF
+# AASCAQBIQIkTEVVIeWumK4OtL5PcmEGgus9a2tg5Wpvobi5SC8TPkSl/6AU0fwoF
+# m7PJKGr/oWGZFIc2WfaTiYF5e29RxdNotkSCvMxkI5MY4vvhc23ZobMP3Q3lf8DD
+# 0Y//MHGGXaVA0irOB8SJzHezvQZyLAhRGCz6aibZwxKNJ7o/CWMd2krlLl7guo9o
+# XdSA7nWVVGLvFOXl5nMoQWELX0R3B/wk8UNRbxe2WsqCeua6G3sd0aIXln6+wbE5
+# K+WXhKe51y8j4zBrbwiJMun+KCP3jEWI9yHLQCXg6Pz+WaADm6xxoL2RMchSf5h4
+# Jqui5OzxDDuqOXaPDBd46CsSgzrfoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMxNDIw
-# MzEzNVowLwYJKoZIhvcNAQkEMSIEIKNKzRfdMP9bEOTsS+DULQJz23L2bkTEXRpz
-# 15dIdxd4MA0GCSqGSIb3DQEBAQUABIICAFIovxBxHIq1CZvp6tQBgOLppHH7ITpv
-# K3Bm4Y4uPpfmhfQT6BkDGZ8XV6NQcFTwowq10d4P/T16zgtNAQbi3Y7kpxzHmr1Z
-# tGI4/WrVIT5TpAJDxPyXhzNqM8QlD2nqgIYEEopICju5l28fnAL1qAfWyUITw5dt
-# I3Fw26SOBMKYRdBslEeTWYIzBjU5IqKU/3FLqQYSfFT8kAkUAHnu1gjJro4kuET6
-# QCvCy4Df61WbusbUi1GM13+jeXcumvDISJKUriLrA3nZvsk0f+R9OBCOxZMjUu7I
-# csWt1o5m8xgkc0umo+XfvDfNNp6IHOiT0zkWnsjsVJbgoDd/m9QAvdHO7AMw0LrW
-# HIjqGoGO2yFlfJVSmGASkRfFj5WjGDpiWNZhmhbvyQSgiRB3333wb1i4S18wvR2e
-# kAVfewm5yyYaB/ks/Lc/yk8gMKrt7S7cjYI02mTJsMchwv3w0+u6FA/Jgg1LtUBo
-# qu4zLB9c2hbpFvohcJo4bVKInIuWKycK13P7JXFR8seb9YcN3V7r/7qqDdQp6H6y
-# Foh+hykOKXbAh4qB/M39Fryy2fp/onhLnBPOQsBuMoL2ri1jwevE4OEWqVGO3nbe
-# ViJCDxRYNfb7wXpNbBNh9pVChi8tPvX71bA+CkuWco2ronvilKfVCcqfgmMZuuUi
-# IIMFDOiXeNdj
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMyMDA4
+# NTU1M1owLwYJKoZIhvcNAQkEMSIEILwB3G+zpMNtVycw9l7ItXt/MV65yAMzKYWG
+# kENDHtKLMA0GCSqGSIb3DQEBAQUABIICAIrMu23bVIMYVxwNAH4Swyek/3r5HeUD
+# qztQ4XhizPYGJcc8N68clTIwNJJpjVU3OAJoiMhcGoQFN57q0kEUs8Mgke8JRT87
+# 2fqPceGSyTlStWePUCPnewPFE+7s9gYfKGEuLh58vT401Cl0NtdF2MHumq2MeoD7
+# nDziJdlbRNoCUrBS+UODff4inqzcy/Ein+bq6FmLe/q6wqKbdaJnFymIiGMdJnM6
+# cqnN2mVhGJ8AgcC873LZFJ4OK014XoAU8ca/uASf3e0uisz4yiFesGgMiCQPHV/K
+# eiKDc/EBpVT2sT0SZuFgyF64FlWCNDuXMnxqyFaUezXSp6MoAmzmom7D81eG7ss0
+# uKwHUv8fD8rm9qXwOBqlUtdmzWMe5D800XfKKo962hpKGNu45lPeAGBEehdJKzv+
+# j6JDnsxiyDuaWLqbjeANUEppH9oKLaZgu30g/FBd5xjaCguipxT7vO4q+9nd07K7
+# QLNjZ7mJA/E9eXK5Z45r8v84bW+iRfLPDY+i4LIHTdNiadhk+Mn8h9oVaVRcMh/8
+# b0HDKyTbmW/swaEIyWFett70glBfghV0xn7K0JTJAj1Mlxzl9mvXb8X+AtSmhkA4
+# wLqdIKuN2ifWPiV+kvSjGM8N2s0XT5RTNOHQMVjrUyRfab1C4t48zUrzi4xTddPZ
+# rvRds8AhTXoK
 # SIG # End signature block
