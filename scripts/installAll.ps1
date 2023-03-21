@@ -42,7 +42,7 @@ scoop install hyper
 scoop install aria2 bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
-scoop install brotli deno gitui poetry python rustup-msvc so sqlitestudio tldr
+scoop install brotli deno gitui poetry python rustup so sqlitestudio tldr
 
 # Editor
 scoop install helix neovim vscode zenhan
@@ -63,7 +63,7 @@ scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-d
 scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
 
 # Nerd Fonts
-sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono CascadiaCode-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
+sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
 sudo scoop install icaros-np --global
