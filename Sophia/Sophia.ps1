@@ -92,8 +92,7 @@ MergeConflicts -Show
 OpenFileExplorerTo -ThisPC
 FileExplorerCompactMode -Disable
 OneDriveFileExplorerAd -Hide
-SnapAssistFlyout -Enable
-SnapAssist -Disable
+SnapAssist -Enable
 FileTransferDialog -Detailed
 RecycleBinDeleteConfirmation -Enable
 QuickAccessRecentFiles -Hide
