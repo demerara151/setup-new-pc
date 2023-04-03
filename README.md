@@ -4,10 +4,10 @@
 
 ### こんな人におすすめ
 
--   余計なプログラムやファイルは出来るだけ排除したい
--   Microsoft 製品は一部を除いて基本的に使わない
--   プライバシーとセキュリティを強化したい
--   PC のスペックが低い、または回線速度に問題がある
+- 余計なプログラムやファイルは出来るだけ排除したい
+- Microsoft 製品は一部を除いて基本的に使わない
+- プライバシーとセキュリティを強化したい
+- PC のスペックが低い、または回線速度に問題がある
 
 ### Screenshot
 
@@ -17,43 +17,45 @@
 
 ## Table of Contents
 
--   [Table of Contents](#table-of-contents)
--   [Requirements](#requirements)
--   [Dependencies](#dependencies)
--   [Before Get Started](#before-get-started)
-    -   [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
--   [Installation](#installation)
-    -   [スクリプトの編集](#スクリプトの編集)
--   [Usage](#usage)
-    -   [Sophia Script for Windows 11](#sophia-script-for-windows-11)
-    -   [メインスクリプトの実行](#メインスクリプトの実行)
-    -   [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
--   [Personal Settings](#personal-settings)
-    -   [各種設定ファイルの配置](#各種設定ファイルの配置)
-    -   [不要なサービスの停止](#不要なサービスの停止)
-    -   [Hyper-V の有効化](#hyper-v-の有効化)
--   [Note](#note)
--   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
-    -   [Set LibreWolf as the default browser](#set-librewolf-as-the-default-browser)
-    -   [Update](#update)
-    -   [拡張機能の導入](#拡張機能の導入)
-    -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
-        -   [追加フィルタ（Optional）](#追加フィルタoptional)
-    -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
--   [日本語フォント](#日本語フォント)
--   [TODO](#todo)
+<!--toc:start-->
+
+- [Requirements](#requirements)
+- [Dependencies](#dependencies)
+- [Before Get Started](#before-get-started)
+  - [Microsoft アカウントの作成を回避](#microsoft-アカウントの作成を回避)
+- [Installation](#installation)
+  - [スクリプトの編集](#スクリプトの編集)
+- [Usage](#usage)
+  - [Sophia Script for Windows 11](#sophia-script-for-windows-11)
+  - [メインスクリプトの実行](#メインスクリプトの実行)
+  - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
+- [Personal Settings](#personal-settings)
+  - [各種設定ファイルの配置](#各種設定ファイルの配置)
+  - [不要なサービスの停止](#不要なサービスの停止)
+  - [Hyper-V の有効化](#hyper-v-の有効化)
+- [Note](#note)
+- [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+  - [Set LibreWolf as the default browser](#set-librewolf-as-the-default-browser)
+  - [Update](#update)
+  - [拡張機能の導入](#拡張機能の導入)
+  - [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
+    - [追加フィルタ（Optional）](#追加フィルタoptional)
+  - [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
+- [日本語フォント](#日本語フォント)
+- [TODO](#todo)
+<!--toc:end-->
 
 ---
 
 ## Requirements
 
--   Windows 11 Home | Pro | EnterPrise | Insider
+- Windows 11 Home | Pro | EnterPrise | Insider
 
 ## Dependencies
 
--   [Scoop]
--   [O&O ShutUp10]
--   [Sophia Script for Windows]
+- [Scoop]
+- [O&O ShutUp10]
+- [Sophia Script for Windows]
 
 ---
 
@@ -97,17 +99,17 @@ git clone https://github.com/demerara151/setup-new-pc.git
 
 ### スクリプトの編集
 
--   [Sophia.ps1](/Sophia/Sophia.ps1)
+- [Sophia.ps1](/Sophia/Sophia.ps1)
 
-    <!-- TODO: Write how to edit guide. -->
+  <!-- TODO: Write how to edit guide. -->
 
-    メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
+  メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
 
--   [installAll.ps1](/scripts/installAll.ps1)
+- [installAll.ps1](/scripts/installAll.ps1)
 
-    <!-- TODO: Write examples. -->
+  <!-- TODO: Write examples. -->
 
-    メモ帳で開き、不要なアプリが含まれていないか確認する。不要なアプリ名を削除、もしくは、各行のコマンドの先頭に `#` を付けることでコマンドの実行を防ぐ
+  メモ帳で開き、不要なアプリが含まれていないか確認する。不要なアプリ名を削除、もしくは、各行のコマンドの先頭に `#` を付けることでコマンドの実行を防ぐ
 
 ---
 
@@ -126,11 +128,11 @@ sudo ~/setup-new-pc/Sophia/Sophia.ps1
 
 プログラムが終了し、PC を再起動するようメッセージが表示されたら、PC を再起動
 
--   実行に失敗した場合、
+- 実行に失敗した場合、
 
-    1. `Windows Update` の実行
-    2. `PoserShell`、または PC の再起動
-    3. `PowerShell` のバージョンがスクリプトの要件を満たしているか確認
+  1. `Windows Update` の実行
+  2. `PoserShell`、または PC の再起動
+  3. `PowerShell` のバージョンがスクリプトの要件を満たしているか確認
 
 ### メインスクリプトの実行
 
@@ -146,9 +148,9 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 アプリのインストール完了後、自動的に以下のアプリが立ち上がるので、以下のように設定
 
--   [O&O ShutUp10]
+- [O&O ShutUp10]
 
-    -   `Actions` から `Recommended and somewhat recommended settings` を選択
+  - `Actions` から `Recommended and somewhat recommended settings` を選択
 
 ## Personal Settings
 
@@ -180,18 +182,18 @@ chezmoi apply
 
 個人的に全く使わない以下のサービスをまとめて停止します
 
--   印刷
--   ファックス
--   IPv6
--   ダイレクトアクセス
--   位置情報
--   IoT 家電
--   デジカメ、スキャナー
--   リモートレジストリ
--   Windows 検索
--   Microsoft Edge 自動アップデート
--   ネットワークデータ使用状況
--   Xbox gaming
+- 印刷
+- ファックス
+- IPv6
+- ダイレクトアクセス
+- 位置情報
+- IoT 家電
+- デジカメ、スキャナー
+- リモートレジストリ
+- Windows 検索
+- Microsoft Edge 自動アップデート
+- ネットワークデータ使用状況
+- Xbox gaming
 
 ```powershell
 sudo ~/setup-new-pc/scripts/stopService.ps1
@@ -211,7 +213,7 @@ sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
 
 ## Note
 
--   Microsoft Edge をアンインストールすると、ログイン時にフリーズして PC が使用できなくなる不具合に遭遇。開発環境だけの問題かもしれないけど、怖いのでそのままにしておくことにする
+- `Microsoft Edge` は、アンインストール可能だが、`Microsoft Edge WebView2 Runtime` は、Windows を使う上で必須のコンポーネントなのでアンインストールできない。万が一アンインストールしてしまうと、Windows が起動しない等の不具合が発生する場合がある。
 
 ---
 
@@ -242,13 +244,13 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 > 💡`uBlockOrigin` は、最初からインストールされています
 
--   [DarkReader] 常にダークモード
+- [DarkReader] 常にダークモード
 
--   [LibRedirect] プライバシーを尊重するサイトへ自動リダイレクト
+- [LibRedirect] プライバシーを尊重するサイトへ自動リダイレクト
 
--   [KeePassXC-Browser] パスワード管理
+- [KeePassXC-Browser] パスワード管理
 
-    導入手順: <https://keepassxc.org/docs/KeePassXC_GettingStarted.html#_setup_browser_integration>
+  導入手順: <https://keepassxc.org/docs/KeePassXC_GettingStarted.html#_setup_browser_integration>
 
 ### `uBlockOrigin` の上級者設定
 
@@ -256,18 +258,18 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 2. デフォルトのフィルターを全て適用
 3. `My rules` タブに、次の 2 行を追加
 
-    ```
-    * * 3p-frame block
-    * * 3p-script block
-    ```
+   ```
+   * * 3p-frame block
+   * * 3p-script block
+   ```
 
 #### 追加フィルタ（Optional）
 
--   AdGuard Social Media
--   [oisd]
--   [1Hosts Pro]
--   [Energized Ultimate Protection]
--   [Energized Xtreme Extension]
+- AdGuard Social Media
+- [oisd]
+- [1Hosts Pro]
+- [Energized Ultimate Protection]
+- [Energized Xtreme Extension]
 
 > PC のスペックが低い場合、これらのフィルターを全て適用するとかなり重たくなります。特に、`Energized ~` は強力ですがその分重たくなるので、様子を見ながら適度に適用してください。初めは `oisd` だけ適用するのがよさそうです
 
@@ -286,12 +288,12 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 必要に応じて手動でインストール
 
--   [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll): 現在 `foobar2000` のプレイリストにフォント適用中
+- [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll): 現在 `foobar2000` のプレイリストにフォント適用中
 
 ## TODO
 
--   [privacy.sexy](https://privacy.sexy) の利用方法の追加
--   [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を `README.md` に追加
+- [privacy.sexy](https://privacy.sexy) の利用方法の追加
+- [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を `README.md` に追加
 
 <!-- Link Reference -->
 
