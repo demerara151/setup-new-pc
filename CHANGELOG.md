@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2023-04-02
+
+### Fixed
+
+-   fix duplicate link in README.
+
+### Changed
+
+-   remove `AutoHotKey` section from README and add it to the config repo.
+
 ## 2023-03-21
 
 ### Changed
@@ -155,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--   `AutoHotkey` のバージョンを更新。[AutoHokey](/README.md/#autohotkey)
+-   `AutoHotkey` のバージョンを更新。
 -   update `Sophia Script for Windows 11 v6.1.5`
 -   実行環境の `Powershell` のバージョンをデフォルトの `5.1(Windows Powershell)` から `7.2(Powershell)` に変更
 -   `scoop` の導入時に `pwsh` (7.2) もインストールするように

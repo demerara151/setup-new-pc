@@ -34,13 +34,12 @@
     -   [Hyper-V の有効化](#hyper-v-の有効化)
 -   [Note](#note)
 -   [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
-    -   [Installation](#installation-1)
+    -   [Set LibreWolf as the default browser](#set-librewolf-as-the-default-browser)
     -   [Update](#update)
     -   [拡張機能の導入](#拡張機能の導入)
     -   [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
         -   [追加フィルタ（Optional）](#追加フィルタoptional)
     -   [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
--   [AutoHotkey](#autohotkey)
 -   [日本語フォント](#日本語フォント)
 -   [TODO](#todo)
 
@@ -92,7 +91,6 @@ scoop install 7zip mingit gsudo pwsh
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
-
 ```
 
 一度 `Windows PowerShell` を終了し、<kbd>Windows</kbd> キーを押して `PowerShell Core` を探して起動
@@ -100,11 +98,13 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ### スクリプトの編集
 
 -   [Sophia.ps1](/Sophia/Sophia.ps1)
+
     <!-- TODO: Write how to edit guide. -->
 
     メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
 
 -   [installAll.ps1](/scripts/installAll.ps1)
+
     <!-- TODO: Write examples. -->
 
     メモ帳で開き、不要なアプリが含まれていないか確認する。不要なアプリ名を削除、もしくは、各行のコマンドの先頭に `#` を付けることでコマンドの実行を防ぐ
@@ -122,7 +122,6 @@ git clone https://github.com/demerara151/setup-new-pc.git
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 sudo ~/setup-new-pc/Sophia/Sophia.ps1
-
 ```
 
 プログラムが終了し、PC を再起動するようメッセージが表示されたら、PC を再起動
@@ -139,7 +138,6 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 ```powershell
 ~/setup-new-pc/scripts/installAll.ps1
-
 ```
 
 必要なアプリがまとめてインストールされます
@@ -162,23 +160,20 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 ```powershell
 chezmoi init https://codeberg.org/Gambling1594/dotfiles.git
-
 ```
 
 中には暗号化されているファイルもあり復号できずにエラーとなるため、適用する前に削除します
 
 ```powershell
 Get-ChildItem ~/.local/share/chezmoi -Include encrypted_* -Recurse | Remove-Item
-
 ```
 
-次に、実際に設定ファイルをあるべき場所に配置します。これは、以前まで使っていた `~/.config` フォルダーではなく、プログラムによって決められたデフォルトの設定ファイルの場所にファイルを展開します
+次に、設定ファイルをプログラムによって決められたデフォルトの場所に配置します
 
 > ⚠️ 全ての既存の設定ファイルの内容が上書きされます。既存の設定ファイルがあるならバックアップをとっておくか、適用したくない設定ファイルは事前に `~/.local/share/chezmoi` の中から削除しておいてください
 
 ```powershell
 chezmoi apply
-
 ```
 
 ### 不要なサービスの停止
@@ -200,7 +195,6 @@ chezmoi apply
 
 ```powershell
 sudo ~/setup-new-pc/scripts/stopService.ps1
-
 ```
 
 > 詳細は、[stopService.ps1](/scripts/stopService.ps1) 及び、[windows-service](/docs/windows-service.md) で確認できます
@@ -211,7 +205,6 @@ BIOS で「ハードウェアの仮想化サポート」が有効になってい
 
 ```Powershell
 sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
-
 ```
 
 > もし、_Windows Insider Program_ への参加が条件で `Hyper-V` が実行できない場合は、[OfflineInsiderEnroll] をインストール（`scoop install offlineinsiderenroll`）することで、Microsoft アカウントの作成を回避して _Windows Insider Program_ へ参加可能
@@ -224,16 +217,13 @@ sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
 
 ## ブラウザ設定（LibreWolf）
 
-### Installation
-
-> ! winget の使用を中断しているため、手動でのインストールになります
+### Set LibreWolf as the default browser
 
 まず、ポータブル版を今まで通りインストールします。
 
 ```powershell
 scoop install librewolf
 librewolf.exe
-
 ```
 
 そのポータブル版で <https://librewolf.net/installation/windows> を開いて、最新版のインストーラーをダウンロードします
@@ -253,7 +243,9 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 > 💡`uBlockOrigin` は、最初からインストールされています
 
 -   [DarkReader] 常にダークモード
+
 -   [LibRedirect] プライバシーを尊重するサイトへ自動リダイレクト
+
 -   [KeePassXC-Browser] パスワード管理
 
     導入手順: <https://keepassxc.org/docs/KeePassXC_GettingStarted.html#_setup_browser_integration>
@@ -263,6 +255,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 1. 設定画面の `I am an advanced user` にチェック
 2. デフォルトのフィルターを全て適用
 3. `My rules` タブに、次の 2 行を追加
+
     ```
     * * 3p-frame block
     * * 3p-script block
@@ -288,24 +281,6 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 | browser.tabs.loadBookmarksInTabs                   |  false  | true | ブックマークを常に新しいタブで開く |
 
 ---
-
-## [AutoHotkey](/.config/AutoHotkey/KeySwapV2.ahk)
-
--   10/21 更新: _AutoHotkey のバージョンを `Version 1.1.34.04` から `Version 2.0-beta.12` へアップグレード。_ 既存のバージョンとの互換性はないため、以前のスクリプトを削除。スクリプトファイル、及び実行ファイルのパスも変わっているため注意
-
--   12/22 更新: AutoHotkey が正式にバージョン 2.0 に昇格したため、名前が AutoHotkey V2 から AutoHotkey へ戻りました
-
-> 参照: <https://lexikos.github.io/v2/docs/AutoHotkey.htm>
-
-英語配列キーボード向けのキーの挙動変更。入れ替えるキーは以下の 2 つ
-
-|  1  | <kbd>;</kbd>  セミコロン | <kbd>:</kbd>  コロン |
-| :-: | :----------------------- | :------------------- |
-|  2  | <kbd>CapsLock</kbd>      | <kbd>ESC</kbd>       |
-
-> `chezmoi init <repo>` でスクリプトを配置していたなら、PC の再起動後に既定のプログラムを設定するようポップアップが出るので、`~/scoop/apps/autohotkey/current/v2/AutoHotkey64.exe` を選択
-
-> または、Windows の設定 > アプリ > 既定のアプリで、ファイルの種類の既定値を設定する。上部の窓に、`.ahk`と入力して上記のプログラムをエクスプローラーから探して選択
 
 ## 日本語フォント
 
