@@ -34,13 +34,13 @@
   - [不要なサービスの停止](#不要なサービスの停止)
   - [Hyper-V の有効化](#hyper-v-の有効化)
 - [Note](#note)
-- [ブラウザ設定（LibreWolf）](#ブラウザ設定librewolf)
+- [ブラウザ設定](#ブラウザ設定)
   - [Set LibreWolf as the default browser](#set-librewolf-as-the-default-browser)
   - [Update](#update)
-  - [拡張機能の導入](#拡張機能の導入)
-  - [`uBlockOrigin` の上級者設定](#ublockorigin-の上級者設定)
-    - [追加フィルタ（Optional）](#追加フィルタoptional)
-  - [about:config で変更したい箇所](#aboutconfig-で変更したい箇所)
+  - [Addons](#addons)
+  - [uBlockOrigin](#ublockorigin)
+    - [Additional filters](#additional-filters)
+  - [Advanced preferences](#advanced-preferences)
 - [日本語フォント](#日本語フォント)
 - [TODO](#todo)
 <!--toc:end-->
@@ -150,7 +150,7 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 - [O&O ShutUp10]
 
-  - `Actions` から `Recommended and somewhat recommended settings` を選択
+  `Actions` から `Recommended and somewhat recommended settings` を選択
 
 ## Personal Settings
 
@@ -213,15 +213,17 @@ sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
 
 ## Note
 
-- `Microsoft Edge` は、アンインストール可能だが、`Microsoft Edge WebView2 Runtime` は、Windows を使う上で必須のコンポーネントなのでアンインストールできない。万が一アンインストールしてしまうと、Windows が起動しない等の不具合が発生する場合がある。
+- `Microsoft Edge` そのものは、アンインストールできます。しかし、`Microsoft Edge WebView2 Runtime` は、Windows を使う上で必須のコンポーネントなのでアンインストールできません。万が一アンインストールしてしまうと、Windows が起動しない等の不具合が発生する恐れがあります
 
 ---
 
-## ブラウザ設定（LibreWolf）
+## ブラウザ設定
+
+LibreWolf の各種設定内容について
 
 ### Set LibreWolf as the default browser
 
-まず、ポータブル版を今まで通りインストールします。
+まず、ポータブル版を今まで通りインストールします
 
 ```powershell
 scoop install librewolf
@@ -232,6 +234,12 @@ librewolf.exe
 
 インストールが終わったら Windows の設定を開き、アプリ > 既定のアプリ で LibreWolf を選択し、一番上にある「既定値に設定」をクリックして LibreWolf を既定のアプリに設定します
 
+LibreWolf を既定のアプリに設定できたなら、`scoop` でインストールした方はアンインストールして構いません
+
+```powershell
+scoop uninstall librewolf
+```
+
 ### Update
 
 LibreWolf 自身には自動アップデート機能は付いていません。アップデートする際は、毎回上記のページを開いて最新版をダウンロードし、インストーラーを実行する必要があります
@@ -240,19 +248,25 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 [librewolf updater extension]: https://addons.mozilla.org/en-US/firefox/addon/librewolf-updater/
 
-### 拡張機能の導入
+### Addons
+
+私が現在利用している拡張機能の一覧です。LibreWolf では、拡張機能は出来る限り最小限に抑えることが推奨されています
+
+<https://librewolf.net/docs/addons/>
 
 > 💡`uBlockOrigin` は、最初からインストールされています
 
 - [DarkReader] 常にダークモード
-
 - [LibRedirect] プライバシーを尊重するサイトへ自動リダイレクト
-
 - [KeePassXC-Browser] パスワード管理
 
   導入手順: <https://keepassxc.org/docs/KeePassXC_GettingStarted.html#_setup_browser_integration>
 
-### `uBlockOrigin` の上級者設定
+> `HTTPS Everywhere`、`Privacy Badger`、`CookieAutoDelete` 等に代表されるプライバシー・セキュリティ関連の拡張機能は、いずれも不要です。LibreWolf または、`uBlockOrigin` が既に同等あるいはそれ以上の機能を有しています。
+
+### uBlockOrigin
+
+ダイナミックフィルタリングを利用するため、上級者機能を有効化します
 
 1. 設定画面の `I am an advanced user` にチェック
 2. デフォルトのフィルターを全て適用
@@ -263,24 +277,29 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
    * * 3p-script block
    ```
 
-#### 追加フィルタ（Optional）
+> この機能は初心者向けではありません。利用する際は、[ドキュメント](https://github.com/gorhill/uBlock/wiki/Advanced-user-features)を注意深く読み込んでからにしてください。
+
+#### Additional filters
+
+私が現在 `uBlockOrigin` で適用している追加のフィルタリストです
 
 - AdGuard Social Media
 - [oisd]
 - [1Hosts Pro]
-- [Energized Ultimate Protection]
-- [Energized Xtreme Extension]
+- [antipopads:reborn]
 
-> PC のスペックが低い場合、これらのフィルターを全て適用するとかなり重たくなります。特に、`Energized ~` は強力ですがその分重たくなるので、様子を見ながら適度に適用してください。初めは `oisd` だけ適用するのがよさそうです
+> PC のスペックが低い場合、これらのフィルターを全て適用するとかなり重たくなります。様子を見ながら適度に適用してください。初めは `oisd` だけ適用するのがよさそうです
 
-> 2023/03/27: 現在 `Energized Protection` のソースファイルが行方不明です。代わりに [antipopads:reborn](https://github.com/AdroitAdorKhan/antipopads-re) を利用しています。
+### Advanced preferences
 
-### about:config で変更したい箇所
+個人的に `about:config` で変更したい設定項目
 
 | key                                                | default | new  | description                        |
 | :------------------------------------------------- | :-----: | :--: | :--------------------------------- |
 | network.http.max-persistent-connections-per-server |    6    |  8   | 1 つのサーバーに対する最大接続数   |
 | browser.tabs.loadBookmarksInTabs                   |  false  | true | ブックマークを常に新しいタブで開く |
+
+> LibreWolf の場合、初めからプライバシーやセキュリティに関する各種の上級設定が変更されています。それ以外の上記のような変更は単なる好みです。
 
 ---
 
@@ -319,5 +338,4 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 [oisd]: https://oisd.nl/
 [1hosts pro]: https://github.com/badmojr/1Hosts
-[energized ultimate protection]: https://filterlists.com/lists/energized-ultimate-protection
-[energized xtreme extension]: https://filterlists.com/lists/energized-xtreme-extension
+[antipopads:reborn]: https://github.com/AdroitAdorKhan/antipopads-re
