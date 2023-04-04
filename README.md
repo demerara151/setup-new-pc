@@ -39,6 +39,7 @@
   - [Update](#update)
   - [Addons](#addons)
   - [uBlockOrigin](#ublockorigin)
+    - [Block third-party remote fonts](#block-third-party-remote-fonts)
     - [Additional filters](#additional-filters)
   - [Advanced preferences](#advanced-preferences)
 - [日本語フォント](#日本語フォント)
@@ -279,6 +280,17 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 > この機能は初心者向けではありません。利用する際は、[ドキュメント](https://github.com/gorhill/uBlock/wiki/Advanced-user-features)を注意深く読み込んでからにしてください。
 
+#### Block third-party remote fonts
+
+`My Filters` のタブに、以下の行を追加することで、サードパーティーのリモートフォントをブロックできます
+
+```
+! Block all third-party remote fonts
+*$font,third-party
+```
+
+> 行の先頭に `!` を付けるとコメントになります
+
 #### Additional filters
 
 私が現在 `uBlockOrigin` で適用している追加のフィルタリストです
@@ -305,9 +317,11 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 ## 日本語フォント
 
-必要に応じて手動でインストール
+プログラミング等とは関係のない一般的な日本語フォントです。インストールは手動になります
 
-- [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll): 現在 `foobar2000` のプレイリストにフォント適用中
+- [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
+
+> プログラミング用日本語フォントは、`IBM Plex Sans JP` を利用しています。`sudo scoop install IBMPlexSans-JP --global` でインストールできます
 
 ## TODO
 
