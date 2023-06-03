@@ -247,6 +247,8 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 幸い、非公式ですが、アップデートがあったら知らせてくれる拡張機能 [LibreWolf Updater extension] があります。毎日ページを開いて確認するのが面倒な人は、こちらの拡張機能の利用を検討してください
 
+> 6/1 にリリースされた `LibreWolf 113.0.2-1` からは、初回インストール時、または更新時に、`LibreWolf Updater extension` をブラウザ本体と同時にインストールできるようになりました。加えて、スケジュールタスクに登録することもできるようになり、ブラウザのアップデートが大分楽になりました。
+
 [librewolf updater extension]: https://addons.mozilla.org/en-US/firefox/addon/librewolf-updater/
 
 ### Addons
