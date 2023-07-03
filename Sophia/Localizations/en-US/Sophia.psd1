@@ -1,96 +1,98 @@
 ﻿ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = \nThe script supports Windows 11 22H2 version and higher
-UpdateWarning                             = \nYour Windows 11 build: {0}.{1}. Supported builds: 22621.1413 and higher. Run Windows Update and try again
-UnsupportedLanguageMode                   = \nThe PowerShell session in running in a limited language mode
-LoggedInUserNotAdmin                      = \nThe logged-on user doesn't have admin rights
-UnsupportedPowerShell                     = \nYou're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version
-UnsupportedHost                           = \nThe script doesn't support running via {0}
-Win10TweakerWarning                       = \nProbably your OS was infected via the Win 10 Tweaker backdoor
-TweakerWarning                            = \nThe Windows stability may have been compromised by using {0}. Just in case, reinstall Windows
-bin                                       = \nThere are no files in the bin folder. Please, re-download the archive
-RebootPending                             = \nThe PC is waiting to be restarted
-UnsupportedRelease                        = \nA new version found
+UnsupportedOSBuild                        = \nThe script supports Windows 11 22H2+.
+UpdateWarning                             = \nYour Windows 11 build: {0}.{1}. Supported builds: 22621.1928+. Run Windows Update and try again.
+UnsupportedLanguageMode                   = \nThe PowerShell session in running in a limited language mode.
+LoggedInUserNotAdmin                      = \nThe logged-on user doesn't have admin rights.
+UnsupportedPowerShell                     = \nYou're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version.
+UnsupportedHost                           = \nThe script doesn't support running via {0}.
+Win10TweakerWarning                       = \nProbably your OS was infected via the Win 10 Tweaker backdoor.
+TweakerWarning                            = \nThe Windows stability may have been compromised by using {0}. Just in case, reinstall Windows.
+bin                                       = \nThere are no files in the bin folder. Please, re-download the archive.
+RebootPending                             = \nThe PC is waiting to be restarted.
+UnsupportedRelease                        = \nA new version found.
 CustomizationWarning                      = \nHave you customized every function in the {0} preset file before running Sophia Script?
-DefenderBroken                            = \nMicrosoft Defender broken or removed from the OS
-UpdateDefender                            = \nMicrosoft Defender definitions are out-of-date. Run Windows Update and try again
-ControlledFolderAccessDisabled            = Controlled folder access disabled
+WindowsComponentBroken                    = \n{0} broken or removed from the OS.
+UpdateDefender                            = \nMicrosoft Defender definitions are out-of-date. Run Windows Update and try again.
+ControlledFolderAccessDisabled            = Controlled folder access disabled.
 ScheduledTasks                            = Scheduled tasks
 OneDriveUninstalling                      = Uninstalling OneDrive...
 OneDriveInstalling                        = Installing OneDrive...
-OneDriveDownloading                       = Downloading OneDrive... ~33 MB
-OneDriveWarning                           = The "{0}" function will be applied only if the preset is configured to remove OneDrive (or the app was already removed), otherwise the backup functionality for the "Desktop" and "Pictures" folders in OneDrive breaks
+OneDriveDownloading                       = Downloading OneDrive...
+OneDriveWarning                           = The "{0}" function will be applied only if the preset is configured to remove OneDrive (or the app was already removed), otherwise the backup functionality for the "Desktop" and "Pictures" folders in OneDrive breaks.
 WindowsFeaturesTitle                      = Windows features
 OptionalFeaturesTitle                     = Optional features
-EnableHardwareVT                          = Enable Virtualization in UEFI
-UserShellFolderNotEmpty                   = Some files left in the "{0}" folder. Move them manually to a new location
+EnableHardwareVT                          = Enable Virtualization in UEFI.
+UserShellFolderNotEmpty                   = Some files left in the "{0}" folder. Move them manually to a new location.
 RetrievingDrivesList                      = Retrieving drives list...
-DriveSelect                               = Select the drive within the root of which the "{0}" folder will be created
-CurrentUserFolderLocation                 = The current "{0}" folder location: "{1}"
+DriveSelect                               = Select the drive within the root of which the "{0}" folder will be created.
+CurrentUserFolderLocation                 = The current "{0}" folder location: "{1}".
 UserFolderRequest                         = Would you like to change the location of the "{0}" folder?
-UserFolderSelect                          = Select a folder for the "{0}" folder
+UserFolderSelect                          = Select a folder for the "{0}" folder.
 UserDefaultFolder                         = Would you like to change the location of the "{0}" folder to the default value?
-ReservedStorageIsInUse                    = This operation is not supported when reserved storage is in use\nPlease re-run the "{0}" function again after PC restart
+ReservedStorageIsInUse                    = This operation is not supported when reserved storage is in use\nPlease re-run the "{0}" function again after PC restart.
 ShortcutPinning                           = The "{0}" shortcut is being pinned to Start...
-SSDRequired                               = To use Windows Subsystem for Android™ on your device, your PC needs to have Solid State Drive (SSD) installed
+SSDRequired                               = To use Windows Subsystem for Android™ on your device, your PC needs to have Solid State Drive (SSD) installed.
 UninstallUWPForAll                        = For all users
 UWPAppsTitle                              = UWP Apps
-HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer... ~2,8 MB
+HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer...
 GraphicsPerformanceTitle                  = Graphics performance preference
 GraphicsPerformanceRequest                = Would you like to set the graphics performance setting of an app of your choice to "High performance"?
-ScheduledTaskPresented                    = The "{0}" function was already created as "{1}"
+ActionCenter                              = In order to use "{0}" function you have to enable Action Center.
+WindowsScriptHost                         = Windows Script Host access is disabled on this machine. In order to use "{0}" function you have to enable Windows Script Host.
+ScheduledTaskPresented                    = The "{0}" function was already created as "{1}".
 CleanupTaskNotificationTitle              = Windows clean up
 CleanupTaskNotificationEvent              = Run task to clean up Windows unused files and updates?
-CleanupTaskDescription                    = Cleaning up Windows unused files and updates using built-in Disk cleanup app
-CleanupNotificationTaskDescription        = Pop-up notification reminder about cleaning up Windows unused files and updates
-SoftwareDistributionTaskNotificationEvent = Windows update cache successfully deleted
-TempTaskNotificationEvent                 = Temporary files folder successfully cleaned up
-FolderTaskDescription                     = The {0} folder cleanup
+CleanupTaskDescription                    = Cleaning up Windows unused files and updates using built-in Disk cleanup app.
+CleanupNotificationTaskDescription        = Pop-up notification reminder about cleaning up Windows unused files and updates.
+SoftwareDistributionTaskNotificationEvent = Windows update cache successfully deleted.
+TempTaskNotificationEvent                 = Temporary files folder successfully cleaned up.
+FolderTaskDescription                     = The {0} folder cleanup.
 EventViewerCustomViewName                 = Process Creation
-EventViewerCustomViewDescription          = Process creation and command-line auditing events
-RestartWarning                            = Make sure to restart your PC
+EventViewerCustomViewDescription          = Process creation and command-line auditing events.
+RestartWarning                            = Make sure to restart your PC.
 ErrorsLine                                = Line
 ErrorsMessage                             = Errors/Warnings
 DialogBoxOpening                          = Displaying the dialog box...
 Disable                                   = Disable
-EXEFilesFilter                            = *.exe|*.exe|All Files (*.*)|*.*
+AllFilesFilter                            = All Files
 FolderSelect                              = Select a folder
-FilesWontBeMoved                          = Files will not be moved
+FilesWontBeMoved                          = Files will not be moved.
 Install                                   = Install
-NoData                                    = Nothing to display
-NoInternetConnection                      = No Internet connection
-RestartFunction                           = Please re-run the "{0}" function
-NoResponse                                = A connection could not be established with {0}
+NoData                                    = Nothing to display.
+NoInternetConnection                      = No Internet connection.
+RestartFunction                           = Please re-run the "{0}" function.
+NoResponse                                = A connection could not be established with {0}.
 Restore                                   = Restore
 Run                                       = Run
-Skipped                                   = Skipped
+Skipped                                   = Skipped.
 GPOUpdate                                 = Updating GPO...
-TelegramGroupTitle                        = Join our official Telegram group
-TelegramChannelTitle                      = Join our official Telegram channel
-DiscordChannelTitle                       = Join our official Discord channel
+TelegramGroupTitle                        = Join our official Telegram group.
+TelegramChannelTitle                      = Join our official Telegram channel.
+DiscordChannelTitle                       = Join our official Discord channel.
 Uninstall                                 = Uninstall
 '@
 
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6QWRrGkrpLw1b8PFK7HxYEcn
-# 7GagghYNMIIDAjCCAeqgAwIBAgIQMB5osrsQ7LJHPnFCQcFydjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA0MDExNTAyMjJa
-# Fw0yNTA0MDExNTEyMTJaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqRln7TeeN9wzHLjxiMfWIqiTgjzV
-# bke1tIPiN6p9FOCc4YibV5MPxozAIW0ZzRv3cM8lH/k4gsIO0lO7j0bMrzDgQ0mm
-# mDOaEBUYpsD/HC8iIB6mJ5T7UAeYjXaawXckB4mSOzRnlzXl4bPOBrdsyPU26K9W
-# TB23JmleL3kBBw8gWKuD6/bHj72Yi2R3+ThX6cq3YfS7XxrjUq6AlivCPTGi0zEL
-# lzORbTDUfZRCiRhZQj5Sqaki2g1DRKRmlUWa9vUnHDYwFiDNMEdouR0b0ldrksfN
-# 5ig95gcGrNws9Jz/F/tikKfHfhoeAQZkk8BJe/k7gxR//dL2Cqozgt+4SQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUq+RQoue3JZPKep/8lJrJ1jKV
+# A56gghYNMIIDAjCCAeqgAwIBAgIQMh4wiRfrYaBGA3JjqLhc0jANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA3MDIxOTM2MjRa
+# Fw0yNTA3MDIxOTQ1NTNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo4fsKZhiq4hcuIQ2kwJ0z4Vt2FMi
+# JKfwslhdoFiVjwb83iwPa2CbZmdXTqdja9bBNLgpPqTxyuu5KyOTnT/4bK1i8Kqk
+# eumqg+KpFbDGYPf6RVFrEqUtWym/iAqy2gcSJgmbv4Xg6F/q639VW5Hc5GVPEgI9
+# LqU6bIxEFIeDikMJF92IlpLCclkLC6fk/ZzVqS0iohc90ek7iBOztpGMlW4GRSve
+# sIplaJicQ3Z5KPOVi/nsLKsXxaevK3LkGXk0ZsEIN3V1eF59x2VKdJG9gJ6XuImc
+# UeXzXW+LIBdNc26n3ShgbzndsSz4ktkSHqAmQhHcVFkGINwCcVrDxotMOQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFOpCm5JzeZbjWrbydxBxFIFyrR3/MA0GCSqGSIb3DQEBCwUAA4IBAQAxBwe2
-# XshhXNDZ7/3bIVZyCUD3OFSDjeRBYGbt8c6/b5Im5R5KAVHWrSWCReWZ0fGO1BAZ
-# cA5luiyVxNDr56VtPEac9YbEefVVfwZ34dIJQQfeQpIu3WEBUHLa82CFwYsuT/Ou
-# n6ZGfpUbWIjVRDrgcESidQ+2xETDOkkwcNB4IwHfGexOa2VuVjfk15Zil7GjXV6R
-# qfRUAcpFg8SlssU227Warf7F4HyVcztHkfVCGDp5K82lNrUmdgFU7Y+y4naWozMB
-# UwV4S1LYNzc22uLsp3w5VBlalOe2YNajiYKrZRLqkB6hI6VZ2JXU1P2qQwr8CXjy
-# pv/+moXI5JhZy8XDMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFPJXa262Wsl48ZFpGvZYNk6UbDoAMA0GCSqGSIb3DQEBCwUAA4IBAQCZmvTm
+# v1aYprPAz8q09cv/WibA0pu1noUzDRssko5RvuCY/QcTsBW3JktmcvNDropjfuXA
+# /uIT0eC2qqaw66aS8EWcMdli1PHP352dakPVL7zTnRLvNrCJokAExm1u6RIBttQ4
+# MB9KWkax+gVXR02YnUcZRtF9q2YfTaNhtD/6opE5NIBeKbs/QNBwbbgyXOCRyTSM
+# TwI2SSI95bfL+4w9uOTv2sKk48uFtsiqYn32SUNYo0oY3W4adxg0ApL3vygsKqYX
+# BBizriZJkhAvDJyFvWzinTEUYpE78a7GmEedRYl6TJ8qjgfGvBFUycJv6qk+Axw/
+# R0KMbYytzP+VFJ0XMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -192,31 +194,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAwHmiyuxDsskc+cUJBwXJ2MAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAyHjCJF+thoEYDcmOouFzSMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBT1+Bx410XHe+jVP9zevazA2W5RkTANBgkqhkiG9w0BAQEF
-# AASCAQAdwIOgfwSyph5cRbOTRVW1OO8D+eFFigyzKDQ1gcCxK9T32NqDgai7qlqQ
-# 1dxKKpwAzo9Nvo0zuXIcKINI3qlAdPLnjdZkKsjXyRXBjOnHB5fq3qQzEdRlwQUC
-# snOBFaKHyja1wYmpH0L+iJehuYKzt/lkAfw90HYFnSlI/QCDaUmD47ldJuKPEYOX
-# HbHPaSjJXstBiUhy6TLwB0MZiCduK0YZh5M0DPtgbR3HsjMiKdTU6EH5sZsKdQMN
-# rijAjN8Bi1vqAIgJWcfHad32jhkEyIyW3zsNtptKiLT4J/1PqoYBHYCPw86+Vp0e
-# JXK8NieDpyax2CPPSqvmHkmPZ8pwoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBQsnJWr9SFeWmMuGPfZnn+AOCxsDTANBgkqhkiG9w0BAQEF
+# AASCAQCQholaLT8Ix9Y5W3i69KdWraIlEPM+ZHOpW3yFDAyOHclirpEdpprXpppt
+# jr4U9TH0tB3janX2SMleZdWKvfvt/WTqfMPNLZ2co09eyYIKe4TVSvesjGkn2EH/
+# 8nyfZSC9bF/VQtDq5qC5AVdJ2F+h8G5lOm+X5adsyPXJF+7FinB7q+OJtyBj9tKf
+# cRW2IJZlVCWapsUGdChBPaAJHvo4s7QZi9nyKfDr/Iwag3bXVl1sAiVVHWIpZd7R
+# z5/M8NU7W/Lu7fLwmzBMmMrtlvzB0bxjG/MyeuZYqhpgeF6Y6jbWjywKaVGjrvA7
+# cxmjBE6KUSWjhEM7MJ+v+8msy/EloYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQwMTE1
-# MTIzMFowLwYJKoZIhvcNAQkEMSIEINHd2u/W00JhxwdrA5nQofygsrNNA/j64tLf
-# fe9FmPPBMA0GCSqGSIb3DQEBAQUABIICAAnypNUA9ekJY+NYWpibyPz/VkXW4OtC
-# BkEh+zud7tg2VVteiQjP4t2pSrcKNBqpIbWvbfaC2n5X/Ihymwy+9Cs49NgR5meV
-# CL6FuPa6jpamY8GtdEQwsu2UvjlkVD49Iu2lDYhSk4vLmCWvWOKVCXJblM/244J7
-# DDf+0BGvZdORYpJgY0used9jUI9vQk4IE+PGYDqTpiLsB0SAhwxXlaSqpB2CR/bX
-# jtpNWG5BdHEGlD63T9h5WEvT6ocJmeEkCZjVw6KvLxbpoYZ4LkH3v3z9Wm2ZAg9Q
-# CaY5IblZdTm2k4y0HZY+ex1TOYsAIaEgg+k0cR096q3+okJX8+WR3haX6R/ErPc/
-# Z/jTjlnEghk7Pmis3jsCpiDs2Zs99Zz/G+yGRsPai5LG5hYM89TuRii+bipwnMKm
-# hMYmuC2cMklV8iPfCnwiiLv1ZVeX8iZhDWe1h70SVGqjYk4vQVabnFmAeBCUfQS4
-# PtQLBAAGUIiA8vBfQQvKjhj7uzS2EV5UUXFGqWRGw/HIbQVDZJLVKEo2+zgSh3Ol
-# gT0hVQl9qsnyQDQyOilwPfvvhwe0aa5PFeLC4dvxcbw190EWjbn6O1hGA9uHEmtg
-# zuH/KhG+zJYdnqVIWRNNx4a3hf8xspUZ1XEwUdsoaNVQgtME0nBEiOK7Jo823v59
-# GqN+kTkuEDoW
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDcwMjE5
+# NDYzNFowLwYJKoZIhvcNAQkEMSIEIMCDr2IdX9Vs/F/HXNwJF9oF0Yy6H5qdmJ8b
+# B7TSCZp0MA0GCSqGSIb3DQEBAQUABIICAFS+nJApG2bAY4aEoPf5mW8OzFxEJsPU
+# HA9QwTQ3SPWc5WE06UuwwRtJlrWowaxIiaXh7AXTCUQUHFM+VdDIu24gfd03HFBF
+# Q6+W0YK90t2HIKcBeeCSdZ0jwYdvSSMOJIQc5cmlm8u/p9ZYhxs59cd2BXFtPqLe
+# 9VbKMtUAnkiYJ35Dbrdy5KTER17ZvM99iErYLVGE/RNFH0ARb5ZamgHw/TcGK3JT
+# JTq08lprHr6NwS0vf+PFWiBumCG62B8bAVqx6bnN2Ugx8yiH/HR9B1iAFQBIlOcM
+# IjRWjaZn6YyGjDK2fTJtf/1r5diV0NsLDEnlhfkNoeto0lssPyGiLqo+EN7MEO2h
+# Ujad9iuxImgfe1c9sdCkta7NDEUI0inrnaOD5zw9qIy81SfQVKiSJ3CvFlo6/hO6
+# VgHWtSvTYtBWwK7RSt7PD7f9EzfNCMvudqZ49rghwHscc75+02JTcBDQD9hqJgV2
+# KrPdtLgiwMk1vTFm9/AgQRQ8gPFtP+m9NZ3ZQdkvZcGCSltqNpb0UB45k/coWDsn
+# o6ycsr2+O5Uppd4J/JioAo3FrCRVTH4tFXhn2xg35RsyBgYOFt3pAgK5oNLaTOjO
+# 1XicY5qPGKgCEokPo7zydnYqomRV0MXR1WvCotRB5OxqVKEPgLgNwryr6C3/PBzX
+# y+FZhr42cOoe
 # SIG # End signature block

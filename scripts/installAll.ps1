@@ -42,16 +42,19 @@ scoop install hyper
 scoop install aria2 bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
-scoop install brotli deno gitui poetry python rustup so sqlitestudio tldr
+scoop install brotli deno gitui marksman osv-scanner poetry python ruff rustup so sqlitestudio tldr
 
 # Editor
-scoop install helix neovim vscode zenhan
+scoop install helix neovim notable vscode zenhan
 
 # Security
 sudo scoop install keepassxc gpg4win
 
 # Network
-scoop install goodbyedpi
+scoop install goodbyedpi localsend
+
+# IM
+scoop install element
 
 # Gaming # Steam have to install manually.
 scoop install discord heroic-games-launcher legendary playnite
