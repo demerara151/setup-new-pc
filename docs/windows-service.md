@@ -1,31 +1,8 @@
 # 不要な Windows サービス
 
+> このページは、[wiki](https://demerara151/setup-new-pc/wiki) に移行しました。docs 内の全てのドキュメントの移行作業が完了次第削除する予定です。
+
 個人的に不要な Windows サービスの詳細。Windows Update の度に増えたり減ったりするので気付いたら編集します。
-
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Fax](#fax)
-- [Print Spooler](#print-spooler)
-- [IP Helper](#ip-helper)
-- [IP 変換構成サービス](#ip-変換構成サービス)
-- [Network Connectivity Assistant](#network-connectivity-assistant)
-- [Geo Location](#geo-location)
-- [Windows Search](#windows-search)
-- [Microsoft Edge Elevation Service](#microsoft-edge-elevation-service)
-- [Microsoft Edge Update Service](#microsoft-edge-update-service)
-- [Connected User Experience](#connected-user-experience)
-- [AllJoyn Router Service](#alljoyn-router-service)
-- [Program Compatibility Service](#program-compatibility-service)
-- [デバイス管理ワイヤレス アプリケーション プロトコル (WAP) プッシュ メッセージ ルーティング サービス](#デバイス管理ワイヤレス-アプリケーション-プロトコル-wap-プッシュ-メッセージ-ルーティング-サービス)
-- [Remote Registry](#remote-registry)
-- [Windows Image Acquisition](#windows-image-acquisition)
-- [Xbox Accessory Management Service](#xbox-accessory-management-service)
-- [Xbox Live Auth Manager](#xbox-live-auth-manager)
-- [Xbox Live Game Save Service](#xbox-live-game-save-service)
-- [Xbox Live Networking Service](#xbox-live-networking-service)
-- [Window Network Data Usage Monitor](#window-network-data-usage-monitor)
-- [Window Insider Service](#window-insider-service)
 
 ## Fax
 
@@ -47,7 +24,7 @@ IPv4 と IPv6 の変換を構成して有効にするサービス。上記のサ
 
 UI コンポーネントにダイレクトアクセスの状態通知を提供するサービス。ダイレクトアクセスを利用していないなら無効にして構いません。組織に属していない限り使う機会はないと思います
 
--   [ダイレクトアクセス機能とは](https://learn.microsoft.com/ja-jp/windows-server/remote/remote-access/directaccess/directaccess)
+- [ダイレクトアクセス機能とは](https://learn.microsoft.com/ja-jp/windows-server/remote/remote-access/directaccess/directaccess)
 
 ## Geo Location
 

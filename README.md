@@ -211,7 +211,7 @@ chezmoi apply
 sudo ~/setup-new-pc/scripts/stopService.ps1
 ```
 
-> 詳細は、[stopService.ps1](/scripts/stopService.ps1) 及び、[windows-service](/docs/windows-service.md) で確認できます
+> 詳細は、[stopService.ps1](/scripts/stopService.ps1) 及び、[wiki](https://github.com/demerara151/setup-new-pc/wiki/Services) で確認できます
 
 ### Hyper-V の有効化
 
