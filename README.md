@@ -153,6 +153,17 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
   `Actions` から `Recommended and somewhat recommended settings` を選択
 
+#### Experimental
+
+以下のアプリはまだ実験段階です。必ず復元ポイントを作成してから実行してください
+
+また、なんらかのトラブルが発生した際にイベントビューア等を駆使して、問題を切り分けられる自信のある方のみ実行してください。特に PC に疎い方による実行はおすすめしません
+
+- privacy.sexy
+
+  `privacy.sexy.exe` を起動、または[サイト](https://privacy.sexy)にアクセスして、左上の `Select:
+None | Standard | Strict | All` というリストから `Standard` を選択。実行ボタン（画面下にある右三角のアイコン）をクリック
+
 ## Personal Settings
 
 以下は個人的な設定です。適用する場合は、必ずファイルの中身を**事前に確認**してください
@@ -255,7 +266,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 私が現在利用している拡張機能の一覧です。LibreWolf では、拡張機能は出来る限り最小限に抑えることが推奨されています
 
-<https://librewolf.net/docs/addons/>
+> Recommended Addons - LibreWolf <https://librewolf.net/docs/addons/>
 
 > 💡`uBlockOrigin` は、最初からインストールされています
 
@@ -327,8 +338,8 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 ## TODO
 
-- [privacy.sexy](https://privacy.sexy) の利用方法の追加
-- [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を `README.md` に追加
+- [x] [privacy.sexy](https://privacy.sexy) の利用方法の追加
+- [ ] Project の wiki を作成して [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を解説する
 
 <!-- Link Reference -->
 
