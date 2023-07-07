@@ -1,44 +1,64 @@
-# How to install clean nvidia display driver
+# ディスプレイドライバーを必要最小限の構成でインストールする
 
-Uninstall all bloatware, registered task, registry key, and telemetries with DDU.
+> このページは、[wiki](https://demerara151/setup-new-pc/wiki) に移行しました。docs 内の全てのドキュメントの移行作業が完了次第削除する予定です。
 
-Then install clean nvidia display driver using nvcleanstall.
+Nvidia が提供するディスプレイドライバーを完全にアンインストールし、最小限の構成でドライバーをインストールする方法
 
-## Dependencies
+## 概要
 
--   [DDU - Display Driver Uninstaller](https://www.wagnardsoft.com/)
--   [NVCleanstall](https://www.techpowerup.com/nvcleanstall/)
+DDU というソフトを使い Nvidia によって登録されたスケジュールタスク、レジストリ、そしてテレメトリなどを全て削除します
 
-## Installation
+その後で、Nvidia の最新のディスプレイドライバーを NVCleanstall を利用して最小構成でクリーンインストールします
 
-Install dependencies via scoop.
+> ドライバーのバージョンは任意のものを選べます
+
+## 必要なソフトのインストール
+
+- [DDU - Display Driver Uninstaller](https://www.wagnardsoft.com/)
+- [NVCleanstall](https://www.techpowerup.com/nvcleanstall/)
+
+scoop でインストールできます
 
 ```powershell
 scoop install ddu nvcleanstall
 ```
 
-### NVCleanstall
+> scoop が何かわからない人はこのリポジトリの README を読んでください
 
-Open nvcleanstall from start menu or command line.
+## 新しいドライバーの準備
 
-1. Click NEXT on the first page.
+スタートメニュー、もしくはコマンドプロンプトや Powershell から nvcleanstall を起動してください
 
-2. Select Recommended or Minimum at the bottom right and NEXT.
+1. 最初のページの NEXT をクリックします
 
-3. Check first three options and NEXT.
+2. 画面下部右側にある `Recommended` か `Minimum` を選択します。NEXT をクリックします
 
-4. Click `Show in Folder`, then move that folder to Desktop.
+3. 上から 3 つのオプション全てにチェックを入れて、NEXT をクリックします
 
-### DDU
+4. `Show in Folder` をクリックします。すると、そのフォルダーの中に入った状態でエクスプローラーが開きます。一つ上の階層に移動して、そのフォルダーをデスクトップに移動しておきます
 
-Restart computer with Safe Mode. Then open DDU.
+## 古いドライバーのアンインストール
 
-1. Select driver category on the right. `GPU` and `nvidia`.
+セーフモードでコンピューターを起動します
 
-2. Click top left button to delete old driver completely.
+> Windows の設定 -> システム -> 回復 -> 「今すぐ再起動」をクリックすると青い画面が表示されます。トラブルシューティングの「詳細オプション」の画面で「スタートアップ設定」をクリックします。「スタートアップ設定」画面が表示されるので「再起動」をクリックします。再起動後、再び青い画面で「スタートアップ設定」が表示されます。数字の 4 キーを押すとセーフモードで起動します
 
-3. Restart computer again.
+PC が再起動したら、DDU を開きます。事前にタスクバーやデスクトップに置いておくと探さなくていいので楽です
 
-## Reference
+1. 右側にあるメニューからカテゴリーを選択します。今回は `GPU` で `nvidia` を選択します
 
--   [DDU Guide Tutorial](https://www.wagnardsoft.com/content/ddu-guide-tutorial)
+2. 左上部にある「削除して再起動」というボタンをクリックします
+
+## 新しいドライバーのインストール
+
+PC が再起動したら、先ほどデスクトップに配置したフォルダーを開いて、`setup.exe` を実行します
+
+## 補足
+
+次回の更新からは、DDU を使わず NVCleanstall だけでドライバーの更新ができます。ただし、オプションの選択画面では、上 2 つにだけチェックを入れてください。最後の画面では、直接 `Install` をクリックします
+
+何か問題が起きた場合だけ、DDU を使えば大丈夫です
+
+## 参照
+
+- DDU Guide Tutorial: <https://www.wagnardsoft.com/content/ddu-guide-tutorial>
