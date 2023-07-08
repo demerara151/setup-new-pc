@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove unnecessary condition statement in `stopService.ps1`.
 - Change the link of Windows service information to `../wiki/Services` instead of `/docs/windows-service.md`.
+- Remove `so` and `tldr` from `installAll.ps1`.
+- Switch `mpv` to `mpv-git` in `installAll.ps1`.
+- Re-edit the section about `winget` in `installAll.ps1`.
 
 ## 2023-07-06
 

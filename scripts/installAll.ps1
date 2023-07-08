@@ -42,7 +42,7 @@ scoop install hyper
 scoop install aria2 bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
-scoop install brotli deno gitui marksman osv-scanner poetry python ruff rustup so sqlitestudio tldr
+scoop install brotli deno gitui marksman osv-scanner poetry python ruff rustup sqlitestudio
 
 # Editor
 scoop install helix neovim notable vscode zenhan
@@ -60,7 +60,7 @@ scoop install element
 scoop install discord heroic-games-launcher legendary playnite
 
 # Media
-scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
+scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv-git yt-dlp
 
 # Media Tool
 scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
@@ -80,27 +80,22 @@ sudo scoop install icaros-np --global
     Besides that winget stops working when privacy.sexy strict rules applied.
     winget has a lot of problem in my recent use case. I'm gonna ditch this function in the future.
 
+    .NOTES
+    2023/07/08: winget has been doing well lately, so I made some comments and tweaked the programs to install.
+
     .LINK
     https://github.com/microsoft/winget-cli/issues/2666
 
-# Make sure winget is installed. If not exists install winget via scoop.
+# Make sure you have winget installed. If not installed, install winget with scoop.
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
-# Install some requirements and softwares that you want to set system default with winget
+# Install some software with winget that cannot be installed with scoop.
 $programs = @(
-    # Default Browser
-    "LibreWolf.LibreWolf",
-
-    # --- Optional from here. You can disable install by put `#` on top of each line. --- #
     # Gaming
     "Valve.Steam",
-    "Discord.Discord",
 
-    # Programming
-    "gerardog.gsudo", # Yet another sudo command
-    "Microsoft.VisualStudio.2022.BuildTools" # for Rust development
-
-    # --- Optional region ends here --- #
+    # for Rust development
+    "Microsoft.VisualStudio.2022.BuildTools"
 )
 foreach ($program in $programs) {
     winget install --id $program --source winget
