@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add another windows service that can be stopped in [stopService.ps1](/scripts/stopService.ps1).
-- Add detail of windows service in [windows-service.md](/docs/windows-service.md).
+- Add detail of windows service in `windows-service.md`.
 
 ## 2022-12-19
 
@@ -145,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add [[start-python.md](/docs/start-python.md)]: Getting started guide for python development.
+- Add `start-python.md` in docs: Getting started guide for python development.
 
 ### Changed
 
@@ -165,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- [display-driver.md](/docs/display-driver.md): Guide to uninstall and install Display Driver cleanly.
+- Add `display-driver.md` in docs: Guide to uninstall and install Display Driver cleanly.
 
 ## 2022-10-29
 
