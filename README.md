@@ -43,7 +43,6 @@
     - [Additional filters](#additional-filters)
   - [Advanced preferences](#advanced-preferences)
 - [日本語フォント](#日本語フォント)
-- [TODO](#todo)
 <!--toc:end-->
 
 ---
@@ -335,11 +334,6 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 - [RocknRoll One](https://github.com/fontworks-fonts/RocknRoll)
 
 > プログラミング用日本語フォントは、`IBM Plex Sans JP` を利用しています。`sudo scoop install IBMPlexSans-JP --global` でインストールできます
-
-## TODO
-
-- [x] [privacy.sexy](https://privacy.sexy) の利用方法の追加
-- [ ] Project の wiki を作成して [Adguard Home](https://https://github.com/AdguardTeam/AdGuardHome) の利用方法を解説する
 
 <!-- Link Reference -->
 
