@@ -27,7 +27,7 @@ scoop install brave everything hwinfo imageglass librewolf lightbulb mailspring 
 # Privacy
 scoop install privacy.sexy shutup10
 
-# <# --- Optional from here. You can disable install by put `#` on top of each line or uncomment out both this line and end line. --- #
+# --- Optional region starts from here. You can prevent installation by prefixing any line with "#". --- #
 
 # Utility (GUI)
 scoop install autohotkey czkawka-gui ddu nvcleanstall synctrayzor
@@ -39,7 +39,7 @@ scoop install starship terminal-icons zoxide
 scoop install hyper
 
 # Utility (CLI)
-scoop install aria2 bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
+scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
 scoop install brotli deno gitui marksman osv-scanner poetry python ruff rustup sqlitestudio
@@ -56,7 +56,7 @@ scoop install goodbyedpi localsend
 # IM
 scoop install element
 
-# Gaming # Steam have to install manually.
+# Gaming
 scoop install discord heroic-games-launcher legendary playnite
 
 # Media
@@ -71,7 +71,7 @@ sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono 
 # Display various thumbnails
 sudo scoop install icaros-np --global
 
-# --- Optional region ends here --- #>
+# --- Optional region ends here --- #
 
 <#
 
