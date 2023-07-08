@@ -19,7 +19,7 @@
     その他、各サービスの詳細は以下のページをご覧ください
 
     .LINK
-    各サービスの詳細: https://github.com/demerara151/setup-new-pc/docs/windows-service.md
+    各サービスの詳細: https://github.com/demerara151/setup-new-pc/wiki/Services
 
     .LINK
     Reference:
@@ -96,12 +96,4 @@
 	#"wisvc"
 )
 
-if ($PSVersionTable.PSVersion.Major -lt 6) {
-    foreach ($service in $services) {
-        Write-Output "Trying to disable $service"
-        Get-Service -Name $service | Set-Service -StartupType Disabled -Status Stopped
-    }
-}
-else {
-    $services.ForEach{ Write-Output "Trying to disable $_"; Get-Service -Name $_ | Set-Service -StartupType Disabled -Status Stopped }
-}
+$services.ForEach{ Write-Output "Trying to disable $_"; Get-Service -Name $_ | Set-Service -StartupType Disabled -Status Stopped }

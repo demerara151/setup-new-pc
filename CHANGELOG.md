@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2023-07-08
+
+### Changed
+
+- Remove unnecessary condition statement in `stopService.ps1`.
+- Change the link of Windows service information to `../wiki/Services` instead of `/docs/windows-service.md`.
+
 ## 2023-07-06
 
 ### Added
