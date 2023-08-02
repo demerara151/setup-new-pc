@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2023-08-02
+
+### Changed
+
+- Revert back mpv-git to mpv to install because new version of mpv fix some critical bugs with `yt-dlp`.
+- Change `windowsdesktop-runtime-lts` to `windowsdesktop-runtime` because `lightbulb` now supports `.NET 7 runtime`.
+
+### Fixed
+
+- Install `icaros-np` with global option can be failed to install and uninstall. So remove `--global` option from that.
+
 ## 2023-07-08
 
 ### Changed

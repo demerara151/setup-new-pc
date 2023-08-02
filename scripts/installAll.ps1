@@ -19,7 +19,7 @@ sudo scoop install vcredist-aio
 Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x64.exe" /y
 
 # Microsoft Windows Desktop Runtime
-sudo scoop install windowsdesktop-runtime-lts
+sudo scoop install windowsdesktop-runtime
 
 # Essential for everyone
 scoop install brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
@@ -60,7 +60,7 @@ scoop install element
 scoop install discord heroic-games-launcher legendary playnite
 
 # Media
-scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv-git yt-dlp
+scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
 
 # Media Tool
 scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
@@ -69,7 +69,7 @@ scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
 sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
 
 # Display various thumbnails
-sudo scoop install icaros-np --global
+sudo scoop install icaros-np
 
 # --- Optional region ends here --- #
 
