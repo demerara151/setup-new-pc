@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.5.2
-	Date: 02.07.2023
+	Version: v6.5.4
+	Date: 16.07.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -13,7 +13,7 @@
 	.NOTES
 	Supported Windows 11 versions
 	Version: 22H2/23H2+
-	Builds: 22621.1928+
+	Builds: 22621.1992+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -37,8 +37,8 @@
 	https://github.com/Inestic
 #>
 
-#region Checks
-function Checks
+#region InitialActions
+function InitialActions
 {
 	param
 	(
@@ -240,6 +240,7 @@ public static string GetString(uint strId)
 						Verbose         = $true
 					}
 					Invoke-WebRequest @Parameters
+
 					Start-Process -FilePath "$DownloadsFolder\Windows11InstallationAssistant.exe" -ArgumentList "/SkipEULA"
 				}
 				catch [System.Net.WebException]
@@ -285,10 +286,10 @@ public static string GetString(uint strId)
 		}
 		{$_ -eq 22621}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1928)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1992)
 			{
-				# Check whether the OS minor build version is 1928 minimum
-				# https://support.microsoft.com/help/5018680
+				# Check whether the OS minor build version is 1992 minimum
+				# https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information#windows-11-current-versions
 				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
 				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
 				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
@@ -892,8 +893,114 @@ public static string GetString(uint strId)
 	# Save all opened folders in order to restore them after File Explorer restart
 	$Script:OpenedFolders = {(New-Object -ComObject Shell.Application).Windows() | ForEach-Object -Process {$_.Document.Folder.Self.Path}}.Invoke()
 
-	# Import PowerShell 5.1 modules
-	Import-Module -Name Microsoft.PowerShell.Management, PackageManagement, Appx -UseWindowsPowerShell
+	<#
+		.SYNOPSIS
+		The "Show menu" function with the up/down arrow keys and enter key to make a selection
+
+		.PARAMETER Menu
+		Array of items to choose from
+
+		.PARAMETER Default
+		Default selected item in array
+
+		.PARAMETER AddSkip
+		Add localized extracted "Skip" string from shell32.dll
+
+		.EXAMPLE
+		Show-Menu -Menu $Items -Default 1
+
+		.LINK
+		https://qna.habr.com/answer?answer_id=1522379
+	#>
+	function script:Show-Menu
+	{
+		[CmdletBinding()]
+		param
+		(
+			[Parameter(Mandatory = $true)]
+			[array]
+			$Menu,
+
+			[Parameter(Mandatory = $true)]
+			[int]
+			$Default,
+
+			[Parameter(Mandatory = $false)]
+			[switch]
+			$AddSkip
+		)
+
+		Write-Information -MessageData "" -InformationAction Continue
+
+		# Add "Please use the arrow keys 🠕 and 🠗 on your keyboard to select your answer" to menu
+		$Menu += $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x1F815), [System.Char]::ConvertFromUtf32(0x1F817)
+
+		if ($AddSkip)
+		{
+			# Extract the localized "Skip" string from shell32.dll
+			$Menu += [WinAPI.GetStr]::GetString(16956)
+		}
+
+		# https://github.com/microsoft/terminal/issues/14992
+		[System.Console]::BufferHeight += $Menu.Count
+		$minY = [Console]::CursorTop
+		$y = [Math]::Max([Math]::Min($Default, $Menu.Count), 0)
+
+		do
+		{
+			[Console]::CursorTop = $minY
+			[Console]::CursorLeft = 0
+			$i = 0
+
+			foreach ($item in $Menu)
+			{
+				if ($i -ne $y)
+				{
+					Write-Information -MessageData ('  {1}  ' -f ($i+1), $item) -InformationAction Continue
+				}
+				else
+				{
+					Write-Information -MessageData ('[ {1} ]' -f ($i+1), $item) -InformationAction Continue
+				}
+
+				$i++
+			}
+
+			$k = [Console]::ReadKey()
+			switch ($k.Key)
+			{
+				"UpArrow"
+				{
+					if ($y -gt 0)
+					{
+						$y--
+					}
+				}
+				"DownArrow"
+				{
+					if ($y -lt ($Menu.Count - 1))
+					{
+						$y++
+					}
+				}
+				"Enter"
+				{
+					return $Menu[$y]
+				}
+			}
+		}
+		while ($k.Key -notin ([ConsoleKey]::Escape, [ConsoleKey]::Enter))
+	}
+
+	# Extract the localized "Browse" string from shell32.dll
+	$Script:Browse = [WinAPI.GetStr]::GetString(9015)
+	# Extract the localized "&No" string from shell32.dll
+	$Script:No = [WinAPI.GetStr]::GetString(33232).Replace("&", "")
+	# Extract the localized "&Yes" string from shell32.dll
+	$Script:Yes = [WinAPI.GetStr]::GetString(33224).Replace("&", "")
+	$Script:KeyboardArrows = $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x1F815), [System.Char]::ConvertFromUtf32(0x1F817)
+	# Extract the localized "Skip" string from shell32.dll
+	$Script:Skip = [WinAPI.GetStr]::GetString(16956)
 
 	# Display a warning message about whether a user has customized the preset file
 	if ($Warning)
@@ -901,39 +1008,38 @@ public static string GetString(uint strId)
 		# Get the name of a preset (e.g Sophia.ps1) regardless it was named
 		# $_.File has no EndsWith() method
 		$PresetName = Split-Path -Path (((Get-PSCallStack).Position | Where-Object -FilterScript {$_.File}).File | Where-Object -FilterScript {$_.EndsWith(".ps1")}) -Leaf
+		Write-Information -MessageData "" -InformationAction Continue
+		Write-Verbose -Message ($Localization.CustomizationWarning -f $PresetName) -Verbose
 
-		$Title = ""
-		$Message       = $Localization.CustomizationWarning -f $PresetName
-		# Extract the localized "&Yes" string from shell32.dll
-		$Yes           = [WinAPI.GetStr]::GetString(33224)
-		# Extract the localized "&No" string from shell32.dll
-		$No            = [WinAPI.GetStr]::GetString(33232)
-		$Options       = $No, $Yes
-		$DefaultChoice = 0
-		$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-		switch ($Result)
+		do
 		{
-			"0"
+			$Choice = Show-Menu -Menu @($Yes, $No) -Default 2
+
+			switch ($Choice)
 			{
-				Invoke-Item -Path $PSScriptRoot\..\$PresetName
+				$Yes
+				{
+					continue
+				}
+				$No
+				{
+					Invoke-Item -Path $PSScriptRoot\..\$PresetName
 
-				Start-Sleep -Seconds 5
+					Start-Sleep -Seconds 5
 
-				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#how-to-use"
-				Start-Process -FilePath "https://t.me/sophia_chat"
-				Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+					Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#how-to-use"
+					Start-Process -FilePath "https://t.me/sophia_chat"
+					Start-Process -FilePath "https://discord.gg/sSryhaEv79"
 
-				exit
-			}
-			"1"
-			{
-				continue
+					exit
+				}
+				$KeyboardArrows {}
 			}
 		}
+		until ($Choice -ne $KeyboardArrows)
 	}
 }
-#endregion Checks
+#endregion InitialActions
 
 #region Protection
 # Enable script logging. The log will be being recorded into the script root folder
@@ -1069,24 +1175,24 @@ $($Type):$($Value)`n
 	Add-Content -Path $Path -Value $Policy -Encoding Default -Force
 }
 
-# Revert back removed or commented out "Checks" functions
-function script:AdditionalChecks
+# Revert back removed or commented out "InitialActions" functions
+function script:AdditionalActions
 {
 	# Get the name of a preset (e.g Sophia.ps1) regardless it was named
 	# $_.File has no EndsWith() method
 	$PresetName = ((Get-PSCallStack).Position | Where-Object -FilterScript {$_.File}).File | Where-Object -FilterScript {$_.EndsWith(".ps1")}
-	if (Select-String -Path $PresetName -Pattern Checks | Select-String -Pattern "{Checks}", "The mandatory checks" -NotMatch)
+	if (Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch)
 	{
 		# The string exists and is commented
-		if ((Select-String -Path $PresetName -Pattern Checks | Select-String -Pattern "{Checks}", "The mandatory checks" -NotMatch).Line.StartsWith("#") -eq $true)
+		if ((Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch).Line.StartsWith("#") -eq $true)
 		{
-			$Host.UI.RawUI.WindowTitle = "Checks | $($PresetName)"
+			$Host.UI.RawUI.WindowTitle = "InitialActions | $($PresetName)"
 
-			# Calculate the string number to uncomment "Checks -Warning"
-			$LineNumber = (Select-String -Path $PresetName -Pattern Checks | Select-String -Pattern "{Checks}", "The mandatory checks" -NotMatch).LineNumber
-			# Get data from the required line to replace it with "Checks -Warning"
+			# Calculate the string number to uncomment "InitialActions -Warning"
+			$LineNumber = (Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch).LineNumber
+			# Get data from the required line to replace it with "InitialActions -Warning"
 			$RequiredLine = (Get-Content -Path $PresetName -Encoding UTF8) | Where-Object -FilterScript {$_.ReadCount -eq $LineNumber}
-			(Get-Content -Path $PresetName -Encoding UTF8).Replace($RequiredLine, "Checks -Warning") | Set-Content -Path $PresetName -Encoding UTF8 -Force
+			(Get-Content -Path $PresetName -Encoding UTF8).Replace($RequiredLine, "InitialActions -Warning") | Set-Content -Path $PresetName -Encoding UTF8 -Force
 
 			Start-Process -FilePath "https://t.me/sophia_chat"
 			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
@@ -1096,13 +1202,13 @@ function script:AdditionalChecks
 	}
 	else
 	{
-		$Host.UI.RawUI.WindowTitle = "Checks | $($PresetName)"
+		$Host.UI.RawUI.WindowTitle = "InitialActions | $($PresetName)"
 
 		$ReadFile = Get-Content -Path $PresetName -Encoding UTF8
-		# Calculate the string number to add after "Checks -Warning"
+		# Calculate the string number to add after "InitialActions -Warning"
 		$LineNumber = (Select-String -Path $PresetName -Pattern Import-LocalizedData).LineNumber
 		# Array of a new file: content before $LineNumber (including $LineNumber), new added string, the rest data of file
-		$UpdatedFile = @($ReadFile[0..($LineNumber - 1)], "`nChecks -Warning", $ReadFile[$LineNumber..($ReadFile.Length + 1)])
+		$UpdatedFile = @($ReadFile[0..($LineNumber - 1)], "`nInitialActions -Warning", $ReadFile[$LineNumber..($ReadFile.Length + 1)])
 		Set-Content -Path $PresetName -Value $UpdatedFile -Encoding UTF8 -Force
 
 		Start-Process -FilePath "https://t.me/sophia_chat"
@@ -1155,8 +1261,8 @@ function DiagTrackService
 		$Enable
 	)
 
-	# Revert back removed or commented out "Checks" functions
-	AdditionalChecks
+	# Revert back removed or commented out "InitialActions" functions
+	AdditionalActions
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
@@ -2300,11 +2406,6 @@ function BrowsingHistory
 		[switch]
 		$Show
 	)
-
-	if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 1928)
-	{
-		return
-	}
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
@@ -7070,95 +7171,6 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 		}
 	}
 
-	<#
-		.SYNOPSIS
-		The "Show menu" function with the up/down arrow keys and enter key to make a selection
-
-		.EXAMPLE
-		ShowMenu -Menu $ListOfItems -Default $DefaultChoice
-
-		.LINK
-		https://qna.habr.com/answer?answer_id=1522379
-	#>
-	function ShowMenu
-	{
-		[CmdletBinding()]
-		param
-		(
-			[Parameter(Mandatory = $false)]
-			[string]
-			$Title,
-
-			[Parameter(Mandatory = $true)]
-			[array]
-			$Menu,
-
-			[Parameter(Mandatory = $true)]
-			[int]
-			$Default
-		)
-
-		Write-Information -MessageData "" -InformationAction Continue
-		Write-Information -MessageData $Title -InformationAction Continue
-
-		# Extract the localized "Skip" string from shell32.dll
-		$Menu += [WinAPI.GetStr]::GetString(16956)
-		# https://github.com/microsoft/terminal/issues/14992
-		[System.Console]::BufferHeight += $Menu.Count
-		$minY = [Console]::CursorTop
-		$y = [Math]::Max([Math]::Min($Default, $Menu.Count), 0)
-
-		do
-		{
-			[Console]::CursorTop = $minY
-			[Console]::CursorLeft = 0
-			$i = 0
-			foreach ($item in $Menu)
-			{
-				if ($i -ne $y)
-				{
-					Write-Information -MessageData ('  {1}  ' -f ($i+1), $item) -InformationAction Continue
-				}
-				else
-				{
-					Write-Information -MessageData ('[ {1} ]' -f ($i+1), $item) -InformationAction Continue
-				}
-				$i++
-			}
-
-			$k = [Console]::ReadKey()
-			switch ($k.Key)
-			{
-				"UpArrow"
-				{
-					if ($y -gt 0)
-					{
-						$y--
-					}
-				}
-				"DownArrow"
-				{
-					if ($y -lt ($Menu.Count - 1))
-					{
-						$y++
-					}
-				}
-				"Enter"
-				{
-					# Extract the localized "Skip" string from shell32.dll
-					if ($Menu[$y] -eq [WinAPI.GetStr]::GetString(16956))
-					{
-						Write-Verbose -Message $Localization.Skipped -Verbose
-						return
-					}
-
-					return $Menu[$y]
-				}
-			}
-		}
-		while ($k.Key -notin ([ConsoleKey]::Escape, [ConsoleKey]::Enter))
-	}
-
 	switch ($PSCmdlet.ParameterSetName)
 	{
 		"Root"
@@ -7166,15 +7178,9 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Information -MessageData "" -InformationAction Continue
 			Write-Verbose -Message $Localization.RetrievingDrivesList -Verbose
 
-			# Store all fixed disks' letters to use them within ShowMenu function
+			# Store all fixed disks' letters to use them within Show-Menu function
 			# https://learn.microsoft.com/en-us/dotnet/api/system.io.drivetype?view=net-7.0#fields
 			$DriveLetters = @((Get-CimInstance -ClassName CIM_LogicalDisk | Where-Object -FilterScript {$_.DriveType -eq 3}).DeviceID | Sort-Object)
-
-			# If the number of disks is more than one, set the second drive in the list as default drive
-			if ($DriveLetters.Count -gt 1)
-			{
-				$Script:Default = 1
-			}
 
 			# Desktop
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7184,39 +7190,25 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21769), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21769)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21769)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Desktop -FolderPath "${SelectedDrive}\Desktop" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Desktop -FolderPath "$($Choice)\Desktop" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Documents
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7226,39 +7218,25 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21770), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21770)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21770)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Documents -FolderPath "${SelectedDrive}\Documents" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Documents -FolderPath "$($Choice)\Documents" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Downloads
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7268,39 +7246,25 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21798), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21798)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21798)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Downloads -FolderPath "${SelectedDrive}\Downloads" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Downloads -FolderPath "$($Choice)\Downloads" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Music
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7310,39 +7274,25 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21790), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21790)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21790)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Music -FolderPath "${SelectedDrive}\Music" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Music -FolderPath "$($Choice)\Music" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Pictures
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7352,39 +7302,25 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21779), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21779)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21779)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Pictures -FolderPath "${SelectedDrive}\Pictures" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Pictures -FolderPath "$($Choice)\Pictures" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Videos
 			Write-Information -MessageData "" -InformationAction Continue
@@ -7394,463 +7330,443 @@ public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, Int
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21791), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21791)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
-				{
-					if ($DriveLetters.Count -gt 1)
-					{
-						$SelectedDrive = ShowMenu -Title ($Localization.DriveSelect -f [WinAPI.GetStr]::GetString(21791)) -Menu $DriveLetters -Default $Script:Default
-					}
-					else
-					{
-						$SelectedDrive = $env:SystemDrive
-					}
+				$Choice = Show-Menu -Menu $DriveLetters -Default $DriveLetters.Count[-1] -AddSkip
 
-					if ($SelectedDrive)
-					{
-						Set-UserShellFolder -UserFolder Videos -FolderPath "${SelectedDrive}\Videos" -RemoveDesktopINI
-					}
-				}
-				"1"
+				switch ($Choice)
 				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					{$DriveLetters -contains $Choice}
+					{
+						Set-UserShellFolder -UserFolder Videos -FolderPath "$($Choice)\Videos" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 		}
 		"Custom"
 		{
 			# Desktop
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Desktop
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21769)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Desktop
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21769), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21769)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browse
 					{
-						Set-UserShellFolder -UserFolder Desktop -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Desktop -FolderPath "$($FolderBrowserDialog.SelectedPath)\Desktop" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Documents
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Personal
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21770)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Personal
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21770), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21770)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browse
 					{
-						Set-UserShellFolder -UserFolder Documents -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Documents -FolderPath "$($FolderBrowserDialog.SelectedPath)\Documents)" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Downloads
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21798)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21798), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21798)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browser
 					{
-						Set-UserShellFolder -UserFolder Downloads -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Downloads -FolderPath "$($FolderBrowserDialog.SelectedPath)\Downloads)" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Music
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Music"
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21790)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Music"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21790), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21790)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browser
 					{
-						Set-UserShellFolder -UserFolder Music -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Music -FolderPath "$($FolderBrowserDialog.SelectedPath)\Music)" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Pictures
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Pictures"
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21779)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Pictures"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21779), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21779)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browser
 					{
-						Set-UserShellFolder -UserFolder Pictures -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Pictures -FolderPath "$($FolderBrowserDialog.SelectedPath)\Pictures)" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Videos
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Video"
+			Write-Verbose -Message ($Localization.UserFolderRequest -f [WinAPI.GetStr]::GetString(21791)) -Verbose
 
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Video"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21791), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserFolderSelect -f [WinAPI.GetStr]::GetString(21791)
-			# Extract the localized "Browse" string from shell32.dll
-			$Browse        = [WinAPI.GetStr]::GetString(9015)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = "&$Browse", $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Browse, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Add-Type -AssemblyName System.Windows.Forms
-					$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
-					$FolderBrowserDialog.Description = $Localization.FolderSelect
-					$FolderBrowserDialog.RootFolder = "MyComputer"
-
-					# Force move the open file dialog to the foreground
-					$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
-					$FolderBrowserDialog.ShowDialog($Focus)
-
-					if ($FolderBrowserDialog.SelectedPath)
+					$Browser
 					{
-						Set-UserShellFolder -UserFolder Videos -FolderPath $FolderBrowserDialog.SelectedPath -RemoveDesktopINI
+						Add-Type -AssemblyName System.Windows.Forms
+						$FolderBrowserDialog = New-Object -TypeName System.Windows.Forms.FolderBrowserDialog
+						$FolderBrowserDialog.Description = $Localization.FolderSelect
+						$FolderBrowserDialog.RootFolder = "MyComputer"
+
+						# Force move the open file dialog to the foreground
+						$Focus = New-Object -TypeName System.Windows.Forms.Form -Property @{TopMost = $true}
+						$FolderBrowserDialog.ShowDialog($Focus)
+
+						if ($FolderBrowserDialog.SelectedPath)
+						{
+							Set-UserShellFolder -UserFolder Videos -FolderPath "$($FolderBrowserDialog.SelectedPath)\Videos)" -RemoveDesktopINI
+						}
 					}
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 		}
 		"Default"
 		{
 			# Desktop
 			Write-Information -MessageData "" -InformationAction Continue
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21769)) -Verbose
+
+			# Extract the localized "Desktop" string from shell32.dll
 			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Desktop
-
-			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21769), $CurrentUserFolderLocation) -Verbose
-			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21769)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
-			{
-				"0"
-				{
-					Set-UserShellFolder -UserFolder Desktop -FolderPath "$env:USERPROFILE\Desktop" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
-				}
-			}
-
-			# Documents
-			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Personal
-
-			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21770), $CurrentUserFolderLocation) -Verbose
-			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21770)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
-			{
-				"0"
-				{
-					Set-UserShellFolder -UserFolder Documents -FolderPath "$env:USERPROFILE\Documents" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
-				}
-			}
-
-			# Downloads
-			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-
-			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21798), $CurrentUserFolderLocation) -Verbose
-			Write-Warning -Message $Localization.FilesWontBeMoved
-
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21798)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
-			{
-				"0"
-				{
-					Set-UserShellFolder -UserFolder Downloads -FolderPath "$env:USERPROFILE\Downloads" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
-				}
-			}
-
-			# Music
-			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Music"
-
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21790), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21790)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Set-UserShellFolder -UserFolder Music -FolderPath "$env:USERPROFILE\Music" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Desktop -FolderPath "$env:USERPROFILE\Desktop" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
+
+			# Documents
+			Write-Information -MessageData "" -InformationAction Continue
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21770)) -Verbose
+
+			# Extract the localized "Documents" string from shell32.dll
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name Personal
+			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21770), $CurrentUserFolderLocation) -Verbose
+			Write-Warning -Message $Localization.FilesWontBeMoved
+
+			do
+			{
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
+				{
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Documents -FolderPath "$env:USERPROFILE\Documents" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
+				}
+			}
+			until ($Choice -ne $KeyboardArrows)
+
+			# Downloads
+			Write-Information -MessageData "" -InformationAction Continue
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21798)) -Verbose
+
+			# Extract the localized "Downloads" string from shell32.dll
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
+			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21798), $CurrentUserFolderLocation) -Verbose
+			Write-Warning -Message $Localization.FilesWontBeMoved
+
+			do
+			{
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
+				{
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Downloads -FolderPath "$env:USERPROFILE\Downloads" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
+				}
+			}
+			until ($Choice -ne $KeyboardArrows)
+
+			# Music
+			Write-Information -MessageData "" -InformationAction Continue
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21790)) -Verbose
+
+			# Extract the localized "Music" string from shell32.dll
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Music"
+			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21790), $CurrentUserFolderLocation) -Verbose
+			Write-Warning -Message $Localization.FilesWontBeMoved
+
+			do
+			{
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
+				{
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Music -FolderPath "$env:USERPROFILE\Music" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
+				}
+			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Pictures
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Pictures"
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21779)) -Verbose
 
+			# Extract the localized "Pictures" string from shell32.dll
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Pictures"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21779), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21779)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Set-UserShellFolder -UserFolder Pictures -FolderPath "$env:USERPROFILE\Pictures" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Pictures -FolderPath "$env:USERPROFILE\Pictures" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 
 			# Videos
 			Write-Information -MessageData "" -InformationAction Continue
-			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Video"
+			Write-Verbose -Message ($Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21791)) -Verbose
 
+			# Extract the localized "Pictures" string from shell32.dll
+			$CurrentUserFolderLocation = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "My Video"
 			Write-Verbose -Message ($Localization.CurrentUserFolderLocation -f [WinAPI.GetStr]::GetString(21791), $CurrentUserFolderLocation) -Verbose
 			Write-Warning -Message $Localization.FilesWontBeMoved
 
-			$Title         = ""
-			$Message       = $Localization.UserDefaultFolder -f [WinAPI.GetStr]::GetString(21791)
-			# Extract the localized "&Yes" string from shell32.dll
-			$Yes           = [WinAPI.GetStr]::GetString(33224)
-			# Extract the localized "&No" string from shell32.dll
-			$No            = [WinAPI.GetStr]::GetString(33232)
-			$Options       = $Yes, $No
-			$DefaultChoice = 1
-			$Result        = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-
-			switch ($Result)
+			do
 			{
-				"0"
+				$Choice = Show-Menu -Menu @($Yes, $Skip) -Default 2
+
+				switch ($Choice)
 				{
-					Set-UserShellFolder -UserFolder Videos -FolderPath "$env:USERPROFILE\Videos" -RemoveDesktopINI
-				}
-				"1"
-				{
-					Write-Verbose -Message $Localization.Skipped -Verbose
+					$Yes
+					{
+						Set-UserShellFolder -UserFolder Videos -FolderPath "$env:USERPROFILE\Videos" -RemoveDesktopINI
+					}
+					$Skip
+					{
+						Write-Information -MessageData "" -InformationAction Continue
+						Write-Verbose -Message $Localization.Skipped -Verbose
+					}
+					$KeyboardArrows {}
 				}
 			}
+			until ($Choice -ne $KeyboardArrows)
 		}
 	}
 }
@@ -10538,7 +10454,7 @@ FD2F77D9FBE75022FF5D13B168BD0B004D9C803E8F8C5D8F25CB22ACC97D8EDE169E5D50FCD87444
 52AB712AE758AE15C4D86ED3C23D4EB78C5ED94D8A5AB8AA93C43E18FC0CE418AC79DF945E81A58B70332A2C03C445436E8013E0B82AC59AF856C6A00812BCD3B6209449B6D008CA37D8A9210A61049
 350AD07F4E88FC7FBEC9FC64BC60C318912E36DBEA6D4058AF35CACD6E790C96B66EAE5966C47D3E1C4ACF42BF04D58FF363D20DBA61C9D32EBE433A45AFE02B41FD6FC91AE7157CCD7FACEC294623F
 825DE576F72A8245D2BC5D1D7C71B183166C8F0DAF9CF8ED6F1DAEBB0349D82E57BB81DB946128A5440235AD6222A294B27E97738D49F52170DE1B1B922C8C548215FD0D2980D7BA9B8F3133D9415BA
-B29670A5EDEC4858EB9D1A7E8FBD0296CB6D610BDD44A1A450EDEC61983152C237225F7AABABD482EB08328BC338D87BA1FE30864D9A97C20FA42CAEDF6359457C8BB26032A9728E819FFF9BF4F7154
+B29670A5EDEC4858EB9D1A7E8FBD0296CB6D610BDD44A1A450EDEC61983152C237225F7AABABD482EB08328BC338D87BA1FE32084D9A97C20FA42CAEDF6359457C8BB26032A9728E819FFF9BF4F7154
 69A0A4506A4CA1625E79CAE215683CDAADFB1E68ADC4987FF3FD7E9859CB40291478A4D2B281AEFEB97DC45C7F991311A68C2F173E2377709C355C6870DC4C14E5534120539C1DB0AD0D6E331D67058
 1F6E352DCB3E34D61E6742F957FE9F39854A324E07C68A17BE9CB19446583EDDAAFD0E433A54F4E0854709BD47B24AC76DF75849B9D917FF2B0F4228C94EA01CF658430B2C18F6EEAB104B9A935C6FB
 FEA494190BF3446DCC8C8AAF62BA01F0BFB18E15503C27558DB70C48EFB0AEA0B600F985C904E9F244E2A08464AE980E1A8CC05F22C9D4C23D753FD5250D0E190CB0CAC71404CF52A8CCEC988DBA22F
@@ -11903,21 +11819,13 @@ function Set-AppGraphicsPerformance
 {
 	if (Get-CimInstance -ClassName Win32_VideoController | Where-Object -FilterScript {($_.AdapterDACType -ne "Internal") -and ($null -ne $_.AdapterDACType)})
 	{
-		$Title         = $Localization.GraphicsPerformanceTitle
-		$Message       = $Localization.GraphicsPerformanceRequest
-		# Extract the localized "&Yes" string from shell32.dll
-		$Yes           = [WinAPI.GetStr]::GetString(33224)
-		# Extract the localized "&No" string from shell32.dll
-		$No            = [WinAPI.GetStr]::GetString(33232)
-		$Options       = $Yes, $No
-		$DefaultChoice = 1
-
 		do
 		{
-			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-			switch ($Result)
+			$Choice = Show-Menu -Title $Localization.GraphicsPerformanceTitle -Menu @($Yes, $No) -Default 2
+
+			switch ($Choice)
 			{
-				"0"
+				$Yes
 				{
 					Add-Type -AssemblyName System.Windows.Forms
 					$OpenFileDialog = New-Object -TypeName System.Windows.Forms.OpenFileDialog
@@ -11938,14 +11846,15 @@ function Set-AppGraphicsPerformance
 						New-ItemProperty -Path HKCU:\Software\Microsoft\DirectX\UserGpuPreferences -Name $OpenFileDialog.FileName -PropertyType String -Value "GpuPreference=2;" -Force
 					}
 				}
-				"1"
+				$No
 				{
 					Write-Information -MessageData "" -InformationAction Continue
 					Write-Verbose -Message $Localization.Skipped -Verbose
 				}
+				$KeyboardArrows {}
 			}
 		}
-		until ($Result -eq 1)
+		until ($Choice -ne $KeyboardArrows)
 	}
 }
 
@@ -15269,24 +15178,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUoYIXiP0saWj2l7ON6sT42iDt
-# bwCgghYNMIIDAjCCAeqgAwIBAgIQMh4wiRfrYaBGA3JjqLhc0jANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA3MDIxOTM2MjRa
-# Fw0yNTA3MDIxOTQ1NTNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo4fsKZhiq4hcuIQ2kwJ0z4Vt2FMi
-# JKfwslhdoFiVjwb83iwPa2CbZmdXTqdja9bBNLgpPqTxyuu5KyOTnT/4bK1i8Kqk
-# eumqg+KpFbDGYPf6RVFrEqUtWym/iAqy2gcSJgmbv4Xg6F/q639VW5Hc5GVPEgI9
-# LqU6bIxEFIeDikMJF92IlpLCclkLC6fk/ZzVqS0iohc90ek7iBOztpGMlW4GRSve
-# sIplaJicQ3Z5KPOVi/nsLKsXxaevK3LkGXk0ZsEIN3V1eF59x2VKdJG9gJ6XuImc
-# UeXzXW+LIBdNc26n3ShgbzndsSz4ktkSHqAmQhHcVFkGINwCcVrDxotMOQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUK6sAceKQJoPzK6909K+/bIu6
+# OBqgghYNMIIDAjCCAeqgAwIBAgIQaksVnyyz84NPdVUTWD8u7zANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA3MTYxNzEwMjJa
+# Fw0yNTA3MTYxNzE5NTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApicz5jh8o7haSVVBc1LCYPa09UJh
+# v9J52gmBcJHyq+sFrgyZvzY5IlLbAfk/VnlyADVKKbr6qc6dhT0BCjTraLAPxLEZ
+# dG3GQU9ROwyKom6qdS933uWdQP/GA6miccGxLIVia6eYfLi7WYmFI3NLtXQTs9EO
+# EXQTNDuFCl3KN0/CQUiRe1Ye5/tpzFdSq33tcFVuJ/+AkTV3dJTOjafwv3Zejv8e
+# isuGAtjaJSti4kGCry8iQLQVfbIUk+gX+39djvug/aZ1LwrMisn6oSO8f8aJoOhg
+# PsaQUsPu2j8griGCtC7Wa+sWlBkK5rpeZme6E019qP1dQCIC9Bb2aU+3jQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFPJXa262Wsl48ZFpGvZYNk6UbDoAMA0GCSqGSIb3DQEBCwUAA4IBAQCZmvTm
-# v1aYprPAz8q09cv/WibA0pu1noUzDRssko5RvuCY/QcTsBW3JktmcvNDropjfuXA
-# /uIT0eC2qqaw66aS8EWcMdli1PHP352dakPVL7zTnRLvNrCJokAExm1u6RIBttQ4
-# MB9KWkax+gVXR02YnUcZRtF9q2YfTaNhtD/6opE5NIBeKbs/QNBwbbgyXOCRyTSM
-# TwI2SSI95bfL+4w9uOTv2sKk48uFtsiqYn32SUNYo0oY3W4adxg0ApL3vygsKqYX
-# BBizriZJkhAvDJyFvWzinTEUYpE78a7GmEedRYl6TJ8qjgfGvBFUycJv6qk+Axw/
-# R0KMbYytzP+VFJ0XMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFBDjDCjlL9oTkLaBglE0uU6zFaLiMA0GCSqGSIb3DQEBCwUAA4IBAQB2RyYn
+# B5dCJUJC8WtfweY5eBb4K8IEf23N8dfktjsARnZ6zmG+3ggkABsHWVS392HGMLdW
+# r8a2iiqkwZy1TsZl6Y+WfWbaGPnPpBVuVtxe7dC9bsm+5EQObDvFj2msFmgHyDKn
+# mSAiu8Qp0SpXFoR6Q3Qkkehhcsp8M4ijQRTpl92fu6EQuJ+1B+2QJRd/DV9Jz+JY
+# lkgJ+01R7oBH3HHzfg33DaLLlnOmEpte8SFOYQR3/lv2uOnHrq0KFUQZCk4RJBie
+# gcDQdEy5mwQlBzTrF55iu6MU7HV8SS2ehUFcVDVq5B54Z7LzFIo8a7DlBXLr8yhQ
+# 3OaYIlpoe8rzQ6IQMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -15388,31 +15297,31 @@ function Errors
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAyHjCJF+thoEYDcmOouFzSMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBqSxWfLLPzg091VRNYPy7vMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBSJhN5ZsqZ3xRJrZ3jn3WgqikPhczANBgkqhkiG9w0BAQEF
-# AASCAQBbSZW510c+RtjiZau8fEQDFwc1lyRC8an2YalgcWxGbmoZ9zRN1whqznqd
-# zXUSSgxh+lNOHJI8gh6sFaxWWB4KFNoekBfHgGjx8K2MkVKSOisJky+Pc7b/b5wZ
-# BkbNi61Gn7CjdJwP7iR8yOYGpWRLwIqd3AOJhvFYqXOGwSPBo4bDY74Vnfg0dCYL
-# LB7CejgjbDJnfXxrP0/cu4luLjqgWJSJ9m2AgofOtpSIEw0TTEX9EP/sqVCgOzFb
-# NVeN/NJu0xuENR2OjKUWxWyRi6uVilklBpmXs9E/HwrBx/pZXPWVuneUN/5FcSSg
-# f3GB14gHdhzm9oj1rVZ03UcNgswDoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBSWi0mBtNZh0EVfAYGrYh21uDtMfzANBgkqhkiG9w0BAQEF
+# AASCAQCdYoB5awmM2XSQvtMhx6Mms0LoNUjD1solXTG+BpFXYqoL5nwAi4eExW7t
+# 3poG3ZFdF5jq9TtP4EqchjndNNWJL0GCcWMDt7zEJl/6nRxwS9g7JB5Wt4wPlqc9
+# gIVe8qZnerRyvoaTCp9Yb1te4te8+V2ITSma+iZpjnGWPDEQVNOUfqbng6dQrVXW
+# vxy+ryoY+gAEF9d08JoP8OjfSZ6jbYYx43R3prCmj8SskLPm05qCmY4uw81PbEWk
+# MlAH14D+TGIvPiOO+GGZDh4r46Y7490bVWCFOM5NOYf0a/u/VaNoJPWaqZV7ZVyW
+# DXkn8FusE8KUpF6I1ARviCOGd2xfoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDcwMjE5
-# NDYzNVowLwYJKoZIhvcNAQkEMSIEIMW7hBgNPO6x7FtcaHvx6eBSbRIv0+ngbFWC
-# gd3dumJxMA0GCSqGSIb3DQEBAQUABIICALVUouOQxZDBM4UmLZOoYcbUXZD2qEDs
-# mB5KDjpcPIByQMSN2ycsBGanAV7LcB/p+7egN32T8mwJ2Gq0AdNejNjd+hMgFWPw
-# CzptsavEKRRk6//8s3RVTgDveDJXKg0i3XqynwmtFL0/Msf0B+P4viB5kbiidly4
-# oWzEh6oP/qQu2uGjTeWLhF6JcaHAWXO6t7RVW4hLrTF2h7TWGmy8P/rOvmMNBPAK
-# tU7VLj/EtzzuJFTiczTfPkrkGfe3i5uWMgXTB1QalZJ3x+vn+nD7lwFD7uuRzfyQ
-# BzXg3T9lOWs+btm+GRSAsOrsRk8RF9H5uCllyGUfBUIbYh5V6uh16AXcmzYqe/FH
-# /+Yj4XNoeUZKZE1+T0aOkczAjtpF54a9LtKPfy6WpWytbwJpvr2Arefr62PErs5y
-# UQroEredMvYdFB64OqC5mqIfrHQa/4Os8QSplxI1fKjjbwjXHaFgR/ixKvQRfooX
-# D0zK4M6T+3RhZ1jo1r7/vmEpcDmZAI6fRl2k2oZA++ujlpv9a2gK/W6tbPiwJcD0
-# /cdMXcwobzdUCv2AoVySWauAKx+pqkppvvvF8DVB/R+kkD0XF7+QsaO9ODiNzzSx
-# ePvIT72Gy5Q3qTNTSTAV/e6YURgg7PrQ3db8N+7xOMozqUxwVzA+tAd4N8Q/nB9e
-# gGE9vIv2egaa
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDcxNjE3
+# MjAzM1owLwYJKoZIhvcNAQkEMSIEIOY8noYTUNv9HNBOlji00HZ26886xEsPk9D0
+# DRWMW3IwMA0GCSqGSIb3DQEBAQUABIICAFxmgqjXRJ+V3jXUuI9TruyKUyjLSWLt
+# Y9Xc1dNbSvpPbXjwAYq/o2LgV8vYR0gsxc6rpYtCX5SQW4gle2TfkLp64ExdlpT5
+# UC8iAaclHfE4qxV+2oWC7fVQqafgKGvrv0Xm1Vf8lZoMqDP5wB+vbRU6iflnRo0O
+# VeAAebhy3rYHz0ZquBSp/bfb5hcUfKMq8sB0/NPGvt4LO4XUZc2OYX4dKnZKoA7a
+# jf9JPuuYEBMblrs4Qt8yMRJFi3k5AdNfINxw63X/pveBO5nrxaA+V7ur9hrgjwrv
+# OsCf/xY3kd/nJE8QGBODG3/WeNdO3nYuSIouRpFiAPoWC7YUUMCFhbPe0uDcu2TX
+# J6SRaNlFvKD1nNl99w5816AcEVPHix0OHBrOB+EKIOgKZknTu6y61C9bPPRrAFrL
+# Z0QnWcjqMOR96rnUE1pNtcVcYT4N884ifKhlNS8ZY7SDLIb1x4OMKBhQy+SFfmSC
+# 10I8POLNKgQXn6AsZ8BwN1LRjGXZN0uI0CHgim5aLFSPoQm2Rfw2cQr8BVEXJSIN
+# 1bUbmaM0KOr0hfyivYh4Dv2IKtsMwM0fDaJ2S76d7WD3vChJRtFWsqiWyubg+XHc
+# cuHea7mGpyXI9AnAgyqeuMj/QatX896OUt6/l4W04+rnLStVbSlrpNQFHo22w+6v
+# j28G1tGy8x48
 # SIG # End signature block

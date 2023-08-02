@@ -1,18 +1,19 @@
 ﻿ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = \nThe script supports Windows 11 22H2+.
-UpdateWarning                             = \nYour Windows 11 build: {0}.{1}. Supported builds: 22621.1928+. Run Windows Update and try again.
-UnsupportedLanguageMode                   = \nThe PowerShell session in running in a limited language mode.
-LoggedInUserNotAdmin                      = \nThe logged-on user doesn't have admin rights.
-UnsupportedPowerShell                     = \nYou're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version.
-UnsupportedHost                           = \nThe script doesn't support running via {0}.
-Win10TweakerWarning                       = \nProbably your OS was infected via the Win 10 Tweaker backdoor.
-TweakerWarning                            = \nThe Windows stability may have been compromised by using {0}. Just in case, reinstall Windows.
-bin                                       = \nThere are no files in the bin folder. Please, re-download the archive.
-RebootPending                             = \nThe PC is waiting to be restarted.
-UnsupportedRelease                        = \nA new version found.
-CustomizationWarning                      = \nHave you customized every function in the {0} preset file before running Sophia Script?
-WindowsComponentBroken                    = \n{0} broken or removed from the OS.
-UpdateDefender                            = \nMicrosoft Defender definitions are out-of-date. Run Windows Update and try again.
+UnsupportedOSBuild                        = The script supports Windows 11 22H2+.
+UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22621.1992+. Run Windows Update and try again.
+UnsupportedLanguageMode                   = The PowerShell session in running in a limited language mode.
+LoggedInUserNotAdmin                      = The logged-on user doesn't have admin rights.
+UnsupportedPowerShell                     = You're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version.
+UnsupportedHost                           = The script doesn't support running via {0}.
+Win10TweakerWarning                       = Probably your OS was infected via the Win 10 Tweaker backdoor.
+TweakerWarning                            = The Windows stability may have been compromised by using {0}. Just in case, reinstall Windows.
+bin                                       = There are no files in the bin folder. Please, re-download the archive.
+RebootPending                             = The PC is waiting to be restarted.
+UnsupportedRelease                        = A new version found.
+KeyboardArrows                            = Please use the arrow keys {0} and {1} on your keyboard to select your answer
+CustomizationWarning                      = Have you customized every function in the {0} preset file before running Sophia Script?
+WindowsComponentBroken                    = {0} broken or removed from the OS.
+UpdateDefender                            = Microsoft Defender definitions are out-of-date. Run Windows Update and try again.
 ControlledFolderAccessDisabled            = Controlled folder access disabled.
 ScheduledTasks                            = Scheduled tasks
 OneDriveUninstalling                      = Uninstalling OneDrive...
@@ -27,7 +28,6 @@ RetrievingDrivesList                      = Retrieving drives list...
 DriveSelect                               = Select the drive within the root of which the "{0}" folder will be created.
 CurrentUserFolderLocation                 = The current "{0}" folder location: "{1}".
 UserFolderRequest                         = Would you like to change the location of the "{0}" folder?
-UserFolderSelect                          = Select a folder for the "{0}" folder.
 UserDefaultFolder                         = Would you like to change the location of the "{0}" folder to the default value?
 ReservedStorageIsInUse                    = This operation is not supported when reserved storage is in use\nPlease re-run the "{0}" function again after PC restart.
 ShortcutPinning                           = The "{0}" shortcut is being pinned to Start...
@@ -35,8 +35,7 @@ SSDRequired                               = To use Windows Subsystem for Android
 UninstallUWPForAll                        = For all users
 UWPAppsTitle                              = UWP Apps
 HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer...
-GraphicsPerformanceTitle                  = Graphics performance preference
-GraphicsPerformanceRequest                = Would you like to set the graphics performance setting of an app of your choice to "High performance"?
+GraphicsPerformanceTitle                  = Would you like to set the graphics performance setting of an app of your choice to "High performance"?
 ActionCenter                              = In order to use "{0}" function you have to enable Action Center.
 WindowsScriptHost                         = Windows Script Host access is disabled on this machine. In order to use "{0}" function you have to enable Windows Script Host.
 ScheduledTaskPresented                    = The "{0}" function was already created as "{1}".
@@ -75,24 +74,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblQYJKoZIhvcNAQcCoIIbhjCCG4ICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUq+RQoue3JZPKep/8lJrJ1jKV
-# A56gghYNMIIDAjCCAeqgAwIBAgIQMh4wiRfrYaBGA3JjqLhc0jANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA3MDIxOTM2MjRa
-# Fw0yNTA3MDIxOTQ1NTNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo4fsKZhiq4hcuIQ2kwJ0z4Vt2FMi
-# JKfwslhdoFiVjwb83iwPa2CbZmdXTqdja9bBNLgpPqTxyuu5KyOTnT/4bK1i8Kqk
-# eumqg+KpFbDGYPf6RVFrEqUtWym/iAqy2gcSJgmbv4Xg6F/q639VW5Hc5GVPEgI9
-# LqU6bIxEFIeDikMJF92IlpLCclkLC6fk/ZzVqS0iohc90ek7iBOztpGMlW4GRSve
-# sIplaJicQ3Z5KPOVi/nsLKsXxaevK3LkGXk0ZsEIN3V1eF59x2VKdJG9gJ6XuImc
-# UeXzXW+LIBdNc26n3ShgbzndsSz4ktkSHqAmQhHcVFkGINwCcVrDxotMOQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUKwo5S7eAlub/fQ+1v+eontyR
+# 2WqgghYNMIIDAjCCAeqgAwIBAgIQaksVnyyz84NPdVUTWD8u7zANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA3MTYxNzEwMjJa
+# Fw0yNTA3MTYxNzE5NTBaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApicz5jh8o7haSVVBc1LCYPa09UJh
+# v9J52gmBcJHyq+sFrgyZvzY5IlLbAfk/VnlyADVKKbr6qc6dhT0BCjTraLAPxLEZ
+# dG3GQU9ROwyKom6qdS933uWdQP/GA6miccGxLIVia6eYfLi7WYmFI3NLtXQTs9EO
+# EXQTNDuFCl3KN0/CQUiRe1Ye5/tpzFdSq33tcFVuJ/+AkTV3dJTOjafwv3Zejv8e
+# isuGAtjaJSti4kGCry8iQLQVfbIUk+gX+39djvug/aZ1LwrMisn6oSO8f8aJoOhg
+# PsaQUsPu2j8griGCtC7Wa+sWlBkK5rpeZme6E019qP1dQCIC9Bb2aU+3jQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFPJXa262Wsl48ZFpGvZYNk6UbDoAMA0GCSqGSIb3DQEBCwUAA4IBAQCZmvTm
-# v1aYprPAz8q09cv/WibA0pu1noUzDRssko5RvuCY/QcTsBW3JktmcvNDropjfuXA
-# /uIT0eC2qqaw66aS8EWcMdli1PHP352dakPVL7zTnRLvNrCJokAExm1u6RIBttQ4
-# MB9KWkax+gVXR02YnUcZRtF9q2YfTaNhtD/6opE5NIBeKbs/QNBwbbgyXOCRyTSM
-# TwI2SSI95bfL+4w9uOTv2sKk48uFtsiqYn32SUNYo0oY3W4adxg0ApL3vygsKqYX
-# BBizriZJkhAvDJyFvWzinTEUYpE78a7GmEedRYl6TJ8qjgfGvBFUycJv6qk+Axw/
-# R0KMbYytzP+VFJ0XMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFBDjDCjlL9oTkLaBglE0uU6zFaLiMA0GCSqGSIb3DQEBCwUAA4IBAQB2RyYn
+# B5dCJUJC8WtfweY5eBb4K8IEf23N8dfktjsARnZ6zmG+3ggkABsHWVS392HGMLdW
+# r8a2iiqkwZy1TsZl6Y+WfWbaGPnPpBVuVtxe7dC9bsm+5EQObDvFj2msFmgHyDKn
+# mSAiu8Qp0SpXFoR6Q3Qkkehhcsp8M4ijQRTpl92fu6EQuJ+1B+2QJRd/DV9Jz+JY
+# lkgJ+01R7oBH3HHzfg33DaLLlnOmEpte8SFOYQR3/lv2uOnHrq0KFUQZCk4RJBie
+# gcDQdEy5mwQlBzTrF55iu6MU7HV8SS2ehUFcVDVq5B54Z7LzFIo8a7DlBXLr8yhQ
+# 3OaYIlpoe8rzQ6IQMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -194,31 +193,31 @@ Uninstall                                 = Uninstall
 # HJpRxC+a9l+nJ5e6li6FV8Bg53hWf2rvwpWaSxECyIKcyRoFfLpxtU56mWz06J7U
 # WpjIn7+NuxhcQ/XQKujiYu54BNu90ftbCqhwfvCXhHjjCANdRyxjqCU4lwHSPzra
 # 5eX25pvcfizM/xdMTQCi2NYBDriL7ubgclWJLCcZYfZ3AYwxggTyMIIE7gIBATAt
-# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhAyHjCJF+thoEYDcmOouFzSMAkG
+# MBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0AhBqSxWfLLPzg091VRNYPy7vMAkG
 # BSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJ
 # AzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMG
-# CSqGSIb3DQEJBDEWBBQsnJWr9SFeWmMuGPfZnn+AOCxsDTANBgkqhkiG9w0BAQEF
-# AASCAQCQholaLT8Ix9Y5W3i69KdWraIlEPM+ZHOpW3yFDAyOHclirpEdpprXpppt
-# jr4U9TH0tB3janX2SMleZdWKvfvt/WTqfMPNLZ2co09eyYIKe4TVSvesjGkn2EH/
-# 8nyfZSC9bF/VQtDq5qC5AVdJ2F+h8G5lOm+X5adsyPXJF+7FinB7q+OJtyBj9tKf
-# cRW2IJZlVCWapsUGdChBPaAJHvo4s7QZi9nyKfDr/Iwag3bXVl1sAiVVHWIpZd7R
-# z5/M8NU7W/Lu7fLwmzBMmMrtlvzB0bxjG/MyeuZYqhpgeF6Y6jbWjywKaVGjrvA7
-# cxmjBE6KUSWjhEM7MJ+v+8msy/EloYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
+# CSqGSIb3DQEJBDEWBBQCUlg6UJ7FPHKMdgCZhud8OJOlATANBgkqhkiG9w0BAQEF
+# AASCAQB8C5JL2tf3asy1IgNGpqgqAsZjYO7JCzjf3idaTa6HprE1o4a997BLEDFq
+# owTmhNTVTYngjPhTesghGC0QP4EODt9UVLlvVi9DkvRFyzAWvvagTBhTKDbDR8v2
+# x2LXldYbkG7nFgc015fOAYM5kUpWWY5v+lyXSBRaQpoKc6N4DQMgxOtLSfKZhJCf
+# tX6KnPSdlqgkm8bpiPVLpF6PhvBOJ+ssipjbo0tqDmoEi8wOidB+yztA9D3ozqyY
+# vEHE/C8AtRV5f4GS/ZVxQM/rKhqp5qwVr2TQkwaRrEiNt/NCXUxhxnLfRTnkpJF6
+# toWSbg7Gh6D13ksRu006FvwFrJvzoYIDIDCCAxwGCSqGSIb3DQEJBjGCAw0wggMJ
 # AgEBMHcwYzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTsw
 # OQYDVQQDEzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVT
 # dGFtcGluZyBDQQIQDE1pckuU+jwqSj0pB4A9WjANBglghkgBZQMEAgEFAKBpMBgG
-# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDcwMjE5
-# NDYzNFowLwYJKoZIhvcNAQkEMSIEIMCDr2IdX9Vs/F/HXNwJF9oF0Yy6H5qdmJ8b
-# B7TSCZp0MA0GCSqGSIb3DQEBAQUABIICAFS+nJApG2bAY4aEoPf5mW8OzFxEJsPU
-# HA9QwTQ3SPWc5WE06UuwwRtJlrWowaxIiaXh7AXTCUQUHFM+VdDIu24gfd03HFBF
-# Q6+W0YK90t2HIKcBeeCSdZ0jwYdvSSMOJIQc5cmlm8u/p9ZYhxs59cd2BXFtPqLe
-# 9VbKMtUAnkiYJ35Dbrdy5KTER17ZvM99iErYLVGE/RNFH0ARb5ZamgHw/TcGK3JT
-# JTq08lprHr6NwS0vf+PFWiBumCG62B8bAVqx6bnN2Ugx8yiH/HR9B1iAFQBIlOcM
-# IjRWjaZn6YyGjDK2fTJtf/1r5diV0NsLDEnlhfkNoeto0lssPyGiLqo+EN7MEO2h
-# Ujad9iuxImgfe1c9sdCkta7NDEUI0inrnaOD5zw9qIy81SfQVKiSJ3CvFlo6/hO6
-# VgHWtSvTYtBWwK7RSt7PD7f9EzfNCMvudqZ49rghwHscc75+02JTcBDQD9hqJgV2
-# KrPdtLgiwMk1vTFm9/AgQRQ8gPFtP+m9NZ3ZQdkvZcGCSltqNpb0UB45k/coWDsn
-# o6ycsr2+O5Uppd4J/JioAo3FrCRVTH4tFXhn2xg35RsyBgYOFt3pAgK5oNLaTOjO
-# 1XicY5qPGKgCEokPo7zydnYqomRV0MXR1WvCotRB5OxqVKEPgLgNwryr6C3/PBzX
-# y+FZhr42cOoe
+# CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDcxNjE3
+# MjAzMlowLwYJKoZIhvcNAQkEMSIEIFp3L467ZgTpSoi11Gza41qIyUesafKfxpWn
+# XAAmSD9SMA0GCSqGSIb3DQEBAQUABIICALHyCWMUwKkRHdHjXpO2nS6h85l3dgpx
+# hdLlTzHO77IcPnaK3qgeR1zaIJIVmJVJBmqujxI3YVA8tjGKNfYTPmtvHUk9+4zt
+# q2ivxIAXu5dqtyuwWYniIiFlRD45mXCxEFnPL0dNBy7OrqwmFH91alxnA33NaPSI
+# uqA5vb2UJ8n/Vn1z3Wcll82pFIQW/YBugl+ab0lybqqwdc6y7K2kcxRqA7mepd/I
+# x4Vu96cDC/5Rl0CFT9OMjntWwq1BnkPkQ9GmNtzxRhcucRzcheVSSKGRfoPThIPG
+# oCpaqQjcHr6W+VXvhak7W6M8CiPcjJJt8EwnwyPEpcGicSErRvfS+GirswSs1I/z
+# LcueoLKtUB8fSol3/xh339WiaNCrDvlA08fWvQOBKMFEFHRyPsdMbeyGrP2kA3KO
+# F+oNyaSGQGHvIrHGuOZ0pWC5hg+uEp4aHpHigLfkxdaL9opQlhMcSygsqKHL0vvv
+# bDhEDsIOaHabaSphlMnrvBExByD0rWbSNsN3QXgW+bjSQWKAqu8hxaJekEeuyPCs
+# KC7mWGbuTp6/4uj9mIO0hLUqJPLpFyjkzL+YLknS6I98jR3RFULtY8OLG7y/ffmb
+# d5WFAPcCC6vTfQBT5Iu72uQQCSMafzOR4MAtV4t7cXzXzaOCkD0L+hHkrnXmz4S9
+# oPgAt4mvXv3P
 # SIG # End signature block
