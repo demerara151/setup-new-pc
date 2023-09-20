@@ -1,6 +1,6 @@
 ConvertFrom-StringData -StringData @'
 UnsupportedOSBuild                        = このスクリプトは Windows 11 22H2 かそれ以上のバージョンをサポートしています
-UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22621.1928 かそれ以上です。Windows Update を実行してから再度お試しください。
+UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22621.2283 かそれ以上です。Windows Update を実行してから再度お試しください。
 UnsupportedLanguageMode                   = PowerShell は限られた言語モードで実行されています
 LoggedInUserNotAdmin                      = ログオンしているユーザーには管理者権限がありません
 UnsupportedPowerShell                     = PowerShell {0}.{1} でスクリプトを実行しようとしています。適切な PowerShell のバージョンで実行してください
@@ -54,6 +54,7 @@ ErrorsLine                                = Line
 ErrorsMessage                             = Error/Warning
 DialogBoxOpening                          = ダイアログを表示します...
 Disable                                   = 無効化
+Enable                                    = 有効化
 AllFilesFilter                            = 全てのファイル
 FolderSelect                              = フォルダーを選択してください
 FilesWontBeMoved                          = ファイルは移動されません
