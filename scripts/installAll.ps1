@@ -42,7 +42,7 @@ scoop install hyper
 scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
 
 # Dev
-scoop install brotli deno gitui marksman osv-scanner poetry python ruff rustup sqlitestudio
+scoop install deno marksman osv-scanner poetry python ruff rustup sqlitestudio
 
 # Editor
 scoop install helix neovim notable vscode zenhan
@@ -51,7 +51,7 @@ scoop install helix neovim notable vscode zenhan
 sudo scoop install keepassxc gpg4win
 
 # Network
-scoop install goodbyedpi localsend
+scoop install localsend
 
 # IM
 scoop install element
