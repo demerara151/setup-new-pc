@@ -1,15 +1,15 @@
 # Setup Workflow for Windows 11
 
-**Windows を快適に使うための PC セットアップ手順**
+Windows を快適に使うための PC セットアップ手順
 
-### こんな人におすすめ
+## こんな人におすすめ
 
 - 余計なプログラムやファイルは出来るだけ排除したい
 - Microsoft 製品は一部を除いて基本的に使わない
 - プライバシーとセキュリティを強化したい
 - PC のスペックが低い、または回線速度に問題がある
 
-### Screenshot
+## Screenshot
 
 ![taskmgr](https://user-images.githubusercontent.com/54271767/219234992-6b27ac3e-009f-4414-a7d1-57456196df07.png)
 
@@ -285,7 +285,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 2. デフォルトのフィルターを全て適用
 3. `My rules` タブに、次の 2 行を追加
 
-   ```
+   ```txt
    * * 3p-frame block
    * * 3p-script block
    ```
@@ -296,7 +296,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 `My Filters` のタブに、以下の行を追加することで、サードパーティーのリモートフォントをブロックできます
 
-```
+```txt
 ! Block all third-party remote fonts
 *$font,third-party
 ```
