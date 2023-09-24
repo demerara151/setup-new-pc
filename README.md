@@ -27,7 +27,7 @@ Windows を快適に使うための PC セットアップ手順
   - [スクリプトの編集](#スクリプトの編集)
 - [Usage](#usage)
   - [Sophia Script for Windows 11](#sophia-script-for-windows-11)
-  - [メインスクリプトの実行](#メインスクリプトの実行)
+  - [アプリの一括インストール](#%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE%E4%B8%80%E6%8B%AC%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
   - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
 - [Personal Settings](#personal-settings)
   - [各種設定ファイルの配置](#各種設定ファイルの配置)
@@ -105,7 +105,7 @@ git clone https://github.com/demerara151/setup-new-pc.git
 
   メモ帳で開き、中身を自分好みに編集。もしくは、別の PC で事前に編集しておく
 
-- [installAll.ps1](/scripts/installAll.ps1)
+- [InstallAllApps.ps1](/scripts/InstallAllApps.ps1)
 
   <!-- TODO: Write examples. -->
 
@@ -134,12 +134,12 @@ sudo ~/setup-new-pc/Sophia/Sophia.ps1
   2. `PoserShell`、または PC の再起動
   3. `PowerShell` のバージョンがスクリプトの要件を満たしているか確認
 
-### メインスクリプトの実行
+### アプリの一括インストール
 
 PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプトを実行
 
 ```powershell
-~/setup-new-pc/scripts/installAll.ps1
+~/setup-new-pc/scripts/InstallAllApps.ps1
 ```
 
 必要なアプリがまとめてインストールされます
@@ -207,10 +207,10 @@ chezmoi apply
 - Xbox gaming
 
 ```powershell
-sudo ~/setup-new-pc/scripts/stopService.ps1
+sudo ~/setup-new-pc/scripts/StopUnneededServices.ps1
 ```
 
-> 詳細は、[stopService.ps1](/scripts/stopService.ps1) 及び、[wiki](https://github.com/demerara151/setup-new-pc/wiki/Services) で確認できます
+> 詳細は、[StopUnneededServices.ps1](/scripts/StopUnneededServices.ps1) 及び、[wiki](https://github.com/demerara151/setup-new-pc/wiki/Services) で確認できます
 
 ### Hyper-V の有効化
 
@@ -265,8 +265,7 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
 
 私が現在利用している拡張機能の一覧です。LibreWolf では、拡張機能は出来る限り最小限に抑えることが推奨されています
 
-> Recommended Addons - LibreWolf <https://librewolf.net/docs/addons/>
-
+> Recommended Addons - LibreWolf <https://librewolf.net/docs/addons/>  
 > 💡`uBlockOrigin` は、最初からインストールされています
 
 - [DarkReader] 常にダークモード

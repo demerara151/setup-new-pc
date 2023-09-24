@@ -5,12 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2023-09-24
+
+### Changed
+
+- Divide auto installer scripts by category. Now you can choose app installation by category.
+- Change script file name to title case: Use uppercase for all first letter of each words.
+- Introduce markdownlint for documents.
+
 ## 2023-09-20
 
 ### Changed
 
 - Update Sophia Script to v6.5.6.
-- Remove `brotli`, `gitui`, and `goodbye-dpi` from `installAll.ps1`.
+- Remove `brotli`, `gitui`, and `goodbye-dpi` from `InstallAllApps.ps1`.
 
 ## 2023-08-02
 
@@ -29,9 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove unnecessary condition statement in `stopService.ps1`.
 - Change the link of Windows service information to `../wiki/Services` instead of `/docs/windows-service.md`.
-- Remove `aria2`, `so` and `tldr` from `installAll.ps1`.
-- Switch `mpv` to `mpv-git` in `installAll.ps1`.
-- Re-edit the section about `winget` in `installAll.ps1`.
+- Remove `aria2`, `so` and `tldr` from `InstallAllApps.ps1`.
+- Switch `mpv` to `mpv-git` in `InstallAllApps.ps1`.
+- Re-edit the section about `winget` in `InstallAllApps.ps1`.
 
 ## 2023-07-06
 
@@ -101,7 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add another windows service that can be stopped in [stopService.ps1](/scripts/stopService.ps1).
+- Add another windows service that can be stopped in [stopService.ps1](/scripts/StopUnneededServices.ps1).
 - Add detail of windows service in `windows-service.md`.
 
 ## 2022-12-19
@@ -132,10 +140,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add new apps in [installAll.ps1](/installAll.ps1).
+- add new apps in [InstallAllApps.ps1](scripts/InstallAllApps.ps1).
   new apps: `ddu`, `nvcleanstall`, `keepassxc`, `gpg4win`, `chezmoi`, `privacy.sexy`, `synctrayzor`, `hyper`, `brotli`, `deno`, `helix`, `goodbyedpi`, `inkscape`, `openshot`, `waifu2x-ncnn-vulkan` and `Delugia-Nerd-Font-Complete`.
 
-- add more app categories in [installAll.ps1](/installAll.ps1).
+- add more app categories in [InstallAllApps.ps1](scripts/InstallAllApps.ps1).
 
 ### Changed
 
@@ -176,7 +184,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Remove FiraCode and add JetBrainsMono and Hack font in [installAll.ps1](/installAll.ps1).
+- Remove FiraCode and add JetBrainsMono and Hack font in [InstallAllApps.ps1](scripts/InstallAllApps.ps1).
 
 ## 2022-10-30
 
@@ -205,7 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `extras bucket` に `wpd` が追加されたため、`scoop` でのインストールに変更
 
-- より汎用的にするため、アプリのインストールとサービスの停止、設定ファイルの配置の 3 つのプロセスを個々のプロセスに分割。アプリのインストールだけがしたい場合、[installAll.ps1](/installAll.ps1)のみを実行すれば済むように
+- より汎用的にするため、アプリのインストールとサービスの停止、設定ファイルの配置の 3 つのプロセスを個々のプロセスに分割。アプリのインストールだけがしたい場合、[InstallAllApps.ps1](scripts/InstallAllApps.ps1)のみを実行すれば済むように
 
 - 不要なサービスの停止と設定ファイルの配置を、追加設定の項目に移動
 
