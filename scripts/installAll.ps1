@@ -22,39 +22,33 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 sudo scoop install windowsdesktop-runtime
 
 # Essential for everyone
-scoop install brave everything hwinfo imageglass librewolf lightbulb mailspring sharex
+scoop install brave crystaldiskinfo everything hwinfo imageglass librewolf lightbulb mailspring sharex
 
 # Privacy
 scoop install privacy.sexy shutup10
 
-# --- Optional region starts from here. You can prevent installation by prefixing any line with "#". --- #
-
-# Utility (GUI)
-scoop install autohotkey czkawka-gui ddu nvcleanstall synctrayzor
-
-# Shell
-scoop install starship terminal-icons zoxide
-
-# Terminal
-scoop install hyper
-
-# Utility (CLI)
-scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu sd
-
-# Dev
-scoop install deno marksman osv-scanner poetry python ruff rustup sqlitestudio
-
-# Editor
-scoop install helix neovim notable vscode zenhan
-
 # Security
 sudo scoop install keepassxc gpg4win
 
-# Network
-scoop install localsend
+# --- Optional region starts from here. You can prevent installation by prefixing any line with "#". --- #
 
-# IM
-scoop install element
+# Utility (GUI)
+scoop install autohotkey czkawka-gui ddu element localsend nvcleanstall synctrayzor
+
+# Utility (CLI)
+scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu zoxide
+
+## Yet another terminal
+scoop install hyper
+
+## Shell customization
+scoop install starship terminal-icons
+
+# Dev
+scoop install deno marksman osv-scanner poetry python rustup sqlitestudio
+
+## Text editor
+scoop install helix neovim notable vscode zenhan
 
 # Gaming
 scoop install discord heroic-games-launcher legendary playnite
@@ -62,14 +56,12 @@ scoop install discord heroic-games-launcher legendary playnite
 # Media
 scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
 
-# Media Tool
-scoop install exifcleaner inkscape losslesscut openshot waifu2x-ncnn-vulkan
+# Media Tools
+scoop install exifcleaner inkscape losslesscut
+sudo scoop install icaros-np
 
 # Nerd Fonts
 sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
-
-# Display various thumbnails
-sudo scoop install icaros-np
 
 # --- Optional region ends here --- #
 
