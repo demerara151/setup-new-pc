@@ -1,3 +1,27 @@
+<#
+    .SYNOPSIS
+    私個人が普段使いしているアプリやツールを一括でインストールします。
+
+    .DESCRIPTION
+    全てのカテゴリーのアプリやツールを一括でインストールするスクリプトです。
+    カテゴリー別でインストールするスクリプトは同じフォルダー内に配置されています。
+
+    インストールが不要なアプリはノートパッド等でこのスクリプトを開いてアプリ名を削除してください。
+    また、インストールコマンド（scoop install ~）の先頭に `#` を付けることでコマンドが実行されないようにコメント化できます。
+
+    インストールが終わると自動的に shutup10 が起動するようになってます。
+    Actions > Recommended or somewhat recommended settings をクリックしてください。
+    PC のプライバシーやセキュリティ関連の設定がまとめて自動で設定できます。
+
+    .NOTES
+    それなりに数があるので、インストールが終わるまでそれなりの時間が掛かります。
+    事前に aria2 をインストールしておけばダウンロード速度を増加させることができますが、時々不具合でダウンロードが中断されてしまうことがあります。
+    その場合は、ダウンロードが中断したアプリを除外してインストールするか、aria2 を無効化して再度インストールしてください。
+
+    .EXAMPLE
+    .\InstallAllApps.ps1
+#>
+
 # Add buckets
 foreach (
     $bucket in @(
@@ -20,6 +44,9 @@ Start-Process -FilePath "$(scoop prefix vcredist-aio)\VisualCppRedist_AIO_x86_x6
 
 # Microsoft Windows Desktop Runtime
 sudo scoop install windowsdesktop-runtime
+
+## Optional for speedup downloading
+# scoop install aria2
 
 # Essential for everyone
 scoop install brave crystaldiskinfo everything hwinfo imageglass librewolf lightbulb mailspring sharex
