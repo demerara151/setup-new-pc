@@ -97,6 +97,8 @@ git clone https://github.com/demerara151/setup-new-pc.git
 
 一度 `Windows PowerShell` を終了し、<kbd>Windows</kbd> キーを押して `PowerShell Core` を探して起動
 
+> 見つからない場合は、「すべてのアプリ」の中の Scoop Apps のフォルダの中
+
 ### スクリプトの編集
 
 - [Sophia.ps1](/Sophia/Sophia.ps1)
@@ -143,6 +145,60 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 ```
 
 必要なアプリがまとめてインストールされます
+
+#### カテゴリー別にインストール
+
+上記のスクリプトは一括で全てのアプリをインストールしますが、人によっては不要なものも多く含まれている可能性があります。
+
+そこで、カテゴリー別にアプリの一括インストールが行えるようにしました。
+
+- Essential
+
+  私が PC を使う上で最低限必要だと感じているアプリやツールです。
+
+  アプリのインストールは最低限で構わないという方は、とりあえずこれだけ実行しておけば大丈夫です。
+
+  > また、以下のカテゴリー別スクリプトを実行する場合は、特定のアプリを動かすために必要なランタイム等が存在するため、事前にこのスクリプトを実行しておく必要があります。
+
+  ```powershell
+  ~/setup-new-pc/scripts/InstallEssentialApps.ps1
+  ```
+
+- Desktop apps
+
+  GUI を備える便利ツールです。
+
+  ```powershell
+  ~/setup-new-pc/scripts/InstallDesktopApps.ps1
+  ```
+
+- Media tools
+
+  音楽や動画等のメディアファイルを扱うアプリやツールです。
+
+  ```powershell
+  ~/setup-new-pc/script/InstallMediaTools.ps1
+  ```
+
+- Dev tools
+
+  プログラミング用のアプリやツールです。
+
+  私は Python と Rust で開発を行っているので、主にそれらに関連したツールが多いです。
+
+  ```powershell
+  ~/setup-new-pc/scripts/InstallDevTools.ps1
+  ```
+
+- Gaming tools
+
+  ゲーム関連のアプリやツールです。
+
+  Epic Games Launcher の代替品である Heroic をインストールするのが主な目的です。
+
+  ```powershell
+  ~/setup-new-pc/scripts/InstallGamingTools.ps1
+  ```
 
 ### プライバシーとセキュリティの強化
 
