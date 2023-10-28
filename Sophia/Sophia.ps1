@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11 (PowerShell 7)"
 
-	Version: v6.5.6
-	Date: 17.09.2023
+	Version: v6.5.7
+	Date: 22.10.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -27,7 +27,7 @@
 	.NOTES
 	Supported Windows 11 versions
 	Version: 22H2
-	Builds: 22621.2283+
+	Builds: 22621.2428+
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
@@ -69,7 +69,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.6 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.7 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -398,6 +398,14 @@ TaskbarSearch -Hide
 # Показать поле поиска на панели задач (значение по умолчанию)
 # TaskbarSearch -SearchBox
 
+# Hide Copilot button on the taskbar
+# Скрыть кнопку Copilot с панели задач
+CopilotButton -Hide
+
+# Show Copilot button on the taskbar (default value)
+# Отобразить кнопку Copilot на панели задач (значение по умолчанию)
+# CopilotButton -Show
+
 # Hide the Task view button from the taskbar
 # Скрыть кнопку "Представление задач" с панели задач
 TaskViewButton -Hide
@@ -421,6 +429,18 @@ TaskbarChat -Hide
 # Hide seconds on the taskbar clock (default value)
 # Скрыть секунды на часах на панели задач (значение по умолчанию)
 SecondsInSystemClock -Hide
+
+# Combine taskbar buttons and always hide labels (default value)
+# Объединить кнопки панели задач и всегда скрывать метки (значение по умолчанию)
+TaskbarCombine -Always
+
+# Combine taskbar buttons and hide labels when taskbar is full
+# Объединить кнопки панели задач и скрывать метки при переполнении панели задач
+# TaskbarCombine -Full
+
+# Combine taskbar buttons and never hide labels
+# Объединить кнопки панели задач и никогда не скрывать метки
+# TaskbarCombine -Never
 
 # Unpin the "Microsoft Edge", "Microsoft Store" shortcuts from the taskbar
 # Открепить ярлыки "Microsoft Edge", "Microsoft Store" от панели задач
@@ -1427,24 +1447,24 @@ Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUygij+KsE9/hctAFPM5kHgiET
-# vx+gghYPMIIDAjCCAeqgAwIBAgIQaCN8KfrjD6BOk5DiIPWouTANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA5MTcxNzU1Mjha
-# Fw0yNTA5MTcxODA0NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyX2JF3ExXjGKMrUp79D6hyQXY+zu
-# MQU6qtebkcjxlnOjlQf7PJdXi7PwxxuuCJWiDGTuGB+hUTXPE6DJWzJNWEfXI3aH
-# c32Ps7RCPg8Aviy7zdLx+zHGJ328fXXvRMyCSmAqA05cxuRYMmiak7yQ1egVtH+a
-# iQj2P4WeuX8QntM3k1v0YGIdUWCW4lPMw3seWXCS0cf+R8Je6l8H+dgrzIkQdJSb
-# vfF9n356lfRx8fk/eG21Zm3yINQTz1uC6sHu+Zp1azQu97IPvEbEilXwiVV9w00k
-# 3jRej4TFpNYinxnf/MVqe0qgU7eV95OAYpi8a9gn/bqj99uS+W0LR+yrYQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUoDLM4oxPK8NQ4/ppDItXrzpA
+# E3igghYPMIIDAjCCAeqgAwIBAgIQUPaelcly55FCZjxyiQsgzjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEwMjIxMDAyNDZa
+# Fw0yNTEwMjIxMDEyNDNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8EywGH9B56QBSKz16hx6kkEqiR4/
+# fDiHY3aPAuo5rzMbTWQsWOvhZiIZvit+KdCQDo9hghCFOpcpkr82svmFkAX72Hxx
+# mKKwYEoHC9KZ8X271tC4KN1ev7JxdXcmhcmrPI7wjqP47sqe9CVsd5U+FKYOpY/0
+# ExhK+JJWBIYdPg0K7WTzjKLO0GmwNcn4VVSOn3CCflx3J32LBOwvlvNfYc6pmGzQ
+# q2R6QrxrVC2EbunUTkAXvNJw+fvnD7e/6Afqlxf55rv9xjlUwhM/kEpfluQtU+4N
+# Bx1w3GTSRCOIYsPGj4pV5tzCDjoswufif49V7d4KS+g8egNFdzxymIX4WQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFFTlv/SckttupzhAMIJfxGGz0oVmMA0GCSqGSIb3DQEBCwUAA4IBAQAPuSjM
-# EmxBPRqAtZZKBlvpqZ+43+phpn/MXwLjRpdSJg7L9K/vPUuh+N2oPjX4VoRKT3kj
-# zL4/kfGX7cS8H1o4GyljrxKcrrbPFRgsZ5tjqqBBEqAh5cGnkJhALy8Tftx2a6Jd
-# Yd2ZxwoaFZiRPNZiAQoyIFbUnf607mNxKYQKMyE1rbDF0UIBCt1ZKSSHMW+K7/uu
-# TRaaJYzy1fBPkrDMO8jUDcFq5cFGiQH3G+fao2uKUp99oWTGxWi2U+n41rGIRo5i
-# kK2LoxucRaIdxMRoh3+Qw/dN2CxEckkboAdfuByigeyhq3kcoiB00WrR3uMzeKTS
-# /oPtgG2zf3WMkUttMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFH65iyeHES30Re0Fmezj1jsseM+VMA0GCSqGSIb3DQEBCwUAA4IBAQCNom28
+# chZ0+iFXNvtyVJ0OJUBcG6ZLMNfgjZxl9evXImdJPV6aBOTqnSHzzzO8MLB6U2Bv
+# grn8L1iE04gIudw0eZqwwf89V75Me2aBfjkinbzVkz8tmpiewGMkiJ9L347ph5i9
+# GeKPMOGJNLsqU5CPkmXsAjpU5zxLUd63VZppb86HmpUgp9LqqBvZKUIllJsH+kDs
+# 7A9vKmeK1fPIg1udHp+6GDk9WYfdgPUwYUHA4v3mH0pTRTwS66UjxzJOtq3IVY9D
+# CfrS6qUYmej421+KAqa/DFslPZWeN+6Ak/wrvRq1G+z8L72TvI1Z+NzwDycjQce5
+# hn6MUHe+H8XxUwQ7MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -1546,31 +1566,31 @@ Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEGgjfCn64w+gTpOQ4iD1qLkw
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEFD2npXJcueRQmY8cokLIM4w
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFIcRqagdDZoU0/n1spdcharoDGVXMA0GCSqGSIb3DQEB
-# AQUABIIBAHxLOxGAI9VoYv/em7doLjdI93RoL/12h1HvyU7Q2qsMdWZamPJOhdAJ
-# AF5RxJLAvh1eunIeY8NbH/8r+uJdUAlfXWW2FA8w/JM1kV2UccHcgbacwoXyf/Cv
-# dgZHP6bAQlMkjTQvXlBkKdMoqEp2BWk8PS9J6DDuYTLP6n7RDcg5US+Z+aBqB74G
-# PjAVOOYXJc82uj7ZYE6eja/BCXEnwTZ/2iw4uI0+EiTn73v1oWH6M4IcioxHDDoI
-# 57pR2PcX6uy6QkJrurRav9e4cGqoJLsf9f7GYyqHA9QoVSGXW0lDytTLzlku+go8
-# KvUOLZ9DB+mOzpHOQhF3ZJN89lpqo7ChggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFDdrV2K8iU4qK6b3D9KCg43E5GrQMA0GCSqGSIb3DQEB
+# AQUABIIBAOSdhGMVA7aWyT6RvaJql29lr770AfOEbMkUI8A8OvmHT0JniLUdSP4I
+# kVdB/8Xe5Bz7zi+w4AsMqUCpaI0oUnlZuG62bwhj5J/nPN10BdAMltLK0eivMVHK
+# QwzQOR0amm619A4zegMxX/kcD2kHXWMLNf50SDHusazrpJJcj8iYt01b2pkCI/0C
+# 2P5soF2VWNh0nb3oNJYifImD4zcpzC7N4tAK/zpjVCc172Aotll401JD75hxVzWr
+# +iQorbyG9hqOEzfISOyb2ZKvEoJesVE5HatCI3U//OzLsiXrSXlACtRDerXy0Fqd
+# tAGj1VgduUYPJDL52L1UMwP56XWScMShggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMwOTE3
-# MTgwNTM1WjAvBgkqhkiG9w0BCQQxIgQguI1/TIIqQNcIN9/4vDPxNgh3DhBlqLTo
-# Oq/UDMHVij0wDQYJKoZIhvcNAQEBBQAEggIAZVE+zNR7oUlxen9HxI/YReCuNSQs
-# pzllCK6PeqnqlYjvldLde1DRx2EyZh9WPjzfpkegsw4LziFuOdEhlKs5yuUmSEWx
-# nCLe28ToHhoWmjBTJCBZhFmUVqMnEzvCR5HhZhxwRVvjE7K/y5T3AEUvKVn2621s
-# fsDPMwlN3YIU7II2HMWs/h8xEjyn/e1ckzi3eXZEVfJcvkGO22Oh43N7RJxaMniV
-# VJ+VPJ+Sw5xo1Uwj3kU6ONnDBdt2buzuQqtEFwRctqQzi0ZT4nkuw03IAw9WpCA7
-# VDvTPWKgUrfQZXMD9mHhlmzltGuCfEd6LsG4HD2Y8AFX0WIAEoit81lv6p5g/Ca/
-# B4obsOP5geAuDiXJDmqYrK1G2e6sB1zB/NRt/+hr0njFIYdArEcdUDtWG979Htn3
-# YwxiMJIMKiXNEaQgqU3sNYTw3ExI/2K9GSFWdr428dilTGpIvJnkk6LKfSRQ2XLG
-# HDvI8c3Txki7qmL5ks/3FNZ5UMikyIKOZBejHWZGi0MdmXCs+vCdZK89yMjmwNIq
-# tRkcayh65F7givRYLUmtT13NHjhfvmg3GouHGETy0B/+maN4EEzPAThZWxvb9yyr
-# 8H79SGcXWHIpKtaA7x2JD/eWUZ53SBaB01h+8q+udEEgQW32N4F8KFd7R270Ux7U
-# j5HUURgpWFS8PCQ=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMDIy
+# MTAxMjU3WjAvBgkqhkiG9w0BCQQxIgQgK+YDJm7Y/gALMXOp6h387DKlM+QyZL4t
+# cZTll+avockwDQYJKoZIhvcNAQEBBQAEggIAjiIVIk1V9g4bIdpuGHyK3ejLXeVq
+# qzKy9m2d4j0XiXsu7LViFQIqZ5zhRe1+8VICCZgHijmjEAQsHGQBteXFRzai3LtN
+# 0qNWl6rUohvsW2EFZzyw++p1eIWBXAoIdpW7pb8l/4lS3FDPZWONPFWWlJY6edva
+# r6rYzW6a9yp8tbKN3r4VE+5aw2A0k/ais0sWum32uQT/6N29PTmF0XO7tPmMf9de
+# OLoW1zq1RczhCXFWEtzxM/ni9Nrib7tYSsn0X4TWuGbu500MFYGVynsUNnysss0b
+# Wfv4zWqoRsMgOxwuUNAtHOSZPiADrQQn4kQWwUFE9f6LNvQ2RspLu0Zlo2+Q+ekT
+# s8pl31MDDN6fOjKMNyckazO4Cpp/oGcD4UjMisZTKIVpOHsr3r9LgxQv5/tHOQAj
+# W2OKs5QLBDg8VB5maPavgJ1ayaTw6bjerp81mvNVCUFpeqeQqkZars0p4RusJGbg
+# cc1iAGiRiReOZJZcehmymBVwAB77u3ROLlLy4IWEJ0O8ECAuQaXQF8anbK78uDBC
+# 0lFkcvt08UCnvlkn487KNJVwMQj9gvv2k3X3FAf6lv7uQzIjY9cAGC/YNJmQbzWN
+# GHNrsb5fxKU2LENZ/uLDUQgsFmYI3sdUINomsMHK12kYeurZiUN53XtTPFcXHecM
+# U3q5B4iZT8pYHRI=
 # SIG # End signature block

@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.5.6
-	Date: 17.09.2023
+	Version: v6.5.7
+	Date: 22.10.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -13,7 +13,7 @@
 	.NOTES
 	Supported Windows 11 versions
 	Version: 22H2/23H2+
-	Builds: 22621.2283+
+	Builds: 22621.2428+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -242,6 +242,8 @@ public static string GetString(uint strId)
 					Invoke-WebRequest @Parameters
 
 					Start-Process -FilePath "$DownloadsFolder\Windows11InstallationAssistant.exe" -ArgumentList "/SkipEULA"
+
+					exit
 				}
 				catch [System.Net.WebException]
 				{
@@ -263,32 +265,25 @@ public static string GetString(uint strId)
 			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
 			Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
 
-			# Enable receiving updates for other Microsoft products when you update Windows
+			# Receive updates for other Microsoft products when you update Windows
 			(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-			Start-Sleep -Seconds 1
 
 			# Check for UWP apps updates
 			Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 
+			# Check for updates
+			Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
+
 			# Open the "Windows Update" page
 			Start-Process -FilePath "ms-settings:windowsupdate"
-
-			# Check for updates
-			Start-Process -FilePath "ms-settings:windowsupdate-action"
-
-			Start-Sleep -Seconds 1
-
-			# Trigger Windows Update for detecting new updates
-			(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
 
 			exit
 		}
 		{$_ -eq 22621}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2283)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2428)
 			{
-				# Check whether the OS minor build version is 2283 minimum
+				# Check whether the OS minor build version is 2428 minimum
 				# https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information#windows-11-current-versions
 				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
 				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
@@ -298,24 +293,17 @@ public static string GetString(uint strId)
 				Start-Process -FilePath "https://discord.gg/sSryhaEv79"
 				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
 
-				# Enable receiving updates for other Microsoft products when you update Windows
+				# Receive updates for other Microsoft products when you update Windows
 				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-				Start-Sleep -Seconds 1
 
 				# Check for UWP apps updates
 				Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
 
+				# Check for updates
+				Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
+
 				# Open the "Windows Update" page
 				Start-Process -FilePath "ms-settings:windowsupdate"
-
-				# Check for updates
-				Start-Process -FilePath "ms-settings:windowsupdate-action"
-
-				Start-Sleep -Seconds 1
-
-				# Trigger Windows Update for detecting new updates
-				(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
 
 				exit
 			}
@@ -621,46 +609,43 @@ public static string GetString(uint strId)
 	}
 
 	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
-	try
+	# Due to "Set-StrictMode -Version Latest" we have to call Get-Member first to check whether ProductStatus property exists
+	if (Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender | Get-Member | Where-Object -FilterScript {$_.Name -eq "ProductStatus"})
 	{
 		if ($Script:DefenderproductState)
 		{
 			if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).ProductStatus -eq 1)
 			{
-				$Script:DefenderProductStatus = $false
+				$Script:DefenderProductState = $false
 			}
 			else
 			{
-				$Script:DefenderProductStatus = $true
+				$Script:DefenderProductState = $true
 			}
 		}
 		else
 		{
-			$Script:DefenderProductStatus = $false
+			$Script:DefenderProductState = $false
 		}
 	}
-	catch [System.Management.Automation.PropertyNotFoundException]
+	else
 	{
 		Write-Warning -Message $Localization.UpdateDefender
 
 		Start-Process -FilePath "https://t.me/sophia_chat"
 		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
 
-		# Enable receiving updates for other Microsoft products when you update Windows
+		# Receive updates for other Microsoft products when you update Windows
 		(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
 
-		Start-Sleep -Seconds 1
+		# Check for UWP apps updates
+		Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+
+		# Check for updates
+		Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
 
 		# Open the "Windows Update" page
 		Start-Process -FilePath "ms-settings:windowsupdate"
-
-		# Check for updates
-		Start-Process -FilePath "ms-settings:windowsupdate-action"
-
-		Start-Sleep -Seconds 1
-
-		# Trigger Windows Update for detecting new updates
-		(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
 
 		exit
 	}
@@ -935,7 +920,7 @@ public static string GetString(uint strId)
 		Write-Information -MessageData "" -InformationAction Continue
 
 		# Add "Please use the arrow keys 🠕 and 🠗 on your keyboard to select your answer" to menu
-		$Menu += $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x1F815), [System.Char]::ConvertFromUtf32(0x1F817)
+		$Menu += $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x2191), [System.Char]::ConvertFromUtf32(0x2193)
 
 		if ($AddSkip)
 		{
@@ -1000,7 +985,7 @@ public static string GetString(uint strId)
 	$Script:No = [WinAPI.GetStr]::GetString(33232).Replace("&", "")
 	# Extract the localized "&Yes" string from shell32.dll
 	$Script:Yes = [WinAPI.GetStr]::GetString(33224).Replace("&", "")
-	$Script:KeyboardArrows = $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x1F815), [System.Char]::ConvertFromUtf32(0x1F817)
+	$Script:KeyboardArrows = $Localization.KeyboardArrows -f [System.Char]::ConvertFromUtf32(0x2191), [System.Char]::ConvertFromUtf32(0x2193)
 	# Extract the localized "Skip" string from shell32.dll
 	$Script:Skip = [WinAPI.GetStr]::GetString(16956)
 
@@ -1328,6 +1313,16 @@ function DiagnosticDataLevel
 		$Default
 	)
 
+	if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection))
+	{
+		New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Force
+	}
+
+	if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
+	{
+		New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
+	}
+
 	switch ($PSCmdlet.ParameterSetName)
 	{
 		"Minimal"
@@ -1335,43 +1330,29 @@ function DiagnosticDataLevel
 			if (Get-WindowsEdition -Online | Where-Object -FilterScript {($_.Edition -like "Enterprise*") -or ($_.Edition -eq "Education")})
 			{
 				# Diagnostic data off
-				if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection))
-				{
-					New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Force
-				}
 				New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 0 -Force
+
 				Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 0
 			}
 			else
 			{
 				# Send required diagnostic data
-				if (-not (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection))
-				{
-					New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Force
-				}
 				New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 1 -Force
+
 				Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 1
 			}
 
-			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
-			{
-				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
-			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 1 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 1 -Force
 		}
 		"Default"
 		{
 			# Optional diagnostic data
-			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force -ErrorAction Ignore
-			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type CLEAR
-
-			if (-not (Test-Path -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack))
-			{
-				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Force
-			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
+
+			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force -ErrorAction Ignore
+			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type CLEAR
 		}
 	}
 }
@@ -1543,7 +1524,13 @@ function ScheduledTasks
 	# The following tasks will have their checkboxes checked
 	[string[]]$CheckedScheduledTasks = @(
 		# Collects program telemetry information if opted-in to the Microsoft Customer Experience Improvement Program
+		"MareBackup",
+
+		# Collects program telemetry information if opted-in to the Microsoft Customer Experience Improvement Program
 		"Microsoft Compatibility Appraiser",
+
+		# Updates compatibility database
+		"StartupAppTask",
 
 		# This task collects and uploads autochk SQM data if opted-in to the Microsoft Customer Experience Improvement Program
 		"Proxy",
@@ -3303,6 +3290,65 @@ function TaskbarSearch
 
 <#
 	.SYNOPSIS
+	Copilot button on the taskbar
+
+	.PARAMETER Hide
+	Hide Copilot button on the taskbar
+
+	.PARAMETER Show
+	Show Copilot button on the taskbar
+
+	.EXAMPLE
+	CopilotButton -Hide
+
+	.EXAMPLE
+	CopilotButton -Show
+
+	.NOTES
+	Current user
+#>
+function CopilotButton
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Hide"
+		)]
+		[switch]
+		$Hide,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Show"
+		)]
+		[switch]
+		$Show
+	)
+
+	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
+	{
+		{($_ -ne 22631) -and ($_ -lt 23493)}
+		{
+			return
+		}
+	}
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Hide"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowCopilotButton -PropertyType DWord -Value 0 -Force
+		}
+		"Show"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowCopilotButton -PropertyType DWord -Value 1 -Force
+		}
+	}
+}
+
+<#
+	.SYNOPSIS
 	Task view button on the taskbar
 
 	.PARAMETER Hide
@@ -3397,6 +3443,7 @@ function TaskbarChat
 		"Hide"
 		{
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarMn -PropertyType DWord -Value 0 -Force
+
 			# Save string to run it as "NT SERVICE\TrustedInstaller"
 			# Prevent Microsoft Teams from installing for new users
 			$Task = "New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications -Name ConfigureChatAutoInstall -Value 0 -Type Dword -Force"
@@ -3404,6 +3451,7 @@ function TaskbarChat
 		"Show"
 		{
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarMn -PropertyType DWord -Value 1 -Force
+
 			# Save string to run it as "NT SERVICE\TrustedInstaller"
 			# Remove block from installing Microsoft Teams for new users
 			$Task = "Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications -Name ConfigureChatAutoInstall -Value 1 -Type Dword -Force"
@@ -3472,6 +3520,74 @@ function SecondsInSystemClock
 		"Show"
 		{
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name ShowSecondsInSystemClock -PropertyType DWord -Value 1 -Force
+		}
+	}
+}
+
+<#
+	.SYNOPSIS
+	Combine taskbar buttons and hide labels
+
+	.PARAMETER Always
+	Combine taskbar buttons and always hide labels
+
+	.PARAMETER Full
+	Combine taskbar buttons and hide labels when taskbar is full
+
+	.PARAMETER Never
+	Combine taskbar buttons and never hide labels
+
+	.EXAMPLE
+	TaskbarCombine -Always
+
+	.EXAMPLE
+	TaskbarCombine -Full
+
+	.EXAMPLE
+	TaskbarCombine -Never
+
+	.NOTES
+	Current user
+#>
+function TaskbarCombine
+{
+	param
+	(
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Always"
+		)]
+		[switch]
+		$Always,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Full"
+		)]
+		[switch]
+		$Full,
+
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "Never"
+		)]
+		[switch]
+		$Never
+	)
+
+	switch ($PSCmdlet.ParameterSetName)
+	{
+		"Always"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name taskbarGlomLevel -PropertyType DWord -Value 0 -Force
+		}
+		"Full"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name taskbarGlomLevel -PropertyType DWord -Value 1 -Force
+		}
+		"Never"
+		{
+			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name taskbarGlomLevel -PropertyType DWord -Value 1 -Force
 		}
 	}
 }
@@ -9583,7 +9699,8 @@ function Export-Associations
 
 	Clear-Variable -Name ProgramPath, Icon -ErrorAction Ignore
 
-	$AllJSON | ConvertTo-Json | Set-Content -Path "$PSScriptRoot\..\Application_Associations.json" -Force -Encoding utf8
+	# Save in UTF-8 without BOM
+	$AllJSON | ConvertTo-Json | Set-Content -Path "$PSScriptRoot\..\Application_Associations.json" -Encoding utf8NoBOM -Force
 
 	Remove-Item -Path "$env:TEMP\Application_Associations.xml" -Force
 }
@@ -9998,7 +10115,7 @@ function RKNBypass
 		}
 		"Disable"
 		{
-			Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name AutoConfigURL -Force
+			Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" -Name AutoConfigURL -Force -ErrorAction Ignore
 		}
 	}
 }
@@ -10260,126 +10377,145 @@ function SATADrivesRemovableMedia
 #>
 function Install-WSL
 {
-	[System.Console]::OutputEncoding = [System.Text.Encoding]::Unicode
-
-	$wsl = wsl --list --online
-	# Calculate the string number where the "FRIENDLY NAME" header begins to truncate all other unnecessary strings in the beginning
-	$LineNumber = ($wsl | Select-String -Pattern "FRIENDLY NAME" -CaseSensitive).LineNumber
-	# Remove first strings in output from the first to the $LineNumber
-	$Distros = ($wsl).Replace("  ", "").Replace("* ", "")[($LineNumber)..(($wsl).Count)] | ForEach-Object -Process {
-		[PSCustomObject]@{
-			"Distro" = ($_ -split " ", 2 | Select-Object -Last 1).Trim()
-			"Alias"  = ($_ -split " ", 2 | Select-Object -First 1).Trim()
-		}
-	}
-
-	Add-Type -AssemblyName PresentationCore, PresentationFramework
-
-	#region Variables
-	$CommandTag = $null
-
-	#region XAML Markup
-	# The section defines the design of the upcoming dialog box
-	[xml]$XAML = @"
-	<Window
-		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		Name="Window"
-		Title="WSL"
-		MinHeight="460" MinWidth="350"
-		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"
-		TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True"
-		FontFamily="Candara" FontSize="16" ShowInTaskbar="True"
-		Background="#F1F1F1" Foreground="#262626">
-		<Window.Resources>
-			<Style TargetType="RadioButton">
-				<Setter Property="VerticalAlignment" Value="Center"/>
-				<Setter Property="Margin" Value="10"/>
-			</Style>
-			<Style TargetType="TextBlock">
-				<Setter Property="VerticalAlignment" Value="Center"/>
-				<Setter Property="Margin" Value="0, 0, 0, 2"/>
-			</Style>
-			<Style TargetType="Button">
-				<Setter Property="Margin" Value="20"/>
-				<Setter Property="Padding" Value="10"/>
-				<Setter Property="IsEnabled" Value="False"/>
-			</Style>
-		</Window.Resources>
-		<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
-			<StackPanel Name="PanelContainer" Grid.Row="0"/>
-			<Button Name="ButtonInstall" Content="Install" Grid.Row="2"/>
-		</Grid>
-	</Window>
-"@
-	#endregion XAML Markup
-
-	$Form = [Windows.Markup.XamlReader]::Load((New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML))
-	$XAML.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]") | ForEach-Object -Process {
-		Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name)
-	}
-
-	$ButtonInstall.Content = $Localization.Install
-	#endregion Variables
-
-	#region Functions
-	function RadioButtonChecked
+	try
 	{
-		$Script:CommandTag = $_.OriginalSource.Tag
-		if (-not $ButtonInstall.IsEnabled)
+		# Check the internet connection
+		$Parameters = @{
+			Name        = "dns.msftncsi.com"
+			Server      = "1.1.1.1"
+			DnsOnly     = $true
+			ErrorAction = "Stop"
+		}
+		if ((Resolve-DnsName @Parameters).IPAddress -notcontains "131.107.255.255")
 		{
-			$ButtonInstall.IsEnabled = $true
+			return
 		}
-	}
 
-	function ButtonInstallClicked
-	{
-		Write-Warning -Message $Script:CommandTag
+		try
+		{
+			[System.Console]::OutputEncoding = [System.Text.Encoding]::Unicode
 
-		Start-Process -FilePath wsl.exe -ArgumentList "--install --distribution $Script:CommandTag" -Wait
+			# https://github.com/microsoft/WSL/blob/master/distributions/DistributionInfo.json
+			# wsl --list --online relies on Internet connection too, so it's much convenient to parse DistributionInfo.json, rather than parse a cmd output
+			$Parameters = @{
+				Uri             = "https://raw.githubusercontent.com/microsoft/WSL/master/distributions/DistributionInfo.json"
+				UseBasicParsing = $true
+				Verbose         = $true
+			}
+			(Invoke-RestMethod @Parameters).Distributions | ForEach-Object -Process {
+				[PSCustomObject]@{
+					"Distro" = $_.FriendlyName
+					"Alias"  = $_.Name
+				}
+			}
 
-		$Form.Close()
+			Add-Type -AssemblyName PresentationCore, PresentationFramework
 
-		# Receive updates for other Microsoft products when you update Windows
-		(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+			#region Variables
+			$CommandTag = $null
 
-		# Trigger Windows Update for detecting new updates
-		(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
-	}
-	#endregion
+			#region XAML Markup
+			# The section defines the design of the upcoming dialog box
+			[xml]$XAML = @"
+<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Name="Window"
+	Title="WSL"
+	MinHeight="460" MinWidth="350"
+	SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"
+	TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True"
+	FontFamily="Candara" FontSize="16" ShowInTaskbar="True"
+	Background="#F1F1F1" Foreground="#262626">
+	<Window.Resources>
+		<Style TargetType="RadioButton">
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="10"/>
+		</Style>
+		<Style TargetType="TextBlock">
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="0, 0, 0, 2"/>
+		</Style>
+		<Style TargetType="Button">
+			<Setter Property="Margin" Value="20"/>
+			<Setter Property="Padding" Value="10"/>
+			<Setter Property="IsEnabled" Value="False"/>
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<StackPanel Name="PanelContainer" Grid.Row="0"/>
+		<Button Name="ButtonInstall" Content="Install" Grid.Row="2"/>
+	</Grid>
+</Window>
+"@
+			#endregion XAML Markup
 
-	foreach ($Distro in $Distros)
-	{
-		$Panel = New-Object -TypeName System.Windows.Controls.StackPanel
-		$RadioButton = New-Object -TypeName System.Windows.Controls.RadioButton
-		$TextBlock = New-Object -TypeName System.Windows.Controls.TextBlock
-		$Panel.Orientation = "Horizontal"
-		$RadioButton.GroupName = "WslDistro"
-		$RadioButton.Tag = $Distro.Alias
-		$RadioButton.Add_Checked({RadioButtonChecked})
-		$TextBlock.Text = $Distro.Distro
-		$Panel.Children.Add($RadioButton) | Out-Null
-		$Panel.Children.Add($TextBlock) | Out-Null
-		$PanelContainer.Children.Add($Panel) | Out-Null
-	}
+			$Form = [Windows.Markup.XamlReader]::Load((New-Object -TypeName System.Xml.XmlNodeReader -ArgumentList $XAML))
+			$XAML.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]") | ForEach-Object -Process {
+				Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name)
+			}
 
-	$ButtonInstall.Add_Click({ButtonInstallClicked})
+			$ButtonInstall.Content = $Localization.Install
+			#endregion Variables
 
-	#region Sendkey function
-	# Emulate the Backspace key sending to prevent the console window to freeze
-	Start-Sleep -Milliseconds 500
+			#region Functions
+			function RadioButtonChecked
+			{
+				$Script:CommandTag = $_.OriginalSource.Tag
+				if (-not $ButtonInstall.IsEnabled)
+				{
+					$ButtonInstall.IsEnabled = $true
+				}
+			}
 
-	Add-Type -AssemblyName System.Windows.Forms
+			function ButtonInstallClicked
+			{
+				Write-Warning -Message $Script:CommandTag
 
-	$Signature = @{
-		Namespace        = "WinAPI"
-		Name             = "ForegroundWindow"
-		Language         = "CSharp"
-		MemberDefinition = @"
+				Start-Process -FilePath wsl.exe -ArgumentList "--install --distribution $Script:CommandTag" -Wait
+
+				$Form.Close()
+
+				# Receive updates for other Microsoft products when you update Windows
+				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+				# Check for updates
+				Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
+			}
+			#endregion
+
+			foreach ($Distro in $Distros)
+			{
+				$Panel = New-Object -TypeName System.Windows.Controls.StackPanel
+				$RadioButton = New-Object -TypeName System.Windows.Controls.RadioButton
+				$TextBlock = New-Object -TypeName System.Windows.Controls.TextBlock
+				$Panel.Orientation = "Horizontal"
+				$RadioButton.GroupName = "WslDistro"
+				$RadioButton.Tag = $Distro.Alias
+				$RadioButton.Add_Checked({RadioButtonChecked})
+				$TextBlock.Text = $Distro.Distro
+				$Panel.Children.Add($RadioButton) | Out-Null
+				$Panel.Children.Add($TextBlock) | Out-Null
+				$PanelContainer.Children.Add($Panel) | Out-Null
+			}
+
+			$ButtonInstall.Add_Click({ButtonInstallClicked})
+
+			#region Sendkey function
+			# Emulate the Backspace key sending to prevent the console window to freeze
+			Start-Sleep -Milliseconds 500
+
+			Add-Type -AssemblyName System.Windows.Forms
+
+			$Signature = @{
+				Namespace        = "WinAPI"
+				Name             = "ForegroundWindow"
+				Language         = "CSharp"
+				MemberDefinition = @"
 [DllImport("user32.dll")]
 public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
@@ -10387,32 +10523,45 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 [return: MarshalAs(UnmanagedType.Bool)]
 public static extern bool SetForegroundWindow(IntPtr hWnd);
 "@
-	}
+			}
 
-	if (-not ("WinAPI.ForegroundWindow" -as [type]))
+			if (-not ("WinAPI.ForegroundWindow" -as [type]))
+			{
+				Add-Type @Signature
+			}
+
+			Get-Process | Where-Object -FilterScript {(($_.ProcessName -eq "powershell") -or ($_.ProcessName -eq "WindowsTerminal")) -and ($_.MainWindowTitle -match "Sophia Script for Windows 11")} | ForEach-Object -Process {
+				# Show window, if minimized
+				[WinAPI.ForegroundWindow]::ShowWindowAsync($_.MainWindowHandle, 10)
+
+				Start-Sleep -Seconds 1
+
+				# Force move the console window to the foreground
+				[WinAPI.ForegroundWindow]::SetForegroundWindow($_.MainWindowHandle)
+
+				Start-Sleep -Seconds 1
+
+				# Emulate the Backspace key sending
+				[System.Windows.Forms.SendKeys]::SendWait("{BACKSPACE 1}")
+			}
+			#endregion Sendkey function
+
+			# Force move the WPF form to the foreground
+			$Window.Add_Loaded({$Window.Activate()})
+			$Form.ShowDialog() | Out-Null
+		}
+		catch [System.Net.WebException]
+		{
+			Write-Warning -Message ($Localization.NoResponse -f "https://raw.githubusercontent.com")
+			Write-Error -Message ($Localization.NoResponse -f "https://raw.githubusercontent.com") -ErrorAction SilentlyContinue
+		}
+	}
+	catch [System.ComponentModel.Win32Exception]
 	{
-		Add-Type @Signature
+		Write-Warning -Message $Localization.NoInternetConnection
+		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
 	}
 
-	Get-Process | Where-Object -FilterScript {(($_.ProcessName -eq "powershell") -or ($_.ProcessName -eq "WindowsTerminal")) -and ($_.MainWindowTitle -match "Sophia Script for Windows 11")} | ForEach-Object -Process {
-		# Show window, if minimized
-		[WinAPI.ForegroundWindow]::ShowWindowAsync($_.MainWindowHandle, 10)
-
-		Start-Sleep -Seconds 1
-
-		# Force move the console window to the foreground
-		[WinAPI.ForegroundWindow]::SetForegroundWindow($_.MainWindowHandle)
-
-		Start-Sleep -Seconds 1
-
-		# Emulate the Backspace key sending
-		[System.Windows.Forms.SendKeys]::SendWait("{BACKSPACE 1}")
-	}
-	#endregion Sendkey function
-
-	# Force move the WPF form to the foreground
-	$Window.Add_Loaded({$Window.Activate()})
-	$Form.ShowDialog() | Out-Null
 }
 #endregion WSL
 
@@ -10436,7 +10585,7 @@ function UnpinAllStartApps
 3275D9CEEF37E62C3574C036F327D1110AB0977996D67A2F8FA897D7207BEE85586B8CE6AD4F9736AA2154E3DCC9D082996984B76F1C73067F124F92A41F2B2CA83EF35436670979556FAE85AB10EA1
 6C932C3AECE1D45DA06D64BC42F4565AD0FCB8C63CDE7F6BB97ACE300198C3EACA3E1C974F547B1A7CF5B9C6A912448AB38A3BE2D6F0230A4A9AACC710C3E75088754CC2FB054B55B1D6ED7AD41EB8B
 0C9D4C274E87A525582F6CFBEAE5A904A1B0A3BA07939B79CAB4F1C3DF35BF88DE846E64555F0AEB47562C329206A9975664558849E0C251E8832D52B4FD7560347E5606AC882B9FC1F43C96922C0EA
-1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B84851481FE1FF41CA9A2534CCE7AFC45
+1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B84974481FE1FF41CA9A2534CCE7AFC45
 584370B4940DF30555536344249690F00C3A7E2552E352FE733C7ED2F80A29AD16937810AF805A444A344188C0CBDA51E5466BF45F2587508A69581CC2BCDAE06CB363658D94CD60569352FDA17AE7C
 DD785810F369B41F2D15930430A809567CC6C643FE7986CAD545EF3DB40CA6FA9220BFC7F65610AECB22799838B80DE73AF549923F8219FFAAD64780E2DB53133D73890294E77F9B0970484E86A0507
 37724FF15281C1726D334D3C9A67A85A78AE33F55DB675DAA31C47A156C0F8212DCEE228537668F4BF898C0CB869B74C98DF7EFBE0130859E5156417A85CC634B86314FAB47FB9A8DFEAFA1AEFC5E59
@@ -12884,6 +13033,9 @@ while ([WinAPI.Focus]::GetFocusAssistState() -ne "OFF")
 # Run the task
 Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
+# Get "C:\$WinREAgent" path because we need to open brackets for $env:SystemDrive but not for $WinREAgent
+Remove-Item -Path (-join ("`$env:SystemDrive\", '$WinREAgent')) -Recurse -Force
+
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
 
@@ -13293,7 +13445,7 @@ function EventViewerCustomView
 			}
 
 			# Save ProcessCreation.xml in the UTF-8 without BOM encoding
-			Set-Content -Path "$env:ProgramData\Microsoft\Event Viewer\Views\ProcessCreation.xml" -Value $XML -Encoding utf8 -NoNewline -Force
+			Set-Content -Path "$env:ProgramData\Microsoft\Event Viewer\Views\ProcessCreation.xml" -Value $XML -Encoding utf8NoBOM -NoNewline -Force
 		}
 		"Disable"
 		{
@@ -13696,6 +13848,9 @@ function WindowsSandbox
 	.EXAMPLE
 	DNSoverHTTPS -Enable -PrimaryDNS 1.0.0.1 -SecondaryDNS 1.1.1.1
 
+	.EXAMPLE Enable DNS-over-HTTPS via Comss.one DNS server. Applicable for Russia only
+	DNSoverHTTPS -ComssOneDNS
+
 	.EXAMPLE
 	DNSoverHTTPS -Disable
 
@@ -13704,6 +13859,9 @@ function WindowsSandbox
 
 	.LINK
 	https://docs.microsoft.com/en-us/windows-server/networking/dns/doh-client-support
+
+	.LINK
+	https://www.comss.ru/page.php?id=7315
 
 	.NOTES
 	Machine-wide
@@ -13738,6 +13896,14 @@ function DNSoverHTTPS
 		[string]
 		$SecondaryDNS,
 
+		# https://www.comss.ru/page.php?id=7315
+		[Parameter(
+			Mandatory = $true,
+			ParameterSetName = "ComssOneDNS"
+		)]
+		[switch]
+		$ComssOneDNS,
+
 		[Parameter(
 			Mandatory = $true,
 			ParameterSetName = "Disable"
@@ -13745,6 +13911,11 @@ function DNSoverHTTPS
 		[switch]
 		$Disable
 	)
+
+	if ((Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
+	{
+		return
+	}
 
 	# Determining whether Hyper-V is enabled
 	# After enabling Hyper-V feature a virtual switch breing created, so we need to use different method to isolate the proper adapter
@@ -13761,54 +13932,80 @@ function DNSoverHTTPS
 	{
 		"Enable"
 		{
-			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
+			if (((Get-WinHomeLocation).GeoId -ne "203") -or ((Get-WinHomeLocation).GeoId -ne "29"))
 			{
-				# Set a primary and secondary DNS servers
-				if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
-				{
-					Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
-				}
-				else
-				{
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
-				}
+				return
+			}
 
-				foreach ($InterfaceGuid in $InterfaceGuids)
+			# Set a primary and secondary DNS servers
+			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
+			{
+				Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
+			}
+			else
+			{
+				Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses $PrimaryDNS, $SecondaryDNS
+			}
+
+			foreach ($InterfaceGuid in $InterfaceGuids)
+			{
+				if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
 				{
-					if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS"))
-					{
-						New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
-					}
-					if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
-					{
-						New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
-					}
-					# Encrypted preffered, unencrypted allowed
-					New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
-					New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+					New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Force
 				}
+				if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS"))
+				{
+					New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Force
+				}
+				# Encrypted preffered, unencrypted allowed
+				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$PrimaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\$SecondaryDNS" -Name DohFlags -PropertyType QWord -Value 5 -Force
+			}
+		}
+		"ComssOneDNS"
+		{
+			if (-not (((Get-WinHomeLocation).GeoId -eq "203") -or ((Get-WinHomeLocation).GeoId -eq "29")))
+			{
+				return
+			}
+
+			# Set a primary and secondary DNS servers
+			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
+			{
+				Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ServerAddresses 92.223.65.71
+			}
+			else
+			{
+				Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses 92.223.65.71
+			}
+
+			foreach ($InterfaceGuid in $InterfaceGuids)
+			{
+				if (-not (Test-Path -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\92.223.65.71"))
+				{
+					New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\92.223.65.71" -Force
+				}
+				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\92.223.65.71" -Name DohFlags -PropertyType QWord -Value 2 -Force
+				New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh\92.223.65.71" -Name DohTemplate -PropertyType String -Value https://dns.comss.one/dns-query -Force
 			}
 		}
 		"Disable"
 		{
-			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
+			# Determining whether Hyper-V is enabled
+			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
 			{
-				# Determining whether Hyper-V is enabled
-				if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
-				{
-					# Configure DNS servers automatically
-					Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ResetServerAddresses
-				}
-				else
-				{
-					# Configure DNS servers automatically
-					Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
-				}
+				# Configure DNS servers automatically
+				Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily IPv4 | Set-DnsClientServerAddress -ResetServerAddresses
+			}
+			else
+			{
+				# Configure DNS servers automatically
+				Get-NetRoute | Where-Object -FilterScript {$_.DestinationPrefix -eq "0.0.0.0/0"} | Get-NetAdapter | Set-DnsClientServerAddress -ResetServerAddresses
+			}
 
-				foreach ($InterfaceGuid in $InterfaceGuids)
-				{
-					Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh" -Recurse -Force -ErrorAction Ignore
-				}
+			foreach ($InterfaceGuid in $InterfaceGuids)
+			{
+				Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\InterfaceSpecificParameters\$InterfaceGuid\DohInterfaceSettings\Doh" -Recurse -Force -ErrorAction Ignore
 			}
 		}
 	}
@@ -14661,11 +14858,9 @@ function OpenWindowsTerminalAdminContext
 			Stop-Process -Name WindowsTerminal -Force -PassThru
 		}
 
-		$settings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-
 		try
 		{
-			Get-Content -Path $settings -Raw | Test-Json -ErrorAction Stop
+			Get-Content -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Raw | Test-Json -ErrorAction Stop
 		}
 		catch
 		{
@@ -14676,7 +14871,7 @@ function OpenWindowsTerminalAdminContext
 			return
 		}
 
-		$Terminal = Get-Content -Path $settings -Encoding utf8 -Force | ConvertFrom-Json
+		$Terminal = Get-Content -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Encoding utf8 -Force | ConvertFrom-Json
 
 		switch ($PSCmdlet.ParameterSetName)
 		{
@@ -14704,8 +14899,8 @@ function OpenWindowsTerminalAdminContext
 			}
 		}
 
-		# Save in the UTF-8 without BOM encoding due to JSON must not has the BOM: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1
-		ConvertTo-Json -InputObject $Terminal -Depth 4 | Set-Content -Path $settings -Encoding utf8nobom -Force
+		# Save in UTF-8 with BOM despite JSON must not has the BOM: https://datatracker.ietf.org/doc/html/rfc8259#section-8.1. Unless Terminal profile names which contains non-latin characters will have "?" instead of titles
+		ConvertTo-Json -InputObject $Terminal -Depth 4 | Set-Content -Path "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Encoding utf8 -Force
 	}
 }
 
@@ -15177,7 +15372,7 @@ function Errors
 				"$([WinAPI.GetStr]::GetString(4130))" = $ErrorInFile
 				$Localization.ErrorsMessage           = $_.Exception.Message
 			}
-		} | Sort-Object -Property Line | Format-Table -AutoSize -Wrap | Out-String).Trim()
+		} | Sort-Object -Property $Localization.ErrorsLine | Format-Table -AutoSize -Wrap | Out-String).Trim()
 	}
 
 	Write-Information -MessageData "" -InformationAction Continue
@@ -15188,24 +15383,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUHNCQ+mYvWRIqQ49DZpXWvKTK
-# veigghYPMIIDAjCCAeqgAwIBAgIQaCN8KfrjD6BOk5DiIPWouTANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzA5MTcxNzU1Mjha
-# Fw0yNTA5MTcxODA0NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyX2JF3ExXjGKMrUp79D6hyQXY+zu
-# MQU6qtebkcjxlnOjlQf7PJdXi7PwxxuuCJWiDGTuGB+hUTXPE6DJWzJNWEfXI3aH
-# c32Ps7RCPg8Aviy7zdLx+zHGJ328fXXvRMyCSmAqA05cxuRYMmiak7yQ1egVtH+a
-# iQj2P4WeuX8QntM3k1v0YGIdUWCW4lPMw3seWXCS0cf+R8Je6l8H+dgrzIkQdJSb
-# vfF9n356lfRx8fk/eG21Zm3yINQTz1uC6sHu+Zp1azQu97IPvEbEilXwiVV9w00k
-# 3jRej4TFpNYinxnf/MVqe0qgU7eV95OAYpi8a9gn/bqj99uS+W0LR+yrYQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUolZBcvjAEnvwxIzlv9cM7gw1
+# buKgghYPMIIDAjCCAeqgAwIBAgIQUPaelcly55FCZjxyiQsgzjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEwMjIxMDAyNDZa
+# Fw0yNTEwMjIxMDEyNDNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8EywGH9B56QBSKz16hx6kkEqiR4/
+# fDiHY3aPAuo5rzMbTWQsWOvhZiIZvit+KdCQDo9hghCFOpcpkr82svmFkAX72Hxx
+# mKKwYEoHC9KZ8X271tC4KN1ev7JxdXcmhcmrPI7wjqP47sqe9CVsd5U+FKYOpY/0
+# ExhK+JJWBIYdPg0K7WTzjKLO0GmwNcn4VVSOn3CCflx3J32LBOwvlvNfYc6pmGzQ
+# q2R6QrxrVC2EbunUTkAXvNJw+fvnD7e/6Afqlxf55rv9xjlUwhM/kEpfluQtU+4N
+# Bx1w3GTSRCOIYsPGj4pV5tzCDjoswufif49V7d4KS+g8egNFdzxymIX4WQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFFTlv/SckttupzhAMIJfxGGz0oVmMA0GCSqGSIb3DQEBCwUAA4IBAQAPuSjM
-# EmxBPRqAtZZKBlvpqZ+43+phpn/MXwLjRpdSJg7L9K/vPUuh+N2oPjX4VoRKT3kj
-# zL4/kfGX7cS8H1o4GyljrxKcrrbPFRgsZ5tjqqBBEqAh5cGnkJhALy8Tftx2a6Jd
-# Yd2ZxwoaFZiRPNZiAQoyIFbUnf607mNxKYQKMyE1rbDF0UIBCt1ZKSSHMW+K7/uu
-# TRaaJYzy1fBPkrDMO8jUDcFq5cFGiQH3G+fao2uKUp99oWTGxWi2U+n41rGIRo5i
-# kK2LoxucRaIdxMRoh3+Qw/dN2CxEckkboAdfuByigeyhq3kcoiB00WrR3uMzeKTS
-# /oPtgG2zf3WMkUttMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFH65iyeHES30Re0Fmezj1jsseM+VMA0GCSqGSIb3DQEBCwUAA4IBAQCNom28
+# chZ0+iFXNvtyVJ0OJUBcG6ZLMNfgjZxl9evXImdJPV6aBOTqnSHzzzO8MLB6U2Bv
+# grn8L1iE04gIudw0eZqwwf89V75Me2aBfjkinbzVkz8tmpiewGMkiJ9L347ph5i9
+# GeKPMOGJNLsqU5CPkmXsAjpU5zxLUd63VZppb86HmpUgp9LqqBvZKUIllJsH+kDs
+# 7A9vKmeK1fPIg1udHp+6GDk9WYfdgPUwYUHA4v3mH0pTRTwS66UjxzJOtq3IVY9D
+# CfrS6qUYmej421+KAqa/DFslPZWeN+6Ak/wrvRq1G+z8L72TvI1Z+NzwDycjQce5
+# hn6MUHe+H8XxUwQ7MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -15307,31 +15502,31 @@ function Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEGgjfCn64w+gTpOQ4iD1qLkw
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEFD2npXJcueRQmY8cokLIM4w
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFOKtwXKpZFM+ucdi9vEq770jiduFMA0GCSqGSIb3DQEB
-# AQUABIIBAGDniOzwy6wv55Je3hyWEixwVqkYs9BmIqy832T177nzXbssTyiISmPs
-# VFi7gkxuRoL2ssECPDCHbmn0JqeTiO+1mlDR0FAD6CcAitGiCy4bAz8Btnwx9Mur
-# xPiFtl0AjmG1+7UCNr1sysihYE6+JzfAdN3na2JSn7VfuJr+GOt62MX2+kpN5LGs
-# sSpAOYQwGwCysczeg3fOXni8SEm1PoG2c7sgOCZ9XCCTRFFXlNvS75Wkkz/ICsHr
-# xGIcv0V493omDsoon2TSXrEccnzSLxGo0GbQMDAVwMiS4MNCygV50LZdAa5QDALY
-# 6N9VfrcXokFxTrLO7dQglULG8ueMuUqhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFGsIKWljiDDjl69dzv62Dfj9G7icMA0GCSqGSIb3DQEB
+# AQUABIIBALVyiLyv2rbF0FBO8driu+kms7Kch94svksTBDqJPMg7V4UB0ndDqp68
+# RZuRvfUQdV0NykMZgNTtMvZvv7Wi0uIGyRXaxz+CckGxxhQHs+rn5OLp3phC99A7
+# Et1VzdmGK8/irKmmKYmin0JaNnYpYLBPL2hYRfOdldh2Ow2cJjgFUisCpGoYD26v
+# yUWoMX4lcd8ZuNCiGbnO9SgGINXZNfZXJHlln9A0m/K3IS2/gLp+MTPoX8VtS2kf
+# Q7B2hpwlULPyUkGC9Hrnla2zs7/z70A7LW4RfkbdFgwAtG70+4GL3xLUZ/Lapz72
+# ClvG1bTO+sh8mjRoB4SN0CErm/E6Q7ShggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMwOTE3
-# MTgwNTM2WjAvBgkqhkiG9w0BCQQxIgQg4+E+wToCh9BDD+fMb4DY0PoCLS28R5Cl
-# dhuAAyPoZLMwDQYJKoZIhvcNAQEBBQAEggIAGTVr3/oSRS6KB6ISLMe38S6ENNUy
-# S8+p1W64fUcRSbfEEwZUfDJtmcMwUXzTYWjDQFGylUhz1kA7KwzopPSvGy9rUj8m
-# wfDofEZjN4g5NrhrHW2oTgEU5Lhxib6eoz8skFpxvcY61RGW0nffxviwIMexnuSc
-# qp9gVDxHx9I+AYQSAALEiKEWM7nUP9AC7tDvO106bNlGy0YvJAaF7N9YVOwHW16I
-# Xd3e7HRzAeemY0ZNVZHvTwE9JVGNUzW9R8Ixy7p2SHtP6E5IdNAikqqMFwmldcWb
-# q3x/5PLO65kjnW3KFdn4qFw5dapzK3JW4drcVdrtw0AFlcgFWFKONSE+IShXySGG
-# T7xybK8GSpH3ABSF8OF2tGMztnJgoM48h+JBmbxwV6hx8PfGXDGmpV2Ajj4nTIr4
-# BDK3WfDrrHSL0LhaFj0Xju3FQHIO4k80mkJcC89LivFS+X2Buz6HepEyIuMVUkBk
-# MjX6cSsTEdf6fDRNPIrsC3eAQD7BUJpwXCTrQbKebvpmoWjflMkV0zS5rbPpUajO
-# Khc549IpNupmsq4tf/KnS7WqNyJrX6dzox1gqsEzlo+MjXRXE/1lhvQnfbeIWe0v
-# yiAEwlArPrFrihRAGfUgarygOrLiC3otMGCO/r3ekn159SR4zY6orYcEhwBykxqo
-# ZewjZG0lzomu7xk=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMDIy
+# MTAxMjU5WjAvBgkqhkiG9w0BCQQxIgQg3u17rFphNenOZ1Q2coYROdgsL1QNK45E
+# XweOO36ScKMwDQYJKoZIhvcNAQEBBQAEggIAkpL6UfK4WlMtb5uOyxbhlL4hcJRT
+# 7g0YfYpYoVAMtNaTAZLdEHowjKrvpiAQ5IOOedTpwNpFq3CvRuf6BF60I/Gl8kn2
+# kNL1i4vU+3O0JXdC8ws4cK1MG+MeDms0QpL7PE2JX6oo1+WA26/RN+NzXPa04aTt
+# Vj0epAz4QRuDJtdXsCEIIOxC/O6/kJqhjPFAyqC3BVauutDm97xEb62Z+rLt6LlH
+# vt7XNihjbhyzRrPuQN0kVN4QessgStVe6kE4YI7BEoa474w2RiDTwPIGzRIiUzGL
+# I41EqagNuELRb/TP4jNzQ6AD8Jfd+dKW+qOQM/Wb7ZRzVcqm/lpZjZ3QPZceCBA6
+# MB43+BY4fCe896HFJcR8Bd6uJfPZyIbl0ia84nRcpE5XcAJ57UzC9gSHsW2L6SFf
+# O9I4TFiJJppVH71Bc6FOXzXl6OjIj+BtMTtKTcLvF0HfjZlBWq2Qphdi29utS5N2
+# arX/qO1rA5GwYo6upRo+OSAGT9JQUvTib9xWKAf8w5HG5GE7E21mbKc0s4Qhrh7c
+# O8JRSyCxsScSfrTujY4XClJWJAGbVI/EIyvBFyypNbAQhQhpVdoJPd6m1pripfGl
+# 0zirQ5SK/DeLJjCD/jIGf8jNLjcyIgFBsxI2Z/GymdOke0fg0Bk0oc9QXmtG+Hw0
+# KVXGPagXUuCvDBE=
 # SIG # End signature block
