@@ -1,24 +1,18 @@
 <#
     .SYNOPSIS
-    ゲーム関連ソフトをインストールします。
+    ゲーム関連ソフトをインストールします
 
     .DESCRIPTION
-    PC でゲームを遊ぶ上で私が普段使っているソフトやツールをまとめてインストールします。
+    PC でゲームを遊ぶ上で私が普段使っているソフトやツールをまとめてインストールします
 
     .NOTES
-    Steam は公式サイトから直接ダウンロードしてインストールするか、winget でインストールしてください。
+    2023/12/05 最近は Celeste と麻雀くらいしか遊んでないので、Heroic と Steam は除外しました。legendary も今のとこ必要ありませんが、今後何か興味がそそられる無料配布が来た時用に取っておくことにします
 #>
 
 scoop bucket add games
 
-# Chat
-scoop install discord
-
 # EpicGamesLauncher alternative
-scoop install heroic-games-launcher legendary
+scoop install legendary
 
 # Game manager
 scoop install playnite
-
-# Steam client
-# winget install --id Valve.Steam --source winget
