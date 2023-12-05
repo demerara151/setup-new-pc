@@ -49,7 +49,7 @@ sudo scoop install windowsdesktop-runtime
 # scoop install aria2
 
 # Essential for everyone
-scoop install brave crystaldiskinfo everything hwinfo imageglass librewolf lightbulb mailspring sharex
+scoop install brave crystaldiskinfo everything hwinfo imageglass lightbulb mailspring sharex
 
 # Privacy
 scoop install privacy.sexy shutup10
@@ -63,7 +63,7 @@ sudo scoop install keepassxc gpg4win
 scoop install autohotkey czkawka-gui ddu element localsend nvcleanstall synctrayzor
 
 # Utility (CLI)
-scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu zoxide
+scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd fzf less lsd ripgrep sfsu typos zoxide
 
 ## Yet another terminal
 scoop install hyper
@@ -72,13 +72,13 @@ scoop install hyper
 scoop install starship terminal-icons
 
 # Dev
-scoop install deno marksman osv-scanner poetry python rustup sqlitestudio
+scoop install deno love lua lua-language-server marksman omnisharp osv-scanner poetry python rustup sqlitestudio taplo
 
 ## Text editor
 scoop install helix neovim notable vscode zenhan
 
 # Gaming
-scoop install discord heroic-games-launcher legendary playnite
+scoop install legendary playnite
 
 # Media
 scoop install ffmpeg foobar2000 foobar2000-encoders freetube gallery-dl mpv yt-dlp
@@ -92,26 +92,13 @@ sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono 
 
 # --- Optional region ends here --- #
 
-<#
-
-    .NOTES
-    Commented out this function since winget source is broken.
-    Besides that winget stops working when privacy.sexy strict rules applied.
-    winget has a lot of problem in my recent use case. I'm gonna ditch this function in the future.
-
-    .NOTES
-    2023/07/08: winget has been doing well lately, so I made some comments and tweaked the programs to install.
-
-    .LINK
-    https://github.com/microsoft/winget-cli/issues/2666
-
 # Make sure you have winget installed. If not installed, install winget with scoop.
 if (!(Get-Command winget -ErrorAction Continue)) { scoop install winget }
 
 # Install some software with winget that cannot be installed with scoop.
 $programs = @(
-    # Gaming
-    "Valve.Steam",
+    # Browser
+    "LibreWolf.LibreWolf"
 
     # for Rust development
     "Microsoft.VisualStudio.2022.BuildTools"
@@ -119,8 +106,6 @@ $programs = @(
 foreach ($program in $programs) {
     winget install --id $program --source winget
 }
-
-#>
 
 # Run shutup10
 Start-Process -FilePath "$(scoop prefix shutup10)\OOSU10.exe"
