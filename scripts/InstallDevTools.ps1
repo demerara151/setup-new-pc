@@ -15,7 +15,7 @@
 #>
 
 # Utility (CLI)
-scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd ffsend fzf less lsd ripgrep sfsu zoxide
+scoop install bat bottom broot chezmoi czkawka delta dust everything-cli fd fzf less lsd ripgrep sfsu zoxide
 
 ## Yet another terminal
 scoop install hyper
@@ -24,13 +24,16 @@ scoop install hyper
 scoop install starship terminal-icons
 
 # Programming language
-scoop install deno python rustup
+scoop install deno love lua python rustup
 
 # Package manager for Python
 scoop install poetry
 
+## LSP
+scoop install lua-language-server marksman omnisharp ruff taplo
+
 ## Additional tools
-scoop install marksman osv-scanner sqlitestudio
+scoop install osv-scanner sqlitestudio typos
 
 ## Text editor
 scoop install helix neovim notable vscode zenhan
@@ -39,5 +42,5 @@ scoop install helix neovim notable vscode zenhan
 scoop bucket add nerd-fonts
 sudo scoop install Delugia-Nerd-Font-Complete IBMPlexSans-JP VictorMono-NF-Mono FantasqueSansMono-NF-Mono JetBrainsMono-NF-Mono Mononoki-NF-Mono --global
 
-# BuildTools for Rust
-# winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget
+# BuildTools for Rust and .NET
+winget install --id Microsoft.VisualStudio.2022.BuildTools --source winget
