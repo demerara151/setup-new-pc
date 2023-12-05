@@ -27,7 +27,7 @@ Windows を快適に使うための PC セットアップ手順
   - [スクリプトの編集](#スクリプトの編集)
 - [Usage](#usage)
   - [Sophia Script for Windows 11](#sophia-script-for-windows-11)
-  - [アプリの一括インストール](#%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE%E4%B8%80%E6%8B%AC%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+  - [アプリの一括インストール](#アプリの一括インストール)
   - [プライバシーとセキュリティの強化](#プライバシーとセキュリティの強化)
 - [Personal Settings](#personal-settings)
   - [各種設定ファイルの配置](#各種設定ファイルの配置)
@@ -35,11 +35,9 @@ Windows を快適に使うための PC セットアップ手順
   - [Hyper-V の有効化](#hyper-v-の有効化)
 - [Note](#note)
 - [ブラウザ設定](#ブラウザ設定)
-  - [Set LibreWolf as the default browser](#set-librewolf-as-the-default-browser)
-  - [Update](#update)
+  - [LibreWolf を既定のブラウザに設定](#librewolf-を既定のブラウザに設定)
   - [Addons](#addons)
   - [uBlockOrigin](#ublockorigin)
-    - [Block third-party remote fonts](#block-third-party-remote-fonts)
     - [Additional filters](#additional-filters)
   - [Advanced preferences](#advanced-preferences)
 - [日本語フォント](#日本語フォント)
@@ -89,15 +87,21 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 irm get.scoop.sh | iex
 
-scoop install 7zip mingit gsudo pwsh
+scoop install 7zip mingit gsudo
 scoop update
 
 git clone https://github.com/demerara151/setup-new-pc.git
 ```
 
-一度 `Windows PowerShell` を終了し、<kbd>Windows</kbd> キーを押して `PowerShell Core` を探して起動
+続けて、`PowerShell 7` を `winget` でインストール
 
-> 見つからない場合は、「すべてのアプリ」の中の Scoop Apps のフォルダの中
+```powershell
+winget install --id Microsoft.PowerShell -source winget
+```
+
+> もし winget コマンドが見つからないとエラーが出たら、`scoop install winget` でインストールします
+
+一度 `Windows PowerShell` を終了し、<kbd>Windows</kbd> キーを押して `PowerShell 7 (x64)` を探して起動
 
 ### スクリプトの編集
 
@@ -148,15 +152,15 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 #### カテゴリー別にインストール
 
-上記のスクリプトは一括で全てのアプリをインストールしますが、人によっては不要なものも多く含まれている可能性があります。
+上記のスクリプトは一括で全てのアプリをインストールしますが、人によっては不要なものも多く含まれている可能性があります
 
-そこで、カテゴリー別にアプリの一括インストールが行えるようにしました。
+そこで、カテゴリー別にアプリの一括インストールが行えるようにしました
 
 - Essential
 
-  私が PC を使う上で最低限必要だと感じているアプリやツールです。
+  私が PC を使う上で最低限必要だと感じているアプリやツールです
 
-  アプリのインストールは最低限で構わないという方は、とりあえずこれだけ実行しておけば大丈夫です。
+  アプリのインストールは最低限で構わないという方は、とりあえずこれだけ実行しておけば大丈夫です
 
   > また、以下のカテゴリー別スクリプトを実行する場合は、特定のアプリを動かすために必要なランタイム等が存在するため、事前にこのスクリプトを実行しておく必要があります。
 
@@ -166,7 +170,7 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 - Desktop apps
 
-  GUI を備える便利ツールです。
+  マウスで操作が可能なデスクトップアプリです
 
   ```powershell
   ~/setup-new-pc/scripts/InstallDesktopApps.ps1
@@ -174,7 +178,7 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 - Media tools
 
-  音楽や動画等のメディアファイルを扱うアプリやツールです。
+  音楽や動画等のメディアファイルを扱うアプリやツールです
 
   ```powershell
   ~/setup-new-pc/script/InstallMediaTools.ps1
@@ -182,9 +186,9 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 - Dev tools
 
-  プログラミング用のアプリやツールです。
+  プログラミング用のアプリやツールです
 
-  私は Python と Rust で開発を行っているので、主にそれらに関連したツールが多いです。
+  私は Python と Rust で開発を行っているので、主にそれらに関連したツールが多いです
 
   ```powershell
   ~/setup-new-pc/scripts/InstallDevTools.ps1
@@ -192,9 +196,7 @@ PC の再起動後、再度 `PowerShell Core` を起動して次のスクリプ�
 
 - Gaming tools
 
-  ゲーム関連のアプリやツールです。
-
-  Epic Games Launcher の代替品である Heroic をインストールするのが主な目的です。
+  ゲーム関連のアプリやツールです
 
   ```powershell
   ~/setup-new-pc/scripts/InstallGamingTools.ps1
@@ -288,34 +290,9 @@ sudo ~/setup-new-pc/scripts/hyper-v/hv.bat
 
 LibreWolf の各種設定内容について
 
-### Set LibreWolf as the default browser
+### LibreWolf を既定のブラウザに設定
 
-まず、ポータブル版を今まで通りインストールします
-
-```powershell
-scoop install librewolf
-librewolf.exe
-```
-
-そのポータブル版で <https://librewolf.net/installation/windows> を開いて、最新版のインストーラーをダウンロードします
-
-インストールが終わったら Windows の設定を開き、アプリ > 既定のアプリ で LibreWolf を選択し、一番上にある「既定値に設定」をクリックして LibreWolf を既定のアプリに設定します
-
-LibreWolf を既定のアプリに設定できたなら、`scoop` でインストールした方はアンインストールして構いません
-
-```powershell
-scoop uninstall librewolf
-```
-
-### Update
-
-LibreWolf 自身には自動アップデート機能は付いていません。アップデートする際は、毎回上記のページを開いて最新版をダウンロードし、インストーラーを実行する必要があります
-
-幸い、非公式ですが、アップデートがあったら知らせてくれる拡張機能 [LibreWolf Updater extension] があります。毎日ページを開いて確認するのが面倒な人は、こちらの拡張機能の利用を検討してください
-
-> 6/1 にリリースされた `LibreWolf 113.0.2-1` からは、初回インストール時、または更新時に、`LibreWolf Updater extension` をブラウザ本体と同時にインストールできるようになりました。加えて、スケジュールタスクに登録することもできるようになり、ブラウザのアップデートが大分楽になりました。
-
-[librewolf updater extension]: https://addons.mozilla.org/en-US/firefox/addon/librewolf-updater/
+Windows の設定を開き、アプリ > 既定のアプリ で LibreWolf を選択し、一番上にある「既定値に設定」をクリックして LibreWolf を既定のアプリに設定します
 
 ### Addons
 
@@ -346,17 +323,6 @@ LibreWolf 自身には自動アップデート機能は付いていません。�
    ```
 
 > この機能は初心者向けではありません。利用する際は、[ドキュメント](https://github.com/gorhill/uBlock/wiki/Advanced-user-features)を注意深く読み込んでからにしてください。
-
-#### Block third-party remote fonts
-
-`My Filters` のタブに、以下の行を追加することで、サードパーティーのリモートフォントをブロックできます
-
-```txt
-! Block all third-party remote fonts
-*$font,third-party
-```
-
-> 行の先頭に `!` を付けるとコメントになります
 
 #### Additional filters
 
