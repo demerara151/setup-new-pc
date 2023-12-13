@@ -1,6 +1,6 @@
 ﻿ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = The script supports Windows 11 22H2+.
-UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22621.2428+. Run Windows Update and try again.
+UnsupportedOSBuild                        = The script supports Windows 11 23H2+.
+UpdateWarning                             = Your Windows 11 build: {0}.{1}. Supported builds: 22631.2792+. Run Windows Update and try again.
 UnsupportedLanguageMode                   = The PowerShell session in running in a limited language mode.
 LoggedInUserNotAdmin                      = The logged-on user doesn't have admin rights.
 UnsupportedPowerShell                     = You're trying to run script via PowerShell {0}.{1}. Run the script in the appropriate PowerShell version.
@@ -15,6 +15,7 @@ CustomizationWarning                      = Have you customized every function i
 WindowsComponentBroken                    = {0} broken or removed from the OS.
 UpdateDefender                            = Microsoft Defender definitions are out-of-date. Run Windows Update and try again.
 ControlledFolderAccessDisabled            = Controlled folder access disabled.
+InitialActionsCheckFailed                 = "InitialActions" function cannot be loaded from the {0} preset file.
 ScheduledTasks                            = Scheduled tasks
 OneDriveUninstalling                      = Uninstalling OneDrive...
 OneDriveInstalling                        = Installing OneDrive...
@@ -34,7 +35,6 @@ ShortcutPinning                           = The "{0}" shortcut is being pinned t
 SSDRequired                               = To use Windows Subsystem for Android™ on your device, your PC needs to have Solid State Drive (SSD) installed.
 UninstallUWPForAll                        = For all users
 UWPAppsTitle                              = UWP Apps
-HEVCDownloading                           = Downloading HEVC Video Extensions from Device Manufacturer...
 GraphicsPerformanceTitle                  = Would you like to set the graphics performance setting of an app of your choice to "High performance"?
 ActionCenter                              = In order to use "{0}" function you have to enable Action Center.
 WindowsScriptHost                         = Windows Script Host access is disabled on this machine. In order to use "{0}" function you have to enable Windows Script Host.
@@ -75,24 +75,24 @@ Uninstall                                 = Uninstall
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUF2BGculnj9/YzGEpuwyZKY+d
-# SwagghYPMIIDAjCCAeqgAwIBAgIQUPaelcly55FCZjxyiQsgzjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEwMjIxMDAyNDZa
-# Fw0yNTEwMjIxMDEyNDNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8EywGH9B56QBSKz16hx6kkEqiR4/
-# fDiHY3aPAuo5rzMbTWQsWOvhZiIZvit+KdCQDo9hghCFOpcpkr82svmFkAX72Hxx
-# mKKwYEoHC9KZ8X271tC4KN1ev7JxdXcmhcmrPI7wjqP47sqe9CVsd5U+FKYOpY/0
-# ExhK+JJWBIYdPg0K7WTzjKLO0GmwNcn4VVSOn3CCflx3J32LBOwvlvNfYc6pmGzQ
-# q2R6QrxrVC2EbunUTkAXvNJw+fvnD7e/6Afqlxf55rv9xjlUwhM/kEpfluQtU+4N
-# Bx1w3GTSRCOIYsPGj4pV5tzCDjoswufif49V7d4KS+g8egNFdzxymIX4WQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU9IWJ2NQ3nDzVO4ySmW/ItTXw
+# 2aKgghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
+# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
+# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
+# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
+# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
+# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
+# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFH65iyeHES30Re0Fmezj1jsseM+VMA0GCSqGSIb3DQEBCwUAA4IBAQCNom28
-# chZ0+iFXNvtyVJ0OJUBcG6ZLMNfgjZxl9evXImdJPV6aBOTqnSHzzzO8MLB6U2Bv
-# grn8L1iE04gIudw0eZqwwf89V75Me2aBfjkinbzVkz8tmpiewGMkiJ9L347ph5i9
-# GeKPMOGJNLsqU5CPkmXsAjpU5zxLUd63VZppb86HmpUgp9LqqBvZKUIllJsH+kDs
-# 7A9vKmeK1fPIg1udHp+6GDk9WYfdgPUwYUHA4v3mH0pTRTwS66UjxzJOtq3IVY9D
-# CfrS6qUYmej421+KAqa/DFslPZWeN+6Ak/wrvRq1G+z8L72TvI1Z+NzwDycjQce5
-# hn6MUHe+H8XxUwQ7MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
+# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
+# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
+# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
+# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
+# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
+# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -194,31 +194,31 @@ Uninstall                                 = Uninstall
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEFD2npXJcueRQmY8cokLIM4w
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFPnf81rQocgKUXXlPlxZV6LZ+FZ4MA0GCSqGSIb3DQEB
-# AQUABIIBACQmW0Hor+++fav1NQZ97xJIMZReVmcbSXl6HI8pwL4fbGy/o2P6SPD7
-# 9zeTBYQozY4HyQ5hn6useP9r6Ic59q5ivMV/l4eIvRha58ISiigrwEuaK6FrbW5j
-# TmxH0IPKPTTsaY47X0mJVhoNVTpvdOR+0f+lK6G5W5loqy0knJVIZKa74m1RmzAl
-# WPaJ+8hB34QDNvZWpZf8gS+TyXfsxEif801tc9ss489EsH4hhu3Dui+ZMob/ar5E
-# XimPyiuWAaW1FB+vqDPybHEHSUH+eJnu/3Tw6YG/s1Flb0fOb9Fndwkg68wjzEky
-# sAj0+rXWGUsGaftBvSsm032r07DlC0OhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFAHQVtgUMySb/L3vX2LJ+r6Au6tdMA0GCSqGSIb3DQEB
+# AQUABIIBABdzoWILM61wVpor24PNUxlmbsveaxL5XpwDtXZi2Y7w4imxNJgLK1Zf
+# nUANs+t8srVAfa3q9+0WIq8dy3I1Eup70hMiXcHt25fxkqtVHvSS8E4T+WJqazwL
+# h6qww4vFimntfxBQBRGj1LGTJ19XI15oE9WX0nlygHUSEv/oU1+4d8dG5flnTHoc
+# LnUl9ybyV5UlPC4h3rTIG+I0t1CFZUzt4uXXfP+IMitYpr1aD9rEQr1n9fd1Apmg
+# MZc05MLWAbBPKMGqumyPDlH0UrIPCmTC8DLh+1MKNMhJ/yHtQcG99KKC+B2HoXdj
+# tU/7xstNVoyfcoPa7dlq3y8nI2dqz5KhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMDIy
-# MTAxMjU4WjAvBgkqhkiG9w0BCQQxIgQgnWrUVIJaJHhnbo/pWB0x3pLCpVYvoBBN
-# 0U4Si0d66LQwDQYJKoZIhvcNAQEBBQAEggIAOKwnqwA2WJzbUl4KJDpzXj/1x+N7
-# 1NwAVAF+Daiv1fmz2t4I9yjjieeBSZxoQD9NIfR3qu0bi9o/Gu0wFFXTu9ADhVm7
-# hS4wlxTCGYvIUbc7c25AZX0dpin4EVMGYVqs0D4g7vBpo/Ycankec0KpaBcKu7uP
-# 4Kz/VWQnwH8ZOaOFa2OQ7XMaDDDLAxy2vBB5youqc1mh1pPYpyaAvfQJy6RyaUci
-# /p7HaYh3i8lJtTBH+P/wfIUSpb1PRRHIJKOne3PS3JqoJd3uaCxvTgyweX5gcgYM
-# wD6AF87iK1yyEoZnNVsHn6qBcUvO7cqKjD33+07lX5qIU+kVY1mfoSZM5SvUfik8
-# A8+rcdBg7hqtMc33voUNAZTDZo1U4lQysoJumVWudfYDRzUJqvr6er8M7Ycn80M8
-# hSl2g38VqZLIEAPHowPcBhTZ9Klj+O7QLFxYLVinhFKhEcTZC0oJ3wdB3oBdkMxC
-# XGOW8745q0TAsPlRgqLtvl3BrFF5sZ+56HzM0zNtsr2feiK0BXXhpU+t8wx6vA7h
-# aVfjlzHrnet/o3zUA6UfT/lXERj1JNg1lfGDtdtzxEduvtoEeabdPg4oUUN+dY2W
-# WbX6Mtm7z3obA4Mrf6zRQqf5TqLDtbNtwcmifSPjYPvHvuVHomDCrQYMtr1fNp8s
-# Tk7jCW/x4uaZb+w=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
+# MTY0NzA2WjAvBgkqhkiG9w0BCQQxIgQgtx7cpwjyYBokMLJvnsrwrWCV/o/4IufE
+# Jg3DFcndyukwDQYJKoZIhvcNAQEBBQAEggIAduB1wl6kyYXX0kUVM1Gl0+udyMhy
+# ZWACFNGd8/mItjlu7QJMl5Ccp4xuafnI2p39L5AsddsLFB/hbtKyGEsrp/clROpl
+# MQrcou6NBBKmjEfOjGe5+L9IPWQpz7rKHJUdp0WsDX/CJsNeO8wNrc62D/MP5P7x
+# +XFtCrbI2mSbf8lBIgWkMjCsU+47Ly48z+BsL7rUxMsW/eEn11R9V1ez2Jix+WF/
+# 2N5Y6j6K5Ul4lxPg4H0J0J9fdoc/tVScd0Ks5louKMISe/cty0cJQu/rX5NT+dVg
+# IijVyD9taDajyRg3e999SOLkRFguJzBH3eGKSBxQeGW2+9ler7VMjdOGgmuEzmN9
+# CIN7o1rsFZXe6LXvmULqexlLXDUwrePgfJb21do6rME4tWKtestyU6HIKXnhJv/y
+# 3fTFnEGGOnr5mRRyhpAWk5MD1qupQUAZNI9Fv6rMuMEuN9xoZZgzngMjVozv1oA3
+# 5uSOqhfXtVHgGc25ASwV6OcQpC1+Enxb/s8ssQrNs8hZVwlO8V+ani8cXU6SK0es
+# U5eL1DFByb+y2xhqhoiVxh3FEwc1gLaLguWvO2NADCp+1IWL9NiKJ0aehYqJ8JvD
+# LMBBwO+IrW2q3gOl+XNT7Wqzk2rkCErfCRCzAt6tf/VwGhapjwKzSo1RiDI0CstJ
+# /xtaZbX4URG7dng=
 # SIG # End signature block

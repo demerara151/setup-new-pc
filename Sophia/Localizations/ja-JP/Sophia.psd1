@@ -1,6 +1,6 @@
 ConvertFrom-StringData -StringData @'
-UnsupportedOSBuild                        = このスクリプトは Windows 11 22H2 かそれ以上のバージョンをサポートしています
-UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22621.2428 かそれ以上です。Windows Update を実行してから再度お試しください。
+UnsupportedOSBuild                        = このスクリプトは Windows 11 23H2 かそれ以上のバージョンをサポートしています
+UpdateWarning                             = お使いの Windows 11 は build: {0}.{1}です。サポートされているのは builds: 22631.2792 かそれ以上です。Windows Update を実行してから再度お試しください。
 UnsupportedLanguageMode                   = PowerShell は限られた言語モードで実行されています
 LoggedInUserNotAdmin                      = ログオンしているユーザーには管理者権限がありません
 UnsupportedPowerShell                     = PowerShell {0}.{1} でスクリプトを実行しようとしています。適切な PowerShell のバージョンで実行してください
@@ -15,6 +15,7 @@ CustomizationWarning                      = Sophia Script を実行する前に 
 WindowsComponentBroken                    = {0} が破損しているか OS から削除されている可能性があります
 UpdateDefender                            = Microsoft Defender の定義が最新ではありません。Windows Update を実行してから再度お試しください。
 ControlledFolderAccessDisabled            = 制御されたフォルダー アクセスが無効になっています
+InitialActionsCheckFailed                 = {0} プリセットファイルから "InitialActions" 関数を読み込めませんでした
 ScheduledTasks                            = スケジュールされたタスク
 OneDriveUninstalling                      = OneDrive をアンインストールしています...
 OneDriveInstalling                        = OneDrive をインストールしています...
@@ -34,7 +35,6 @@ ShortcutPinning                           = "{0}" ショートカットをスタ
 SSDRequired                               = Windows Subsystem for Android™ を利用する場合は、お使いのデバイスに Solid State Drive (SSD) が組み込まれている必要があります
 UninstallUWPForAll                        = 全てのユーザー
 UWPAppsTitle                              = UWP アプリ
-HEVCDownloading                           = デバイスの製造元から HEVC ビデオ拡張機能をダウンロードしています...
 GraphicsPerformanceTitle                  = お好みのアプリのグラフィックパフォーマンス設定を「高パフォーマンス」に設定しますか？
 ActionCenter                              = "{0}" 関数を利用するためにはアクションセンターを有効にする必要があります
 WindowsScriptHost                         = このマシーンでは Windows Script Host へのアクセスが禁止されています。"{0}" 関数を実行するためには Windows Script Host を有効にしてください

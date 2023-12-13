@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11 (PowerShell 7)"
 
-	Version: v6.5.7
-	Date: 22.10.2023
+	Version: v6.5.8
+	Date: 08.12.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -26,8 +26,8 @@
 
 	.NOTES
 	Supported Windows 11 versions
-	Version: 22H2
-	Builds: 22621.2428+
+	Version: 23H2
+	Builds: 22631.2792+
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
@@ -69,7 +69,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.7 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.8 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -524,11 +524,11 @@ AeroShaking -Enable
 
 # Download and install free dark "Windows 11 Cursors Concept v2" cursors from Jepri Creations
 # Скачать и установить бесплатные темные курсоры "Windows 11 Cursors Concept v2" от Jepri Creations
-# Cursors -Dark
+Cursors -Dark
 
 # Download and install free light "Windows 11 Cursors Concept v2" cursors from Jepri Creations
 # Скачать и установить бесплатные светлые курсоры "Windows 11 Cursors Concept v2" от Jepri Creations
-Cursors -Light
+# Cursors -Light
 
 # Set default cursors
 # Установить курсоры по умолчанию
@@ -554,7 +554,7 @@ NavigationPaneExpand -Disable
 #region OneDrive
 # Uninstall OneDrive. The OneDrive user folder won't be removed
 # Удалить OneDrive. Папка пользователя OneDrive не будет удалена
-OneDrive -Uninstall
+# OneDrive -Uninstall
 
 # Install OneDrive 64-bit (default value)
 # Установить OneDrive 64-бит (значение по умолчанию)
@@ -1063,18 +1063,7 @@ UninstallUWPApps
 #>
 # RestoreUWPApps
 
-# Download and install "HEVC Video Extensions from Device Manufacturer" to be able to open .heic and .heif formats
-# Скачать и установить "Расширения для видео HEVC от производителя устройства", чтобы иметь возможность открывать форматы .heic и .heif
-# HEVC -Install
 
-<#
-	Open Microsoft Store "HEVC Video Extensions from Device Manufacturer" page to install this extension manually to be able to open .heic and .heif formats
-	The extension can be installed without an Microsoft account
-
-	Открыть страницу "Расширения для видео HEVC от производителя устройства" в Microsoft Store, чтобы вручную установить расширение для открытия форматов .heic и .heif
-	Расширение может быть установлено бесплатно без учетной записи Microsoft
-#>
-# HEVC -Manually
 
 # Disable Cortana autostarting
 # Выключить автозагрузку Кортана
@@ -1294,6 +1283,10 @@ WindowsScriptHost -Disable
 # Выключить DNS-over-HTTPS для IPv4 (значение по умолчанию)
 # DNSoverHTTPS -Disable
 
+# Enable DNS-over-HTTPS via Comss.one DNS server. Applicable for Russia only
+# Включить DNS-over-HTTPS для IPv4 через DNS-сервер Comss.one. Применимо только для России
+# DNSoverHTTPS -ComssOneDNS
+
 # Enable Local Security Authority protection to prevent code injection
 # Включить защиту локальной системы безопасности, чтобы предотвратить внедрение кода
 LocalSecurityAuthority -Enable
@@ -1447,24 +1440,24 @@ Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUoDLM4oxPK8NQ4/ppDItXrzpA
-# E3igghYPMIIDAjCCAeqgAwIBAgIQUPaelcly55FCZjxyiQsgzjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEwMjIxMDAyNDZa
-# Fw0yNTEwMjIxMDEyNDNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8EywGH9B56QBSKz16hx6kkEqiR4/
-# fDiHY3aPAuo5rzMbTWQsWOvhZiIZvit+KdCQDo9hghCFOpcpkr82svmFkAX72Hxx
-# mKKwYEoHC9KZ8X271tC4KN1ev7JxdXcmhcmrPI7wjqP47sqe9CVsd5U+FKYOpY/0
-# ExhK+JJWBIYdPg0K7WTzjKLO0GmwNcn4VVSOn3CCflx3J32LBOwvlvNfYc6pmGzQ
-# q2R6QrxrVC2EbunUTkAXvNJw+fvnD7e/6Afqlxf55rv9xjlUwhM/kEpfluQtU+4N
-# Bx1w3GTSRCOIYsPGj4pV5tzCDjoswufif49V7d4KS+g8egNFdzxymIX4WQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBhGSw6RF2LbBcfJPdQs8E/Yu
+# n06gghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
+# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
+# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
+# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
+# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
+# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
+# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFH65iyeHES30Re0Fmezj1jsseM+VMA0GCSqGSIb3DQEBCwUAA4IBAQCNom28
-# chZ0+iFXNvtyVJ0OJUBcG6ZLMNfgjZxl9evXImdJPV6aBOTqnSHzzzO8MLB6U2Bv
-# grn8L1iE04gIudw0eZqwwf89V75Me2aBfjkinbzVkz8tmpiewGMkiJ9L347ph5i9
-# GeKPMOGJNLsqU5CPkmXsAjpU5zxLUd63VZppb86HmpUgp9LqqBvZKUIllJsH+kDs
-# 7A9vKmeK1fPIg1udHp+6GDk9WYfdgPUwYUHA4v3mH0pTRTwS66UjxzJOtq3IVY9D
-# CfrS6qUYmej421+KAqa/DFslPZWeN+6Ak/wrvRq1G+z8L72TvI1Z+NzwDycjQce5
-# hn6MUHe+H8XxUwQ7MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
+# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
+# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
+# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
+# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
+# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
+# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -1566,31 +1559,31 @@ Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEFD2npXJcueRQmY8cokLIM4w
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFDdrV2K8iU4qK6b3D9KCg43E5GrQMA0GCSqGSIb3DQEB
-# AQUABIIBAOSdhGMVA7aWyT6RvaJql29lr770AfOEbMkUI8A8OvmHT0JniLUdSP4I
-# kVdB/8Xe5Bz7zi+w4AsMqUCpaI0oUnlZuG62bwhj5J/nPN10BdAMltLK0eivMVHK
-# QwzQOR0amm619A4zegMxX/kcD2kHXWMLNf50SDHusazrpJJcj8iYt01b2pkCI/0C
-# 2P5soF2VWNh0nb3oNJYifImD4zcpzC7N4tAK/zpjVCc172Aotll401JD75hxVzWr
-# +iQorbyG9hqOEzfISOyb2ZKvEoJesVE5HatCI3U//OzLsiXrSXlACtRDerXy0Fqd
-# tAGj1VgduUYPJDL52L1UMwP56XWScMShggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFP6ngPX9Bi9BFicv0uYg4lQslyIeMA0GCSqGSIb3DQEB
+# AQUABIIBAE1uygo3E3atW0Rdc7mxQWPcmYU2zikKu6JF4RZYDHCneR7g6Py5Q+Ay
+# UtRTrjO57lerneDMI6MphW+EE9Mkn4X0t3ozeYSNVCv8alp5g7JvsCzd7TrZVTmZ
+# TSuBMriFxalplLJDm/oDbPV/IUJW5MIagSvLaEIn/9Acfr2iRZ1fmIUmaM3yI+Iw
+# q8cQaN2tiEDaHSP3pUanJTWgaiWUNnB/zVeClkJdBoIHA6itkK/MfeQQPAerPUPv
+# Smjfxb0swtanM6O1tMuQU0x5KHUUd7GCigCgyaqPTvvFC7P65LC0ktXSOqfF0AYY
+# /sVOr35V6BE+TMfOK1AYf7nuR7kaXA6hggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMDIy
-# MTAxMjU3WjAvBgkqhkiG9w0BCQQxIgQgK+YDJm7Y/gALMXOp6h387DKlM+QyZL4t
-# cZTll+avockwDQYJKoZIhvcNAQEBBQAEggIAjiIVIk1V9g4bIdpuGHyK3ejLXeVq
-# qzKy9m2d4j0XiXsu7LViFQIqZ5zhRe1+8VICCZgHijmjEAQsHGQBteXFRzai3LtN
-# 0qNWl6rUohvsW2EFZzyw++p1eIWBXAoIdpW7pb8l/4lS3FDPZWONPFWWlJY6edva
-# r6rYzW6a9yp8tbKN3r4VE+5aw2A0k/ais0sWum32uQT/6N29PTmF0XO7tPmMf9de
-# OLoW1zq1RczhCXFWEtzxM/ni9Nrib7tYSsn0X4TWuGbu500MFYGVynsUNnysss0b
-# Wfv4zWqoRsMgOxwuUNAtHOSZPiADrQQn4kQWwUFE9f6LNvQ2RspLu0Zlo2+Q+ekT
-# s8pl31MDDN6fOjKMNyckazO4Cpp/oGcD4UjMisZTKIVpOHsr3r9LgxQv5/tHOQAj
-# W2OKs5QLBDg8VB5maPavgJ1ayaTw6bjerp81mvNVCUFpeqeQqkZars0p4RusJGbg
-# cc1iAGiRiReOZJZcehmymBVwAB77u3ROLlLy4IWEJ0O8ECAuQaXQF8anbK78uDBC
-# 0lFkcvt08UCnvlkn487KNJVwMQj9gvv2k3X3FAf6lv7uQzIjY9cAGC/YNJmQbzWN
-# GHNrsb5fxKU2LENZ/uLDUQgsFmYI3sdUINomsMHK12kYeurZiUN53XtTPFcXHecM
-# U3q5B4iZT8pYHRI=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
+# MTY0NzA1WjAvBgkqhkiG9w0BCQQxIgQgE99JlbzJEp0ENUhnMMQqIw7npcNUT2YE
+# 2KoGHFjAPuQwDQYJKoZIhvcNAQEBBQAEggIAXDD9O5w3g4SsbqBrk1xOsrL7XB5i
+# Ymom17VSJu3dvdNutee3qqvSpnPYKzIS+gmUowmEshC9ifuLY2XSzkfgBR1Wzigf
+# NKS9jD7ZrZxjwCEaUygXzXCLLEEZu16AWDIGqq+tFJlraxVNzdECTqibT9wkzE0X
+# sHsnCoHCul77mioGqOE2HzZQYJhbcxUfoZwvTrMdUFu25f/jkdTizzIhHgNzeRSJ
+# RYOTH+9roA+VBktB8ebc6f5zUc4DF/bUQcWKUZN2sebrbCHdcM+A9ETjwqRMHI2d
+# B6KyaXerlSjipA4FbtjhaWL7nazHnlPjSXfzuVBzvv+1NXiCsDLZznu3n9xjQQr+
+# jgZXCp9COE9gb/Tnd9UZhHpqQYsFpCSiXps+gaYPgMFOBmwOx2J6ihVqL5kgDLhq
+# gmkTgeS0XRcCQs7bE5G3edjioObQ62e6dif/iFT+Tg4BOigdbc8uAOieeFPv86bW
+# xfQ/8sH2w9tDHnQO8EJRcMZSYmqfphLML3uni4JiJqwe3or/j1TEgQ0EiaOP61KC
+# NhBFWyqyeWPFzFaZ8+chK92SU3xSP1icHuNe4Tvliieraph/HBcWoOKS9BZaLFTy
+# vIGBi9lH8u0wQJrvrBVYL3OmCsWwLmLD2vAtkioNhgnF4A0lXiQrcc9SXsWyTHg1
+# b+lDDm1ig63k5+4=
 # SIG # End signature block

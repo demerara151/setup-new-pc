@@ -2,8 +2,8 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.5.7
-	Date: 22.10.2023
+	Version: v6.5.8
+	Date: 08.12.2023
 
 	Copyright (c) 2014—2023 farag
 	Copyright (c) 2019—2023 farag & Inestic
@@ -12,8 +12,8 @@
 
 	.NOTES
 	Supported Windows 11 versions
-	Version: 22H2/23H2+
-	Builds: 22621.2428+
+	Version: 23H2/23H2+
+	Builds: 22631.2792+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -162,8 +162,8 @@ public static string GetString(uint strId)
 			}
 			catch [System.Net.WebException]
 			{
-				Write-Warning -Message ($Localization.NoResponse -f "https://c2rsetup.officeapps.live.com")
-				Write-Error -Message ($Localization.NoResponse -f "https://c2rsetup.officeapps.live.com") -ErrorAction SilentlyContinue
+				Write-Warning -Message ($Localization.NoResponse -f "https://edgeupdates.microsoft.com") 
+				Write-Error -Message ($Localization.NoResponse -f "https://edgeupdates.microsoft.com") -ErrorAction SilentlyContinue
 			}
 		}
 		catch [System.ComponentModel.Win32Exception]
@@ -176,87 +176,8 @@ public static string GetString(uint strId)
 	# Detect the OS build version
 	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
 	{
-		{$_ -lt 22000}
+		{$_ -lt 22631}
 		{
-			Write-Warning -Message $Localization.UnsupportedOSBuild
-
-			Start-Process -FilePath "https://t.me/sophia_chat"
-			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-			Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
-
-			exit
-		}
-		{$_ -eq 22000}
-		{
-			if (Test-Path -Path "$env:LOCALAPPDATA\PCHealthCheck\PCHealthCheck.exe")
-			{
-				Start-Process -FilePath "$env:LOCALAPPDATA\PCHealthCheck\PCHealthCheck.exe"
-				break
-			}
-
-			try
-			{
-				# Check the internet connection
-				$Parameters = @{
-					Name        = "dns.msftncsi.com"
-					Server      = "1.1.1.1"
-					DnsOnly     = $true
-					ErrorAction = "Stop"
-				}
-				if ((Resolve-DnsName @Parameters).IPAddress -notcontains "131.107.255.255")
-				{
-					return
-				}
-
-				try
-				{
-					# Download PC Health Check app to start upgrade
-					$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-					$Parameters = @{
-						Uri             = "https://aka.ms/GetPCHealthCheckApp"
-						OutFile         = "$DownloadsFolder\WindowsPCHealthCheckSetup.msi"
-						UseBasicParsing = $true
-						Verbose         = $true
-					}
-					Invoke-WebRequest @Parameters
-
-					# Extract WindowsPCHealthCheckSetup.msi without installing
-					$Arguments = @(
-						"/a `"$DownloadsFolder\WindowsPCHealthCheckSetup.msi`"",
-						"TARGETDIR=`"$DownloadsFolder\WindowsPCHealthCheckSetup`"",
-						"/qb"
-					)
-					Start-Process -FilePath "msiexec" -ArgumentList $Arguments -Wait
-					Remove-Item -Path "$DownloadsFolder\WindowsPCHealthCheckSetup.msi" -Force
-					Start-Process -FilePath "$DownloadsFolder\WindowsPCHealthCheckSetup\PCHealthCheck\PCHealthCheck.exe"
-
-					# Download Windows 11 Installation Assistant
-					# https://www.microsoft.com/software-download/windows11
-					$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-					$Parameters = @{
-						Uri             = "https://go.microsoft.com/fwlink/?linkid=2171764"
-						OutFile         = "$DownloadsFolder\Windows11InstallationAssistant.exe"
-						UseBasicParsing = $true
-						Verbose         = $true
-					}
-					Invoke-WebRequest @Parameters
-
-					Start-Process -FilePath "$DownloadsFolder\Windows11InstallationAssistant.exe" -ArgumentList "/SkipEULA"
-
-					exit
-				}
-				catch [System.Net.WebException]
-				{
-					Write-Warning -Message ($Localization.NoResponse -f "microsoft.com")
-					Write-Error -Message ($Localization.NoResponse -f "microsoft.com") -ErrorAction SilentlyContinue
-				}
-			}
-			catch [System.ComponentModel.Win32Exception]
-			{
-				Write-Warning -Message $Localization.NoInternetConnection
-				Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
-			}
-
 			$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
 			$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
 			Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
@@ -279,11 +200,11 @@ public static string GetString(uint strId)
 
 			exit
 		}
-		{$_ -eq 22621}
+		{$_ -eq 22631}
 		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2428)
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2792)
 			{
-				# Check whether the OS minor build version is 2428 minimum
+				# Check whether the OS minor build version is 2792 minimum
 				# https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information#windows-11-current-versions
 				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
 				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
@@ -387,6 +308,8 @@ public static string GetString(uint strId)
 		"WinterOS Tweaker"  = "$env:SystemRoot\WinterOS*"
 		# https://github.com/ThePCDuke/WinCry
 		WinCry              = "$env:SystemRoot\TempCleaner.exe"
+		# https://hone.gg
+		Hone                = "$env:LOCALAPPDATA\Programs\Hone\Hone.exe"
 	}
 	foreach ($Tweaker in $Tweakers.Keys)
 	{
@@ -472,6 +395,17 @@ public static string GetString(uint strId)
 		exit
 	}
 
+	# Check if Microsoft Store being an important system component was removed
+	if (-not (Get-AppxPackage -Name Microsoft.WindowsStore))
+	{
+		Write-Warning -Message ($Localization.WindowsComponentBroken -f "Microsoft Store")
+
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+
+		exit
+	}
+
 	# Check if the current module version is the latest one
 	try
 	{
@@ -542,6 +476,17 @@ public static string GetString(uint strId)
 		}
 	}
 
+	# Checking whether Windows Security Settings page was hidden from UI
+	if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", "SettingsPageVisibility", $null) -match "hide:windowsdefender")
+	{
+		Write-Warning -Message ($Localization.WindowsComponentBroken -f "Microsoft Defender")
+
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+
+		exit
+	}
+
 	# Checking whether WMI is corrupted
 	try
 	{
@@ -591,110 +536,48 @@ public static string GetString(uint strId)
 	$DefenderState = ('0x{0:x}' -f $productState).Substring(3, 2)
 	if ($DefenderState -notmatch "00|01")
 	{
-		$Script:DefenderproductState = $true
-	}
-	else
-	{
-		$Script:DefenderproductState = $false
-	}
+		# Defender is a currently used AV. Continue...
+		$Script:DefenderProductState = $true
 
-	# Specify whether Antispyware protection is enabled
-	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).AntispywareEnabled)
-	{
-		$Script:DefenderAntispywareEnabled = $true
-	}
-	else
-	{
-		$Script:DefenderAntispywareEnabled = $false
-	}
-
-	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
-	# Due to "Set-StrictMode -Version Latest" we have to call Get-Member first to check whether ProductStatus property exists
-	if (Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender | Get-Member | Where-Object -FilterScript {$_.Name -eq "ProductStatus"})
-	{
-		if ($Script:DefenderproductState)
+		# Check whether Microsoft Defender was turned off via GPO
+		# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender", "DisableAntiSpyware", $null) -eq 1)
 		{
-			if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).ProductStatus -eq 1)
-			{
-				$Script:DefenderProductState = $false
-			}
-			else
-			{
-				$Script:DefenderProductState = $true
-			}
+			$Script:AntiSpywareEnabled = $false
 		}
 		else
 		{
-			$Script:DefenderProductState = $false
+			$Script:AntiSpywareEnabled = $true
+		}
+
+		# Check whether Microsoft Defender was turned off via GPO
+		# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring", $null) -eq 1)
+		{
+			$Script:RealtimeMonitoringEnabled = $false
+		}
+		else
+		{
+			$Script:RealtimeMonitoringEnabled = $true
+		}
+
+		# Check whether Microsoft Defender was turned off via GPO
+		# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
+		if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableBehaviorMonitoring", $null) -eq 1)
+		{
+			$Script:BehaviorMonitoringEnabled = $false
+		}
+		else
+		{
+			$Script:BehaviorMonitoringEnabled = $true
 		}
 	}
 	else
 	{
-		Write-Warning -Message $Localization.UpdateDefender
-
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-
-		# Receive updates for other Microsoft products when you update Windows
-		(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-		# Check for UWP apps updates
-		Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
-
-		# Check for updates
-		Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
-
-		# Open the "Windows Update" page
-		Start-Process -FilePath "ms-settings:windowsupdate"
-
-		exit
+		$Script:DefenderProductState = $false
 	}
 
-	# https://docs.microsoft.com/en-us/graph/api/resources/intune-devices-windowsdefenderproductstatus?view=graph-rest-beta
-	if ((Get-CimInstance -ClassName MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender).AMEngineVersion -eq "0.0.0.0")
-	{
-		$Script:DefenderAMEngineVersion = $false
-	}
-	else
-	{
-		$Script:DefenderAMEngineVersion = $true
-	}
-
-	# Check whether Microsoft Defender was turned off
-	# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
-	if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender", "DisableAntiSpyware", $null) -eq 1)
-	{
-		$Script:DisableAntiSpyware = $true
-	}
-	else
-	{
-		$Script:DisableAntiSpyware = $false
-	}
-
-	# Check whether real-time protection prompts for known malware detection
-	# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
-	if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring", $null) -eq 1)
-	{
-		$Script:DisableRealtimeMonitoring = $true
-	}
-	else
-	{
-		$Script:DisableRealtimeMonitoring = $false
-	}
-
-	# Check whether behavior monitoring was disabled
-	# Due to "Set-StrictMode -Version Latest" we have to use GetValue()
-	if ([Microsoft.Win32.Registry]::GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableBehaviorMonitoring", $null) -eq 1)
-	{
-		$Script:DisableBehaviorMonitoring = $true
-	}
-	else
-	{
-		$Script:DisableBehaviorMonitoring = $false
-	}
-
-	if ($Script:DefenderproductState -and $Script:DefenderServices -and $Script:DefenderAntispywareEnabled -and $Script:DefenderAMEngineVersion -and
-	(-not $Script:DisableAntiSpyware) -and (-not $Script:DisableRealtimeMonitoring) -and (-not $Script:DisableBehaviorMonitoring))
+	if ($Script:DefenderServices -and $Script:DefenderproductState -and $Script:AntiSpywareEnabled -and $Script:RealtimeMonitoringEnabled -and $Script:BehaviorMonitoringEnabled)
 	{
 		# Defender is enabled
 		$Script:DefenderEnabled = $true
@@ -861,17 +744,6 @@ public static string GetString(uint strId)
 		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
 
 		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line.Trim()) -ErrorAction SilentlyContinue
-	}
-
-	# Check if Microsoft Store as being an important system component was removed
-	if (-not (Get-AppxPackage -Name Microsoft.WindowsStore))
-	{
-		Write-Warning -Message ($Localization.WindowsComponentBroken -f "Microsoft Store")
-
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-
-		exit
 	}
 
 	# PowerShell 5.1 (7.3 too) interprets 8.3 file name literally, if an environment variable contains a non-latin word
@@ -1067,7 +939,7 @@ function CreateRestorePoint
 }
 #endregion Protection
 
-#region Additional functions
+#region Additional function
 <#
 	.SYNOPSIS
 	Create pre-configured text files for LGPO.exe tool
@@ -1161,50 +1033,7 @@ $($Type):$($Value)`n
 
 	Add-Content -Path $Path -Value $Policy -Encoding Default -Force
 }
-
-# Revert back removed or commented out "InitialActions" functions
-function script:AdditionalActions
-{
-	# Get the name of a preset (e.g Sophia.ps1) regardless it was named
-	# $_.File has no EndsWith() method
-	$PresetName = ((Get-PSCallStack).Position | Where-Object -FilterScript {$_.File}).File | Where-Object -FilterScript {$_.EndsWith(".ps1")}
-	if (Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch)
-	{
-		# The string exists and is commented
-		if ((Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch).Line.StartsWith("#") -eq $true)
-		{
-			$Host.UI.RawUI.WindowTitle = "InitialActions | $($PresetName)"
-
-			# Calculate the string number to uncomment "InitialActions -Warning"
-			$LineNumber = (Select-String -Path $PresetName -Pattern InitialActions | Select-String -Pattern "{InitialActions}", "The mandatory checks" -NotMatch).LineNumber
-			# Get data from the required line to replace it with "InitialActions -Warning"
-			$RequiredLine = (Get-Content -Path $PresetName -Encoding UTF8) | Where-Object -FilterScript {$_.ReadCount -eq $LineNumber}
-			(Get-Content -Path $PresetName -Encoding UTF8).Replace($RequiredLine, "InitialActions -Warning") | Set-Content -Path $PresetName -Encoding UTF8 -Force
-
-			Start-Process -FilePath "https://t.me/sophia_chat"
-			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-
-			exit
-		}
-	}
-	else
-	{
-		$Host.UI.RawUI.WindowTitle = "InitialActions | $($PresetName)"
-
-		$ReadFile = Get-Content -Path $PresetName -Encoding UTF8
-		# Calculate the string number to add after "InitialActions -Warning"
-		$LineNumber = (Select-String -Path $PresetName -Pattern Import-LocalizedData).LineNumber
-		# Array of a new file: content before $LineNumber (including $LineNumber), new added string, the rest data of file
-		$UpdatedFile = @($ReadFile[0..($LineNumber - 1)], "`nInitialActions -Warning", $ReadFile[$LineNumber..($ReadFile.Length + 1)])
-		Set-Content -Path $PresetName -Value $UpdatedFile -Encoding UTF8 -Force
-
-		Start-Process -FilePath "https://t.me/sophia_chat"
-		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-
-		exit
-	}
-}
-#endregion Additional functions
+#endregion Additional function
 
 #region Privacy & Telemetry
 <#
@@ -1248,8 +1077,20 @@ function DiagTrackService
 		$Enable
 	)
 
-	# Revert back removed or commented out "InitialActions" functions
-	AdditionalActions
+	# Check whether "InitialActions" function was removed in preset file
+	if (-not ("WinAPI.GetStr" -as [type]))
+	{
+		# Get the name of a preset (e.g Sophia.ps1) regardless it was named
+		# $_.File has no EndsWith() method
+		$PresetName = Split-Path -Path (((Get-PSCallStack).Position | Where-Object -FilterScript {$_.File}).File | Where-Object -FilterScript {$_.EndsWith(".ps1")}) -Leaf
+		Write-Information -MessageData "" -InformationAction Continue
+		Write-Verbose -Message ($Localization.InitialActionsCheckFailed -f $PresetName) -Verbose
+
+		Start-Process -FilePath "https://t.me/sophia_chat"
+		Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+
+		exit
+	}
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
@@ -3325,14 +3166,6 @@ function CopilotButton
 		[switch]
 		$Show
 	)
-
-	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
-	{
-		{($_ -ne 22631) -and ($_ -lt 23493)}
-		{
-			return
-		}
-	}
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
@@ -6540,7 +6373,7 @@ function UpdateMicrosoftProducts
 	Notification when your PC requires a restart to finish updating
 
 	.PARAMETER Show
-	Notify me when a restart is required to finish updatingg
+	Notify me when a restart is required to finish updating
 
 	.PARAMETER Hide
 	Do not notify me when a restart is required to finish updating
@@ -10585,7 +10418,7 @@ function UnpinAllStartApps
 3275D9CEEF37E62C3574C036F327D1110AB0977996D67A2F8FA897D7207BEE85586B8CE6AD4F9736AA2154E3DCC9D082996984B76F1C73067F124F92A41F2B2CA83EF35436670979556FAE85AB10EA1
 6C932C3AECE1D45DA06D64BC42F4565AD0FCB8C63CDE7F6BB97ACE300198C3EACA3E1C974F547B1A7CF5B9C6A912448AB38A3BE2D6F0230A4A9AACC710C3E75088754CC2FB054B55B1D6ED7AD41EB8B
 0C9D4C274E87A525582F6CFBEAE5A904A1B0A3BA07939B79CAB4F1C3DF35BF88DE846E64555F0AEB47562C329206A9975664558849E0C251E8832D52B4FD7560347E5606AC882B9FC1F43C96922C0EA
-1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B84974481FE1FF41CA9A2534CCE7AFC45
+1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B85122481FE1FF41CA9A2534CCE7AFC45
 584370B4940DF30555536344249690F00C3A7E2552E352FE733C7ED2F80A29AD16937810AF805A444A344188C0CBDA51E5466BF45F2587508A69581CC2BCDAE06CB363658D94CD60569352FDA17AE7C
 DD785810F369B41F2D15930430A809567CC6C643FE7986CAD545EF3DB40CA6FA9220BFC7F65610AECB22799838B80DE73AF549923F8219FFAAD64780E2DB53133D73890294E77F9B0970484E86A0507
 37724FF15281C1726D334D3C9A67A85A78AE33F55DB675DAA31C47A156C0F8212DCEE228537668F4BF898C0CB869B74C98DF7EFBE0130859E5156417A85CC634B86314FAB47FB9A8DFEAFA1AEFC5E59
@@ -10613,7 +10446,7 @@ FEA494190BF3446DCC8C8AAF62BA01F0BFB18E15503C27558DB70C48EFB0AEA0B600F985C904E9F2
 2EEEF7B09850D29B2F412DEF3D0BD9194CAE8113B3B38085C77C238CB8D15BF6D6AB42C193F4E2F27F8BEDABB2D6ADE9E486B6AFAFD8D5DBE3B7D7305790F96ECDCC2DD016C5B9B200CB72E6CF54D71
 F69A01CDE4E3A0A4C5A03627DECD491F215C1420EB07AB8FD2763FCFF5211EB964C82E69DA208BDFA76306D54642B117DCB9A92927CE2E633338D4EEA63B571349B8DA1D4B5523C4CA10308769E4F46
 1ADD16DD5DFDB0E705187593DEF5CCCF659E48366462CC21D7930E1064234157A7A08E9C90927A37C5CF23D54C755002E4E657BB6E70D9B4BE7C468C19D6969FAE138EBF2C20DD3F5A0BC4C0E97D5BF
-DB8744A21396C44549242817BEAD5AE14FF602E69E75B87784DE5F30BE14106E8D8A081DC8CCCFBF93896E622F755F27E82A596DDCA3469A93ECB9E2E897BF0FCC063426DACDC3B1D81E1EFE6B63932
+DB8744A21396C44549279217BEAD5AE14FF602E69E75B87784DE5F30BE14106E8D8A081DC8CCCFBF93896E622F755F27E82A596DDCA3469A93ECB9E2E897BF0FCC063426DACDC3B1D81E1EFE6B63932
 6CA43526CFAEDF9922EAC3204FEB84AAED781EE5516FA5B4DCAB85DB5FF33CEC454DAA375BDA5EEA7C871C310AEDC5BD6B220B59B901D377E22FFFE95FEDA28CE2CE33CAEB8541EE05E1B5650D776C4
 B2A246DB4613E2CC5D96A44D24AE662D848A7C9E3E922AFF0632B7B40505402956FABC5C3AAB55EEE29085046C127E8776CEFC1690B76EE99371AF9B1D7EF6F79E78325DD3BD8377E9B73B936C6F261
 1D0A1223A4D7C6CF3037922DD0686A701FF86761993F294D26E13A7BB8B1C61ACAF38D50334A88DABB3FA412B4FC79F6FBFD0D0A92301484FF1BD1CF3DC67780E4562E05CCA329CABA7CB2B77D9A707
@@ -11557,160 +11390,6 @@ public static extern bool SetForegroundWindow(IntPtr hWnd);
 		# Force move the WPF form to the foreground
 		$Window.Add_Loaded({$Window.Activate()})
 		$Form.ShowDialog() | Out-Null
-	}
-}
-
-<#
-	.SYNOPSIS
-	"HEVC Video Extensions from Device Manufacturer" extension
-
-	.PARAMETER Install
-	Download and install the "HEVC Video Extensions from Device Manufacturer" extension
-
-	.PARAMETER Manually
-	Open Microsoft Store "HEVC Video Extensions from Device Manufacturer" page to install the extension manually
-
-	.EXAMPLE
-	HEVC -Install
-
-	.EXAMPLE
-	HEVC -Manually
-
-	.LINK
-	https://www.microsoft.com/store/productId/9n4wgh0z6vhq
-
-	.NOTES
-	The extension can be installed without Microsoft account
-
-	.NOTES
-	HEVC Video Extension is already installed in Windows 11 22H2 by default
-
-	.NOTES
-	Current user
-#>
-function HEVC
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Install"
-		)]
-		[switch]
-		$Install,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Manually"
-		)]
-		[switch]
-		$Manually
-	)
-
-	# Check whether the extension is already installed
-	if ((-not (Get-AppxPackage -Name Microsoft.Windows.Photos)) -or (Get-AppxPackage -Name Microsoft.HEVCVideoExtension))
-	{
-		return
-	}
-
-	try
-	{
-		# Check the internet connection
-		$Parameters = @{
-			Name        = "dns.msftncsi.com"
-			Server      = "1.1.1.1"
-			DnsOnly     = $true
-			ErrorAction = "Stop"
-		}
-		if ((Resolve-DnsName @Parameters).IPAddress -notcontains "131.107.255.255")
-		{
-			return
-		}
-	}
-	catch [System.ComponentModel.Win32Exception]
-	{
-		Write-Warning -Message $Localization.NoInternetConnection
-		Write-Error -Message $Localization.NoInternetConnection -ErrorAction SilentlyContinue
-		Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line.Trim()) -ErrorAction SilentlyContinue
-
-		return
-	}
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Install"
-		{
-			try
-			{
-				# Check whether https://store.rg-adguard.net is alive
-				$Parameters = @{
-					Uri              = "https://store.rg-adguard.net/api/GetFiles"
-					Method           = "Head"
-					DisableKeepAlive = $true
-					UseBasicParsing  = $true
-					Verbose          = $true
-				}
-				if (-not (Invoke-WebRequest @Parameters).StatusDescription)
-				{
-					return
-				}
-
-				$Body = @{
-					type = "url"
-					url  = "https://www.microsoft.com/store/productId/9n4wgh0z6vhq"
-					ring = "Retail"
-					lang = "en-US"
-				}
-				$Parameters = @{
-					Uri             = "https://store.rg-adguard.net/api/GetFiles"
-					Method          = "Post"
-					ContentType     = "application/x-www-form-urlencoded"
-					Body            = $Body
-					UseBasicParsing = $true
-					Verbose         = $true
-				}
-				$Raw = Invoke-WebRequest @Parameters
-
-				# Parsing the page
-				$Raw | Select-String -Pattern '<tr style.*<a href=\"(?<url>.*)"\s.*>(?<text>.*)<\/a>' -AllMatches | ForEach-Object -Process {$_.Matches} | Where-Object -FilterScript {$_.Value -like "*x64*.appx*"} | ForEach-Object -Process {
-					$TempURL = ($_.Groups | Select-Object -Index 1).Value
-					$HEVCPackageName = ($_.Groups | Select-Object -Index 2).Value.Split("_") | Select-Object -Index 1
-
-					# Installing "HEVC Video Extensions from Device Manufacturer"
-					if ([System.Version]$HEVCPackageName -gt [System.Version](Get-AppxPackage -Name Microsoft.HEVCVideoExtension).Version)
-					{
-						Write-Information -MessageData "" -InformationAction Continue
-						# Extract the localized "Please wait..." string from shell32.dll
-						Write-Verbose -Message ([WinAPI.GetStr]::GetString(12612)) -Verbose
-
-						Write-Verbose -Message $Localization.HEVCDownloading -Verbose
-
-						$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
-						$Parameters = @{
-							Uri             = $TempURL
-							OutFile         = "$DownloadsFolder\Microsoft.HEVCVideoExtension_8wekyb3d8bbwe.appx"
-							UseBasicParsing = $true
-							Verbose         = $true
-						}
-						Invoke-WebRequest @Parameters
-
-						Add-AppxPackage -Path "$DownloadsFolder\Microsoft.HEVCVideoExtension_8wekyb3d8bbwe.appx" -Verbose
-						Remove-Item -Path "$DownloadsFolder\Microsoft.HEVCVideoExtension_8wekyb3d8bbwe.appx" -Force
-					}
-				}
-			}
-			catch [System.Net.WebException]
-			{
-				Write-Warning -Message ($Localization.NoResponse -f "https://store.rg-adguard.net/api/GetFiles")
-				Write-Error -Message ($Localization.NoResponse -f "https://store.rg-adguard.net/api/GetFiles") -ErrorAction SilentlyContinue
-
-				Write-Error -Message ($Localization.RestartFunction -f $MyInvocation.Line.Trim()) -ErrorAction SilentlyContinue
-			}
-		}
-		"Manually"
-		{
-			Start-Process -FilePath ms-windows-store://pdp/?ProductId=9n4wgh0z6vhq
-		}
 	}
 }
 
@@ -13033,8 +12712,19 @@ while ([WinAPI.Focus]::GetFocusAssistState() -ne "OFF")
 # Run the task
 Get-ChildItem -Path `$env:TEMP -Recurse -Force | Where-Object -FilterScript {`$_.CreationTime -lt (Get-Date).AddDays(-1)} | Remove-Item -Recurse -Force
 
-# Get "C:\$WinREAgent" path because we need to open brackets for $env:SystemDrive but not for $WinREAgent
-Remove-Item -Path (-join ("`$env:SystemDrive\", '$WinREAgent')) -Recurse -Force
+# Unnecessary folders to remove
+`$Paths = @(
+	# Get "C:\$WinREAgent" path because we need to open brackets for $env:SystemDrive but not for $WinREAgent
+	(-join ("`$env:SystemDrive\", '`$WinREAgent')),
+	"`$env:SystemDrive\Intel",
+	"`$env:SystemDrive\PerfLogs"
+)
+
+if ((Get-Item -Path `$env:SystemDrive\Recovery -Force | Where-Object -FilterScript {`$_.Attributes -match "Hidden"}).FullName)
+{
+	`$Paths += (Get-Item -Path `$env:SystemDrive\Recovery -Force | Where-Object -FilterScript {`$_.Attributes -match "Hidden"}).FullName
+}
+Remove-Item -Path `$Paths -Recurse -Force
 
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
 [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
@@ -13932,11 +13622,6 @@ function DNSoverHTTPS
 	{
 		"Enable"
 		{
-			if (((Get-WinHomeLocation).GeoId -ne "203") -or ((Get-WinHomeLocation).GeoId -ne "29"))
-			{
-				return
-			}
-
 			# Set a primary and secondary DNS servers
 			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).HypervisorPresent)
 			{
@@ -13964,9 +13649,12 @@ function DNSoverHTTPS
 		}
 		"ComssOneDNS"
 		{
-			if (-not (((Get-WinHomeLocation).GeoId -eq "203") -or ((Get-WinHomeLocation).GeoId -eq "29")))
+			switch ((Get-WinHomeLocation).GeoId)
 			{
-				return
+				{($_ -ne 203) -and ($_ -ne 29)}
+				{
+					return
+				}
 			}
 
 			# Set a primary and secondary DNS servers
@@ -15383,24 +15071,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUolZBcvjAEnvwxIzlv9cM7gw1
-# buKgghYPMIIDAjCCAeqgAwIBAgIQUPaelcly55FCZjxyiQsgzjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEwMjIxMDAyNDZa
-# Fw0yNTEwMjIxMDEyNDNaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8EywGH9B56QBSKz16hx6kkEqiR4/
-# fDiHY3aPAuo5rzMbTWQsWOvhZiIZvit+KdCQDo9hghCFOpcpkr82svmFkAX72Hxx
-# mKKwYEoHC9KZ8X271tC4KN1ev7JxdXcmhcmrPI7wjqP47sqe9CVsd5U+FKYOpY/0
-# ExhK+JJWBIYdPg0K7WTzjKLO0GmwNcn4VVSOn3CCflx3J32LBOwvlvNfYc6pmGzQ
-# q2R6QrxrVC2EbunUTkAXvNJw+fvnD7e/6Afqlxf55rv9xjlUwhM/kEpfluQtU+4N
-# Bx1w3GTSRCOIYsPGj4pV5tzCDjoswufif49V7d4KS+g8egNFdzxymIX4WQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUejkbr74h9BGYVe8u7ahfbimi
+# trygghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
+# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
+# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
+# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
+# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
+# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
+# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFH65iyeHES30Re0Fmezj1jsseM+VMA0GCSqGSIb3DQEBCwUAA4IBAQCNom28
-# chZ0+iFXNvtyVJ0OJUBcG6ZLMNfgjZxl9evXImdJPV6aBOTqnSHzzzO8MLB6U2Bv
-# grn8L1iE04gIudw0eZqwwf89V75Me2aBfjkinbzVkz8tmpiewGMkiJ9L347ph5i9
-# GeKPMOGJNLsqU5CPkmXsAjpU5zxLUd63VZppb86HmpUgp9LqqBvZKUIllJsH+kDs
-# 7A9vKmeK1fPIg1udHp+6GDk9WYfdgPUwYUHA4v3mH0pTRTwS66UjxzJOtq3IVY9D
-# CfrS6qUYmej421+KAqa/DFslPZWeN+6Ak/wrvRq1G+z8L72TvI1Z+NzwDycjQce5
-# hn6MUHe+H8XxUwQ7MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
+# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
+# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
+# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
+# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
+# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
+# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -15502,31 +15190,31 @@ function Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEFD2npXJcueRQmY8cokLIM4w
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFGsIKWljiDDjl69dzv62Dfj9G7icMA0GCSqGSIb3DQEB
-# AQUABIIBALVyiLyv2rbF0FBO8driu+kms7Kch94svksTBDqJPMg7V4UB0ndDqp68
-# RZuRvfUQdV0NykMZgNTtMvZvv7Wi0uIGyRXaxz+CckGxxhQHs+rn5OLp3phC99A7
-# Et1VzdmGK8/irKmmKYmin0JaNnYpYLBPL2hYRfOdldh2Ow2cJjgFUisCpGoYD26v
-# yUWoMX4lcd8ZuNCiGbnO9SgGINXZNfZXJHlln9A0m/K3IS2/gLp+MTPoX8VtS2kf
-# Q7B2hpwlULPyUkGC9Hrnla2zs7/z70A7LW4RfkbdFgwAtG70+4GL3xLUZ/Lapz72
-# ClvG1bTO+sh8mjRoB4SN0CErm/E6Q7ShggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFJPxpjzYjom+gekrU7eAsyGHZYugMA0GCSqGSIb3DQEB
+# AQUABIIBADpdjnUD/v+yNL2VK6JQsCCZQ7oEj9Gijwj6d37LgijGkQ8HW80g2gZ/
+# TlPnyCx2rrOcPgdC2zliRdBjfAImuA4pUb/xiuuAbu9fY4q1oWShOZblLHnxxuxP
+# 38C3kebjh+Wl32TjXnzCEgfNTFu0CzB86iCuWBCFLGzkQHJj41/BJqLZOfsENU+t
+# UTjp1LTqPPyAni8+aBnnMeQCmL3znl2GDIziNYlpyNTqCUP7G0QpkoZTl7J+01rc
+# 2bPYsVu2xIjZyC95KIdIQ/jrdxYYyOKSllOAziVHbGFwhVBJA400KwlukW8v7CpV
+# xHN3yW68XmuPHIt1m85+y9ZUgZAlCoGhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMDIy
-# MTAxMjU5WjAvBgkqhkiG9w0BCQQxIgQg3u17rFphNenOZ1Q2coYROdgsL1QNK45E
-# XweOO36ScKMwDQYJKoZIhvcNAQEBBQAEggIAkpL6UfK4WlMtb5uOyxbhlL4hcJRT
-# 7g0YfYpYoVAMtNaTAZLdEHowjKrvpiAQ5IOOedTpwNpFq3CvRuf6BF60I/Gl8kn2
-# kNL1i4vU+3O0JXdC8ws4cK1MG+MeDms0QpL7PE2JX6oo1+WA26/RN+NzXPa04aTt
-# Vj0epAz4QRuDJtdXsCEIIOxC/O6/kJqhjPFAyqC3BVauutDm97xEb62Z+rLt6LlH
-# vt7XNihjbhyzRrPuQN0kVN4QessgStVe6kE4YI7BEoa474w2RiDTwPIGzRIiUzGL
-# I41EqagNuELRb/TP4jNzQ6AD8Jfd+dKW+qOQM/Wb7ZRzVcqm/lpZjZ3QPZceCBA6
-# MB43+BY4fCe896HFJcR8Bd6uJfPZyIbl0ia84nRcpE5XcAJ57UzC9gSHsW2L6SFf
-# O9I4TFiJJppVH71Bc6FOXzXl6OjIj+BtMTtKTcLvF0HfjZlBWq2Qphdi29utS5N2
-# arX/qO1rA5GwYo6upRo+OSAGT9JQUvTib9xWKAf8w5HG5GE7E21mbKc0s4Qhrh7c
-# O8JRSyCxsScSfrTujY4XClJWJAGbVI/EIyvBFyypNbAQhQhpVdoJPd6m1pripfGl
-# 0zirQ5SK/DeLJjCD/jIGf8jNLjcyIgFBsxI2Z/GymdOke0fg0Bk0oc9QXmtG+Hw0
-# KVXGPagXUuCvDBE=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
+# MTY0NzA2WjAvBgkqhkiG9w0BCQQxIgQgDxsllt5v96KBHvhPhhAWu5SPq2CdBXxF
+# k+mX8GQOPLswDQYJKoZIhvcNAQEBBQAEggIAYcIcUzIBtENiDamjAQNVCLfb3dOI
+# 1wQUMsbVQIETEx3C6OC2Cd3MVgBIupd8PDBrUoKYgBdJnEivomGg/AH5hTwLT5Hy
+# DhjumoPWPKy++BHL8zTr0j083/SSUKk510UvRXmG8YjsAbennqsZesQSdk9V/M+h
+# GLYwQP8Fr+K+c//i+E0D4f+xVyQVgkMGcaICkgCDHTpUlvM5KkABHIR4qbIQhz6m
+# VrvJ6tpwRqj5rDK5cHbQbJqsHgBYF86NiTeFTIhLoQuh9x42XpUT6ppNKNPvncsE
+# xvHEu3gU10sEahQ67LmkJYBCnKFxIC7tKRwfLqRFioI3mG2sB944ZQq1q7SjIPGq
+# Ub6eosIn0MQxOIHDjG+sKE33I6+r4P1jftfCnHK+VUhXpk9RczOSSonc/ksJHG9J
+# BRkuKHQIHAkeNYozUlvZLVlKgaF++MUQ6Fw3bZMvr00JSQqIL+VDBANMsPsztz21
+# aTdXp+FmROh1pex39pR7tONTR6QUXzlTtDekA0qS9VvikC8kbGlrhx3HFIBgxCPW
+# griKcrSFQhOVVgKLyH9CW5BRvFtP1FIDy1hRefKNayeGt6rNt5tpzpMgBzYQAtph
+# g9cnS3GAHIaROsJKm5M90acaVcuD46s8GAb/ZudDdTNRKtFqjg3MSTABTc7Q25Uy
+# 9oZAc2j5QjGW/H0=
 # SIG # End signature block
