@@ -26,6 +26,7 @@ $RECYCLE.BIN/
 
 # Spell checker
 /.vscode/
+.typos.toml
 
 # LSP
 .marksman.toml
