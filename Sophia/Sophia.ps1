@@ -2,11 +2,11 @@
 	.SYNOPSIS
 	Default preset file for "Sophia Script for Windows 11 (PowerShell 7)"
 
-	Version: v6.5.8
-	Date: 08.12.2023
+	Version: v6.5.9
+	Date: 26.12.2023
 
-	Copyright (c) 2014—2023 farag
-	Copyright (c) 2019—2023 farag & Inestic
+	Copyright (c) 2014—2024 farag
+	Copyright (c) 2019—2024 farag & Inestic
 
 	Thanks to all https://forum.ru-board.com members involved
 
@@ -26,8 +26,8 @@
 
 	.NOTES
 	Supported Windows 11 versions
-	Version: 23H2
-	Builds: 22631.2792+
+	Version: 23H2+
+	Builds: 22631.2861+
 	Editions: Home/Pro/Enterprise
 
 	.NOTES
@@ -69,7 +69,7 @@ param
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.8 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.9 (PowerShell 7) | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2024"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -648,14 +648,6 @@ DeliveryOptimization -Disable
 # Включить оптимизацию доставки (значение по умолчанию)
 # DeliveryOptimization -Enable
 
-# Always wait for the network at computer startup and logon for workgroup networks
-# Всегда ждать сеть при запуске и входе в систему для рабочих групп
-WaitNetworkStartup -Enable
-
-# Never wait for the network at computer startup and logon for workgroup networks (default value)
-# Никогда не ждать сеть при запуске и входе в систему для рабочих групп (значение по умолчанию)
-# WaitNetworkStartup -Disable
-
 # Do not let Windows manage my default printer
 # Не разрешать Windows управлять принтером, используемым по умолчанию
 WindowsManageDefaultPrinter -Disable
@@ -1063,8 +1055,6 @@ UninstallUWPApps
 #>
 # RestoreUWPApps
 
-
-
 # Disable Cortana autostarting
 # Выключить автозагрузку Кортана
 CortanaAutostart -Disable
@@ -1440,24 +1430,24 @@ Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBhGSw6RF2LbBcfJPdQs8E/Yu
-# n06gghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
-# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
-# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
-# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
-# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
-# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
-# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULcDsUdU4oGlYretzqi1jHDY3
+# QzugghYPMIIDAjCCAeqgAwIBAgIQfwSUTLB+BKxO/CTgrlYBrDANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMjYyMDM5NTBa
+# Fw0yNTEyMjYyMDQ5NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqXVJ2WOnbxynGFmc5wmdAQyUfqPr
+# FbRaukqbA2d709dMO3eM6Exw/TXABB7PSKMJJX+4zMjXJ7ApsSmOayWLyh66Qu40
+# eKh1ezGm3V+lGADl9D5fraUTBHCmYB91EgDoQ9xdOQpTFTFlJQcVTWOCQFU/WA02
+# zKPgFwtNK2FkIujOPn0LUsjQ8f45smYaxS/LWU/fqvdts5dC5zvBLSRNIPSLeEuO
+# WLZVBvEI9GT7VRl0FMVYZw5kI4PgC/g9kO6AqEC8a81uuVzW4wPxwOWHMaZbaKy4
+# QaW36mnE36oE/3W6RcMXPOS0cxLheN7HkTMJQuhfU85taeFwGGe6w2Cl+QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
-# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
-# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
-# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
-# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
-# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
-# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFLYTl5Huv4zgjDr7cO9CL7FoVlUeMA0GCSqGSIb3DQEBCwUAA4IBAQBWTkY2
+# cRxu4zm/vpJzS6ufN3fiq/7ftc8fraUYAJyIkiGccjr0+CgYzKO5xS5ruyzArhfg
+# 2EEHeCrN6D4UzQpbo3zF5nh5rt1XJhfyfMd9gyuE71Hwu3Ng7y0lC7//VdaMu2sm
+# ndvL4igr1Ar8Ug/Wmachaw0vCZLAJ03Mh1kPLn4Qg+iB/8yfxcOUZnSt9zFFzl0F
+# vQAvAexOhBhxjpEzA8DcJ4E3f8G8KqnVBt2JbFOaVDVjjpqv0gxLd5PPmcYAG4GO
+# f/GOCmaoHpJv8kZ7oNkp7bbuWHA6fC/AHVNoFxrYL7FPyZq/4kCAo5bVJbPAVABu
+# 93IsQ+vleVuXy7zIMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -1559,31 +1549,31 @@ Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEH8ElEywfgSsTvwk4K5WAaww
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFP6ngPX9Bi9BFicv0uYg4lQslyIeMA0GCSqGSIb3DQEB
-# AQUABIIBAE1uygo3E3atW0Rdc7mxQWPcmYU2zikKu6JF4RZYDHCneR7g6Py5Q+Ay
-# UtRTrjO57lerneDMI6MphW+EE9Mkn4X0t3ozeYSNVCv8alp5g7JvsCzd7TrZVTmZ
-# TSuBMriFxalplLJDm/oDbPV/IUJW5MIagSvLaEIn/9Acfr2iRZ1fmIUmaM3yI+Iw
-# q8cQaN2tiEDaHSP3pUanJTWgaiWUNnB/zVeClkJdBoIHA6itkK/MfeQQPAerPUPv
-# Smjfxb0swtanM6O1tMuQU0x5KHUUd7GCigCgyaqPTvvFC7P65LC0ktXSOqfF0AYY
-# /sVOr35V6BE+TMfOK1AYf7nuR7kaXA6hggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFAk/L0sWUVdAxeRoR3U27SMxiYamMA0GCSqGSIb3DQEB
+# AQUABIIBAEiK+85w4w+oVm5q0jFT9oHJ5+S7Jc9vdAHX5NP6fu1oxyytejTvHa7T
+# gOdu1QfqUst3MejwC4G/T1qEoZu7Jt6FFCwEq9cDws3dKz+Ko1S3p5d7w6Md45bp
+# jtyE5Qe2VkppWuClta+8WZRAsyepRuXWG4ta+9V6I4wkOifNgHccHmH9ezcYIj27
+# KrLGEFdntQVmP0rjTByHDiuWdVJmK4n5nkajI1oEZRDGXQ7InjgQkC0nYDALR7+J
+# GPBV2OwE7XsT5nVjXhriqsdd1rZzIeL1qw7xXJEuN8Q/uEM1ucsKyTOCDorNcDmj
+# cOO5o95sVRcuLuDFQgoeldHdoU/ropmhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
-# MTY0NzA1WjAvBgkqhkiG9w0BCQQxIgQgE99JlbzJEp0ENUhnMMQqIw7npcNUT2YE
-# 2KoGHFjAPuQwDQYJKoZIhvcNAQEBBQAEggIAXDD9O5w3g4SsbqBrk1xOsrL7XB5i
-# Ymom17VSJu3dvdNutee3qqvSpnPYKzIS+gmUowmEshC9ifuLY2XSzkfgBR1Wzigf
-# NKS9jD7ZrZxjwCEaUygXzXCLLEEZu16AWDIGqq+tFJlraxVNzdECTqibT9wkzE0X
-# sHsnCoHCul77mioGqOE2HzZQYJhbcxUfoZwvTrMdUFu25f/jkdTizzIhHgNzeRSJ
-# RYOTH+9roA+VBktB8ebc6f5zUc4DF/bUQcWKUZN2sebrbCHdcM+A9ETjwqRMHI2d
-# B6KyaXerlSjipA4FbtjhaWL7nazHnlPjSXfzuVBzvv+1NXiCsDLZznu3n9xjQQr+
-# jgZXCp9COE9gb/Tnd9UZhHpqQYsFpCSiXps+gaYPgMFOBmwOx2J6ihVqL5kgDLhq
-# gmkTgeS0XRcCQs7bE5G3edjioObQ62e6dif/iFT+Tg4BOigdbc8uAOieeFPv86bW
-# xfQ/8sH2w9tDHnQO8EJRcMZSYmqfphLML3uni4JiJqwe3or/j1TEgQ0EiaOP61KC
-# NhBFWyqyeWPFzFaZ8+chK92SU3xSP1icHuNe4Tvliieraph/HBcWoOKS9BZaLFTy
-# vIGBi9lH8u0wQJrvrBVYL3OmCsWwLmLD2vAtkioNhgnF4A0lXiQrcc9SXsWyTHg1
-# b+lDDm1ig63k5+4=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjI2
+# MjA0OTU3WjAvBgkqhkiG9w0BCQQxIgQgvI5MyiQ4jYDuGDRjqoL04Q1H5nI7zI5/
+# YUWCk5tyTXQwDQYJKoZIhvcNAQEBBQAEggIAmWZvgYyTZiskste8uGgENXBfSXqn
+# 1f/lJRoMz39TM0SsVbakntz88BLnMexSfUw4O0F2KvhGbqwnEe9fYK1QtySNVCS9
+# 6hHx5AnfOpI1JyhBj2MI1gEjHaVf8HQjJkC6vSbgIthRszQBevvTKADuiqcFrvS1
+# 8pPG6CN2q//AypQs1gx2UvJssgv7AtoNPGjyfcGmnF+mnTW1u1xEltLBQyJCtHoL
+# ATJK7d0142bx573qDXsCDSsU7HwOwU/txl4DTNzMy3YSm+VM2OdzzH3gS+PvnRLs
+# S+iUJjyAJgDuCij654N5E/Zsf9itZR37H3h7oenJfs2T8w2pkLw4NS1A03NahQcH
+# RUTmwKKmyKytjvMYyc9wylum//4yY21ddT3R4aL1HM/JYXm/tI+U/N8FR302f6Fk
+# 2YZ1Rq1Ug8lxpZPwmsdZvKEnOgo6Jdpz8Jk1I7f0mLzs0/Jx93crboUd0F6M+cJc
+# DE32dEcNfxjzTMefB5/v3aaDkm3DVtXUQC4mBlQhPHTzJLFNYkkUaazCsooo41P1
+# R7Vb2sWASa4fiGmLuHlrf0b/q7XCt8gmRiJwBSuATbaDKv8qxLvKHHrRc4uu6zWu
+# +WYvwhbFRDm1PcRWu9v047K1+wUBjMSXngoKdc1aYfDFwqEa3EfJqqo464JJcbQk
+# IkxQAoC7/G+g9UA=
 # SIG # End signature block

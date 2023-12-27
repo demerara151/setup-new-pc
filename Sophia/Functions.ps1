@@ -2,11 +2,11 @@
 	.SYNOPSIS
 	The TAB completion for functions and their arguments
 
-	Version: v6.5.8
-	Date: 08.12.2023
+	Version: v6.5.9
+	Date: 26.12.2023
 
-	Copyright (c) 2014—2023 farag
-	Copyright (c) 2019—2023 farag & Inestic
+	Copyright (c) 2014—2024 farag
+	Copyright (c) 2019—2024 farag & Inestic
 
 	Thanks to all https://forum.ru-board.com members involved
 
@@ -50,7 +50,7 @@ function Sophia
 
 Clear-Host
 
-$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.8 | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2023"
+$Host.UI.RawUI.WindowTitle = "Sophia Script for Windows 11 v6.5.9 | Made with $([System.Char]::ConvertFromUtf32(0x1F497)) of Windows | $([System.Char]0x00A9) farag & Inestic, 2014$([System.Char]0x2013)2024"
 
 Remove-Module -Name Sophia -Force -ErrorAction Ignore
 Import-Module -Name $PSScriptRoot\Manifest\Sophia.psd1 -PassThru -Force
@@ -165,6 +165,11 @@ $Parameters = @{
 						"DNSoverHTTPS -Enable -PrimaryDNS $ValidValue -SecondaryDNS $ValidValueDescending" | Where-Object -FilterScript {$_ -like "*$wordToComplete*"} | ForEach-Object -Process {"`"$_`""}
 					}
 				}
+
+				"DNSoverHTTPS -Disable" | Where-Object -FilterScript {$_ -like "*$wordToComplete*"} | ForEach-Object -Process {"`"$_`""}
+				"DNSoverHTTPS -ComssOneDNS" | Where-Object -FilterScript {$_ -like "*$wordToComplete*"} | ForEach-Object -Process {"`"$_`""}
+
+				continue
 			}
 
 			# If a module command is Set-Policy
@@ -201,24 +206,24 @@ Write-Verbose -Message "Sophia -Functions `"Set-Association -ProgramPath ```"%Pr
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7MC081lL0Vk1hbxRzBb5Sfik
-# GrqgghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
-# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
-# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
-# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
-# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
-# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
-# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyTYftC+ZQ7CcFrp+b1fIIcIU
+# jUygghYPMIIDAjCCAeqgAwIBAgIQfwSUTLB+BKxO/CTgrlYBrDANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMjYyMDM5NTBa
+# Fw0yNTEyMjYyMDQ5NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqXVJ2WOnbxynGFmc5wmdAQyUfqPr
+# FbRaukqbA2d709dMO3eM6Exw/TXABB7PSKMJJX+4zMjXJ7ApsSmOayWLyh66Qu40
+# eKh1ezGm3V+lGADl9D5fraUTBHCmYB91EgDoQ9xdOQpTFTFlJQcVTWOCQFU/WA02
+# zKPgFwtNK2FkIujOPn0LUsjQ8f45smYaxS/LWU/fqvdts5dC5zvBLSRNIPSLeEuO
+# WLZVBvEI9GT7VRl0FMVYZw5kI4PgC/g9kO6AqEC8a81uuVzW4wPxwOWHMaZbaKy4
+# QaW36mnE36oE/3W6RcMXPOS0cxLheN7HkTMJQuhfU85taeFwGGe6w2Cl+QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
-# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
-# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
-# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
-# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
-# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
-# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFLYTl5Huv4zgjDr7cO9CL7FoVlUeMA0GCSqGSIb3DQEBCwUAA4IBAQBWTkY2
+# cRxu4zm/vpJzS6ufN3fiq/7ftc8fraUYAJyIkiGccjr0+CgYzKO5xS5ruyzArhfg
+# 2EEHeCrN6D4UzQpbo3zF5nh5rt1XJhfyfMd9gyuE71Hwu3Ng7y0lC7//VdaMu2sm
+# ndvL4igr1Ar8Ug/Wmachaw0vCZLAJ03Mh1kPLn4Qg+iB/8yfxcOUZnSt9zFFzl0F
+# vQAvAexOhBhxjpEzA8DcJ4E3f8G8KqnVBt2JbFOaVDVjjpqv0gxLd5PPmcYAG4GO
+# f/GOCmaoHpJv8kZ7oNkp7bbuWHA6fC/AHVNoFxrYL7FPyZq/4kCAo5bVJbPAVABu
+# 93IsQ+vleVuXy7zIMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -320,31 +325,31 @@ Write-Verbose -Message "Sophia -Functions `"Set-Association -ProgramPath ```"%Pr
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEH8ElEywfgSsTvwk4K5WAaww
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFLovvPM5Syh85lo1DLxkrwy4LnjmMA0GCSqGSIb3DQEB
-# AQUABIIBAGc8cmi7s5U0E4kNtW49PUP874CEtkF4VimrwFqnToOP9mjIbYy3mmWT
-# bd/bQAj2MU0nENlGDdcPMwwEBy2Vh5FngrpbAaBu1u9sJMSObmuqkUM3hGAHzsln
-# QmImw1UDgaee9eLQgsgRR0AKrupsfEqQUK8xssWLE3JnGS1iBrU4A4+eQaQg2o0o
-# ytEY8ZCOiF4oUx7ERkUfsIBfW7zJ+S5teveKVvS95h9W/FqUrHAn7rCKVmG7rKYd
-# I6qDATmqS/YRzlD/O7uzuhRqQloDEJ2UdR55YygD2601tib45gluxZam1PbUxzk9
-# Qj67iVWuYte6VAFjdPRbQ1/UoseZwF2hggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFCgEoYQ3HkNHzbNhmASJ51sbm9jdMA0GCSqGSIb3DQEB
+# AQUABIIBAA4kje9tlVxolBznYy/rf7B+QUzXqaW/A2bLChkrwhwR4UzJ/OAabOwX
+# zGb+8RKWRtc8WAtO+PV+3Ve1bwhCXxPb7ks6Zebk2DIAb7KjyC7TvPYQElz2RVT4
+# VTai8hRG0x6n6Ut2wzlGQ8Qi3AouAHvvBQaP56sH8HauqTiwtSNsMI71YU9aWseO
+# 4oDtc7w9rFvs/1P/+e2Kut1NCdb2RAcVZS1XDjgI73eTvUjIo0LAO+P0A+YUixq0
+# FO/lzuEu1Xg6C9n6rGCE5jYfi69gZ94+NjGSN9TUy412yKFCKPh1QQzIgnbpD/Z0
+# BC6JtSvP9E9aYTsNh9RqULpkyCBDyhmhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
-# MTY0NzA1WjAvBgkqhkiG9w0BCQQxIgQgYLO95h8G0/MEFgfZq2YRTofo2beaRmfp
-# S+txFE7KclgwDQYJKoZIhvcNAQEBBQAEggIAMHGP7dOepyRUaottdeJUgZZeIQ0l
-# BaGgNc24SdN8tJ9nOYLzeVkwP7JKaahJQNdrM80tR77gOFFcEmXYfgzb/VtMSl/6
-# IAlRWkTywTsrBa9h9yXi5lML3LS/BIfQugV+WenmJcEOCq53kQDms9cJ38/+zBKE
-# FyaR72PW1vygQ9lhFmBI68YU7vExbXOiwN2BbtIvoEzsBtAe+rw7iqd3I1FGAM7K
-# mpm6WeTfiQf/C0V5WDlIaJnYePll4jytk3xpLckU2fzE66+FcNwpGaAtdGSQO8fz
-# Rdrl83YzLn00NJNWLg5nMCSCI2oPNFwUvW1Svd2zQS+cFb5nFzSlES7BnyILz0iA
-# GItjeejWHjTT2u9AeFHV6Gnu3Uub+V9R26dBWzZEJ2kxZ/Y88NP9gmifnc+5L6Pb
-# awgCr9phczzBkUnEIyn/aG9vZnfv5N/RqMuht9F0uGujwPGVWDBUIR7C1wTDHK/N
-# NPT2fDImagLqkgUTlX3GnVY+dofPcnfyOIwK05ukZYLS52ewydRCf26b0VlKBE03
-# NwIOTK7N5TDfO1uKjWcy5XY1k8ev5BivnYs5N1I4lCQ+gQSaZSadMZ6Io0+gXOk6
-# LPoHyOijd7RX8f5wFjQ+xMjIY29TzY1Vqrld6l8c1BPLiG91ebvIL13m64uXwbaD
-# 4QlCbMBZd/eJbNs=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjI2
+# MjA0OTU3WjAvBgkqhkiG9w0BCQQxIgQgmJ8A5G9HHUfR28opZtBjlfgDBChU58st
+# IDkuvfDay+swDQYJKoZIhvcNAQEBBQAEggIAPLgnxb6y7ICtlFB1/DrSYze5PF26
+# 0mqqbaVThurLVqYrFNGxw7IOHr6C+nJiE+Dno5CvYbP4bFIWZYAyxZlTVDkWOZdG
+# zKfROLJsCGhh5EJaKkYb5qemlYAA4mytwl5s3Um08sTOx9m8Dr4cnMwNDUt3VBqQ
+# wI9ckj0QkeKB66crvKCFpGhMjTZq5ly1RON6m/wopjOYQj3yprAZ7BnlO9Uo2IHr
+# DLZESUXdsDJ+/nrCZ+uPrzHczgb5ZltsADhI67DuSoKz9RUMuPMgNhM9JcWn8mjj
+# KBqXJvJIHxNRRjzt6jKK18wO8xIQCoeAUuAe3/n/aP02u7+OeEHZmcImHZkLgfxJ
+# HkOQT1z6p6vP0BzBWYsIxuenZHRwfoudCg1+hxPi6o2EEG0OMxuZamMUeVPq3VOM
+# sPNOTGP+hgXSydcwJGKjEjF1iUxbpsHU2V1iLgL6MdjFyk7vTq6scE2eq/9Z+rTP
+# Do8dv8xAoARDfv0YW5RlPEr3d+tD0gH1m/HmkvK+6WYcR/CFuVztbX89oAmGjRqk
+# mK6l4dmQwGPZSGIkFVNs3RDoasLpH6S0f3rlwgjdSKihS+OZ6wYmCxphoAnoAU9e
+# KaMkR/gq/PAhK7EIixE9WGpkhq0DfXb9d45ytgULNSU3iWpjwkC+ZAWVbq7J/NJJ
+# ZA4uEN9bKn2mE9c=
 # SIG # End signature block

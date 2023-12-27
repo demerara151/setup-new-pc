@@ -2,18 +2,18 @@
 	.SYNOPSIS
 	Sophia Script is a PowerShell module for Windows 10 & Windows 11 fine-tuning and automating the routine tasks
 
-	Version: v6.5.8
-	Date: 08.12.2023
+	Version: v6.5.9
+	Date: 26.12.2023
 
-	Copyright (c) 2014—2023 farag
-	Copyright (c) 2019—2023 farag & Inestic
+	Copyright (c) 2014—2024 farag
+	Copyright (c) 2019—2024 farag & Inestic
 
 	Thanks to all https://forum.ru-board.com members involved
 
 	.NOTES
 	Supported Windows 11 versions
-	Version: 23H2/23H2+
-	Builds: 22631.2792+
+	Version: 23H2+
+	Builds: 22631.2861+
 	Editions: Home/Pro/Enterprise
 
 	.LINK GitHub
@@ -162,7 +162,7 @@ public static string GetString(uint strId)
 			}
 			catch [System.Net.WebException]
 			{
-				Write-Warning -Message ($Localization.NoResponse -f "https://edgeupdates.microsoft.com") 
+				Write-Warning -Message ($Localization.NoResponse -f "https://edgeupdates.microsoft.com")
 				Write-Error -Message ($Localization.NoResponse -f "https://edgeupdates.microsoft.com") -ErrorAction SilentlyContinue
 			}
 		}
@@ -173,62 +173,15 @@ public static string GetString(uint strId)
 		}
 	}
 
-	# Detect the OS build version
-	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
+	# Check if Get-WindowsEdition cmdlet is working
+	try
 	{
-		{$_ -lt 22631}
-		{
-			$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
-			$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
-			Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
-
-			Start-Process -FilePath "https://t.me/sophia_chat"
-			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-			Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
-
-			# Receive updates for other Microsoft products when you update Windows
-			(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-			# Check for UWP apps updates
-			Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
-
-			# Check for updates
-			Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
-
-			# Open the "Windows Update" page
-			Start-Process -FilePath "ms-settings:windowsupdate"
-
-			exit
-		}
-		{$_ -eq 22631}
-		{
-			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2792)
-			{
-				# Check whether the OS minor build version is 2792 minimum
-				# https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information#windows-11-current-versions
-				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
-				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
-				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
-
-				Start-Process -FilePath "https://t.me/sophia_chat"
-				Start-Process -FilePath "https://discord.gg/sSryhaEv79"
-				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
-
-				# Receive updates for other Microsoft products when you update Windows
-				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
-
-				# Check for UWP apps updates
-				Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
-
-				# Check for updates
-				Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
-
-				# Open the "Windows Update" page
-				Start-Process -FilePath "ms-settings:windowsupdate"
-
-				exit
-			}
-		}
+		[void](Get-WindowsEdition -Online)
+	}
+	catch [System.Runtime.InteropServices.COMException]
+	{
+		Write-Warning -Message ($Localization.WindowsComponentBroken -f "Get-WindowsEdition")
+		exit
 	}
 
 	# Check the language mode
@@ -602,6 +555,64 @@ public static string GetString(uint strId)
 		}
 	}
 	#endregion Defender checks
+
+	# Detect the OS build version
+	switch ((Get-CimInstance -ClassName CIM_OperatingSystem).BuildNumber)
+	{
+		{$_ -lt 22631}
+		{
+			$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
+			$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
+			Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
+
+			Start-Process -FilePath "https://t.me/sophia_chat"
+			Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+			Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
+
+			# Receive updates for other Microsoft products when you update Windows
+			(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+			# Check for UWP apps updates
+			Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+
+			# Check for updates
+			Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
+
+			# Open the "Windows Update" page
+			Start-Process -FilePath "ms-settings:windowsupdate"
+
+			exit
+		}
+		"22631"
+		{
+			if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR) -lt 2861)
+			{
+				# Check whether the OS minor build version is 2861 minimum
+				# https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information#windows-11-current-versions
+				$CurrentBuild = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name CurrentBuild
+				$UBR = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows nt\CurrentVersion" -Name UBR
+				Write-Warning -Message ($Localization.UpdateWarning -f $CurrentBuild.CurrentBuild, $UBR.UBR)
+
+				Start-Process -FilePath "https://t.me/sophia_chat"
+				Start-Process -FilePath "https://discord.gg/sSryhaEv79"
+				Start-Process -FilePath "https://github.com/farag2/Sophia-Script-for-Windows#system-requirements"
+
+				# Receive updates for other Microsoft products when you update Windows
+				(New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+
+				# Check for UWP apps updates
+				Get-CimInstance -Namespace root/CIMV2/mdm/dmmap -ClassName MDM_EnterpriseModernAppManagement_AppManagement01 | Invoke-CimMethod -MethodName UpdateScanMethod
+
+				# Check for updates
+				Start-Process -FilePath "$env:SystemRoot\System32\UsoClient.exe" -ArgumentList StartInteractiveScan
+
+				# Open the "Windows Update" page
+				Start-Process -FilePath "ms-settings:windowsupdate"
+
+				exit
+			}
+		}
+	}
 
 	# Enable back the SysMain service if it was disabled by harmful tweakers
 	if ((Get-Service -Name SysMain).Status -eq "Stopped")
@@ -1172,14 +1183,12 @@ function DiagnosticDataLevel
 			{
 				# Diagnostic data off
 				New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 0 -Force
-
 				Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 0
 			}
 			else
 			{
 				# Send required diagnostic data
 				New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 1 -Force
-
 				Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 1
 			}
 
@@ -1191,8 +1200,8 @@ function DiagnosticDataLevel
 			# Optional diagnostic data
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
-
 			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Force -ErrorAction Ignore
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type CLEAR
 		}
 	}
@@ -1400,14 +1409,6 @@ function ScheduledTasks
 		# XblGameSave Standby Task
 		"XblGameSaveTask"
 	)
-
-	# Check if device has a camera
-	$DeviceHasCamera = Get-CimInstance -ClassName Win32_PnPEntity | Where-Object -FilterScript {(($_.PNPClass -eq "Camera") -or ($_.PNPClass -eq "Image")) -and ($_.Service -ne "StillCam")}
-	if (-not $DeviceHasCamera)
-	{
-		# Windows Hello
-		$CheckedScheduledTasks += "FODCleanupTask"
-	}
 	#endregion Variables
 
 	#region XAML Markup
@@ -1594,7 +1595,7 @@ function ScheduledTasks
 	# Getting list of all scheduled tasks according to the conditions
 	$Tasks = Get-ScheduledTask | Where-Object -FilterScript {($_.State -eq $State) -and ($_.TaskName -in $CheckedScheduledTasks)}
 
-	if (-not ($Tasks))
+	if (-not $Tasks)
 	{
 		Write-Information -MessageData "" -InformationAction Continue
 		Write-Verbose -Message $Localization.NoData -Verbose
@@ -1880,7 +1881,7 @@ function WindowsWelcomeExperience
 	Getting tip and suggestions when I use Windows
 
 	.PARAMETER Enable
-	Get tip and suggestions when I use Windows
+	Get tip and suggestions when using Windows
 
 	.PARAMETER Disable
 	Do not get tip and suggestions when I use Windows
@@ -1928,7 +1929,7 @@ function WindowsTips
 
 <#
 	.SYNOPSIS
-	Suggested me content in the Settings app
+	Show me suggested content in the Settings app
 
 	.PARAMETER Hide
 	Hide from me suggested content in the Settings app
@@ -2189,6 +2190,7 @@ function BingSearch
 				New-Item -Path HKCU:\Software\Policies\Microsoft\Windows\Explorer -Force
 			}
 			New-ItemProperty -Path HKCU:\Software\Policies\Microsoft\Windows\Explorer -Name DisableSearchBoxSuggestions -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope User -Path Software\Policies\Microsoft\Windows\Explorer -Name DisableSearchBoxSuggestions -Type DWORD -Value 1
 		}
 		"Enable"
@@ -3233,58 +3235,54 @@ function TaskViewButton
 
 <#
 	.SYNOPSIS
-	The Chat icon (Microsoft Teams) on the taskbar
+	Chat (Microsoft Teams) installation for new users
 
-	.PARAMETER Hide
+	.PARAMETER Enable
 	Hide the Chat icon (Microsoft Teams) on the taskbar and prevent Microsoft Teams from installing for new users
 
-	.PARAMETER Show
+	.PARAMETER Disable
 	Show the Chat icon (Microsoft Teams) on the taskbar and remove block from installing Microsoft Teams for new users
 
 	.EXAMPLE
-	TaskbarChat -Hide
+	PreventTeamsInstallation -Enable
 
 	.EXAMPLE
-	TaskbarChat -Show
+	PreventTeamsInstallation -Disable
 
 	.NOTES
 	Current user
 #>
-function TaskbarChat
+function PreventTeamsInstallation
 {
 	param
 	(
 		[Parameter(
 			Mandatory = $true,
-			ParameterSetName = "Hide"
+			ParameterSetName = "Enable"
 		)]
 		[switch]
-		$Hide,
+		$Enable,
 
 		[Parameter(
 			Mandatory = $true,
-			ParameterSetName = "Show"
+			ParameterSetName = "Disable"
 		)]
 		[switch]
-		$Show
+		$Disable
 	)
 
 	Clear-Variable -Name Task -ErrorAction Ignore
 
 	switch ($PSCmdlet.ParameterSetName)
 	{
-		"Hide"
+		"Disable"
 		{
-			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarMn -PropertyType DWord -Value 0 -Force
-
 			# Save string to run it as "NT SERVICE\TrustedInstaller"
 			# Prevent Microsoft Teams from installing for new users
 			$Task = "New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications -Name ConfigureChatAutoInstall -Value 0 -Type Dword -Force"
 		}
-		"Show"
+		"Enable"
 		{
-			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name TaskbarMn -PropertyType DWord -Value 1 -Force
-
 			# Save string to run it as "NT SERVICE\TrustedInstaller"
 			# Remove block from installing Microsoft Teams for new users
 			$Task = "Remove-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications -Name ConfigureChatAutoInstall -Value 1 -Type Dword -Force"
@@ -4690,7 +4688,7 @@ public static bool MarkFileDelete (string sourcefile)
 					# Remove invalid chars
 					[xml]$OneDriveXML = $Content -replace "ï»¿", ""
 
-					$OneDriveURL = ($OneDriveXML).root.update.amd64binary.url
+					$OneDriveURL = ($OneDriveXML).root.update.amd64binary.url | Select-Object -Index 1
 					$DownloadsFolder = Get-ItemPropertyValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name "{374DE290-123F-4565-9164-39C4925E467B}"
 					$Parameters = @{
 						Uri             = $OneDriveURL
@@ -5484,69 +5482,6 @@ function DeliveryOptimization
 		"Enable"
 		{
 			New-ItemProperty -Path Registry::HKEY_USERS\S-1-5-20\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Settings -Name DownloadMode -PropertyType DWord -Value 1 -Force
-		}
-	}
-}
-
-<#
-	.SYNOPSIS
-	The Group Policy processing
-
-	.PARAMETER Enable
-	Always wait for the network at computer startup and logon for workgroup networks
-
-	.PARAMETER Disable
-	Never wait for the network at computer startup and logon for workgroup networks
-
-	.EXAMPLE
-	WaitNetworkStartup -Enable
-
-	.EXAMPLE
-	WaitNetworkStartup -Disable
-
-	.NOTES
-	Machine-wide
-#>
-function WaitNetworkStartup
-{
-	param
-	(
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Enable"
-		)]
-		[switch]
-		$Enable,
-
-		[Parameter(
-			Mandatory = $true,
-			ParameterSetName = "Disable"
-		)]
-		[switch]
-		$Disable
-	)
-
-	switch ($PSCmdlet.ParameterSetName)
-	{
-		"Enable"
-		{
-			if ((Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
-			{
-				if (-not (Test-Path -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon"))
-				{
-					New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Force
-				}
-				New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name SyncForegroundPolicy -PropertyType DWord -Value 1 -Force
-				Set-Policy -Scope Computer -Path "SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name SyncForegroundPolicy -Type DWORD -Value 1
-			}
-		}
-		"Disable"
-		{
-			if ((Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
-			{
-				Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name SyncForegroundPolicy -Force -ErrorAction Ignore
-				Set-Policy -Scope Computer -Path "SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name SyncForegroundPolicy -Type CLEAR
-			}
 		}
 	}
 }
@@ -7949,6 +7884,7 @@ function RecommendedTroubleshooting
 	New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -PropertyType DWord -Value 3 -Force
 	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name MaxTelemetryAllowed -PropertyType DWord -Value 3 -Force
 	New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack -Name ShowedToastAtLevel -PropertyType DWord -Value 3 -Force
+
 	Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWORD -Value 1
 
 	# Turn on Windows Error Reporting
@@ -8469,6 +8405,11 @@ function NetworkDiscovery
 		$Disable
 	)
 
+	if ((Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
+	{
+		return
+	}
+
 	$FirewallRules = @(
 		# File and printer sharing
 		"@FirewallAPI.dll,-32752",
@@ -8481,20 +8422,13 @@ function NetworkDiscovery
 	{
 		"Enable"
 		{
-			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
-			{
-				Set-NetFirewallRule -Group $FirewallRules -Profile Private -Enabled True
-
-				Set-NetFirewallRule -Profile Public, Private -Name FPS-SMB-In-TCP -Enabled True
-				Set-NetConnectionProfile -NetworkCategory Private
-			}
+			Set-NetFirewallRule -Group $FirewallRules -Profile Private -Enabled True
+			Set-NetFirewallRule -Profile Public, Private -Name FPS-SMB-In-TCP -Enabled True
+			Set-NetConnectionProfile -NetworkCategory Private
 		}
 		"Disable"
 		{
-			if (-not (Get-CimInstance -ClassName CIM_ComputerSystem).PartOfDomain)
-			{
-				Set-NetFirewallRule -Group $FirewallRules -Profile Private -Enabled False
-			}
+			Set-NetFirewallRule -Group $FirewallRules -Profile Private -Enabled False
 		}
 	}
 }
@@ -10418,7 +10352,7 @@ function UnpinAllStartApps
 3275D9CEEF37E62C3574C036F327D1110AB0977996D67A2F8FA897D7207BEE85586B8CE6AD4F9736AA2154E3DCC9D082996984B76F1C73067F124F92A41F2B2CA83EF35436670979556FAE85AB10EA1
 6C932C3AECE1D45DA06D64BC42F4565AD0FCB8C63CDE7F6BB97ACE300198C3EACA3E1C974F547B1A7CF5B9C6A912448AB38A3BE2D6F0230A4A9AACC710C3E75088754CC2FB054B55B1D6ED7AD41EB8B
 0C9D4C274E87A525582F6CFBEAE5A904A1B0A3BA07939B79CAB4F1C3DF35BF88DE846E64555F0AEB47562C329206A9975664558849E0C251E8832D52B4FD7560347E5606AC882B9FC1F43C96922C0EA
-1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B85122481FE1FF41CA9A2534CCE7AFC45
+1927DF004A062BAD5AC5A4BE6BF2DB23158B2BAEEF8DE9E3A777910E82E5488A83E4D64B0D84440B98B35BC4A3438596145669904AB392CFD5F7E22F616747B85206481FE1FF41CA9A2534CCE7AFC45
 584370B4940DF30555536344249690F00C3A7E2552E352FE733C7ED2F80A29AD16937810AF805A444A344188C0CBDA51E5466BF45F2587508A69581CC2BCDAE06CB363658D94CD60569352FDA17AE7C
 DD785810F369B41F2D15930430A809567CC6C643FE7986CAD545EF3DB40CA6FA9220BFC7F65610AECB22799838B80DE73AF549923F8219FFAAD64780E2DB53133D73890294E77F9B0970484E86A0507
 37724FF15281C1726D334D3C9A67A85A78AE33F55DB675DAA31C47A156C0F8212DCEE228537668F4BF898C0CB869B74C98DF7EFBE0130859E5156417A85CC634B86314FAB47FB9A8DFEAFA1AEFC5E59
@@ -10446,7 +10380,7 @@ FEA494190BF3446DCC8C8AAF62BA01F0BFB18E15503C27558DB70C48EFB0AEA0B600F985C904E9F2
 2EEEF7B09850D29B2F412DEF3D0BD9194CAE8113B3B38085C77C238CB8D15BF6D6AB42C193F4E2F27F8BEDABB2D6ADE9E486B6AFAFD8D5DBE3B7D7305790F96ECDCC2DD016C5B9B200CB72E6CF54D71
 F69A01CDE4E3A0A4C5A03627DECD491F215C1420EB07AB8FD2763FCFF5211EB964C82E69DA208BDFA76306D54642B117DCB9A92927CE2E633338D4EEA63B571349B8DA1D4B5523C4CA10308769E4F46
 1ADD16DD5DFDB0E705187593DEF5CCCF659E48366462CC21D7930E1064234157A7A08E9C90927A37C5CF23D54C755002E4E657BB6E70D9B4BE7C468C19D6969FAE138EBF2C20DD3F5A0BC4C0E97D5BF
-DB8744A21396C44549279217BEAD5AE14FF602E69E75B87784DE5F30BE14106E8D8A081DC8CCCFBF93896E622F755F27E82A596DDCA3469A93ECB9E2E897BF0FCC063426DACDC3B1D81E1EFE6B63932
+DB8744A21396C44549286117BEAD5AE14FF602E69E75B87784DE5F30BE14106E8D8A081DC8CCCFBF93896E622F755F27E82A596DDCA3469A93ECB9E2E897BF0FCC063426DACDC3B1D81E1EFE6B63932
 6CA43526CFAEDF9922EAC3204FEB84AAED781EE5516FA5B4DCAB85DB5FF33CEC454DAA375BDA5EEA7C871C310AEDC5BD6B220B59B901D377E22FFFE95FEDA28CE2CE33CAEB8541EE05E1B5650D776C4
 B2A246DB4613E2CC5D96A44D24AE662D848A7C9E3E922AFF0632B7B40505402956FABC5C3AAB55EEE29085046C127E8776CEFC1690B76EE99371AF9B1D7EF6F79E78325DD3BD8377E9B73B936C6F261
 1D0A1223A4D7C6CF3037922DD0686A701FF86761993F294D26E13A7BB8B1C61ACAF38D50334A88DABB3FA412B4FC79F6FBFD0D0A92301484FF1BD1CF3DC67780E4562E05CCA329CABA7CB2B77D9A707
@@ -10794,31 +10728,32 @@ function UninstallUWPApps
 
 		$AppxPackages = @(Get-AppxPackage -PackageTypeFilter Bundle -AllUsers:$AllUsers | Where-Object -FilterScript {$_.Name -notin $ExcludedAppxPackages})
 
-		# The Bundle packages contains no Microsoft Teams
-		if (Get-AppxPackage -Name MicrosoftTeams -AllUsers:$AllUsers)
-		{
-			# Temporarily hack: due to the fact that there are actually two Microsoft Teams packages, we need to choose the first one to display
-			$AppxPackages += Get-AppxPackage -Name MicrosoftTeams -AllUsers:$AllUsers | Select-Object -Index 0
-		}
+		# The -PackageTypeFilter Bundle doesn't contain these packages, and we need to add manually
+		$Packages = @(
+			# Spotify
+			"SpotifyAB.SpotifyMusic",
 
-		# The Bundle packages contains no Spotify
-		if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers:$AllUsers)
-		{
-			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers:$AllUsers
-		}
+			# Disney+
+			"Disney.37853FC22B2CE",
 
-		# The Bundle packages contains no Disney+
-		if (Get-AppxPackage -Name Disney.37853FC22B2CE -AllUsers:$AllUsers)
+			# Outlook
+			"Microsoft.OutlookForWindows",
+			
+			# Chat (Microsoft Teams)
+			"MicrosoftTeams"
+		)
+		foreach ($Package in $Packages)
 		{
-			$AppxPackages += Get-AppxPackage -Name Disney.37853FC22B2CE -AllUsers:$AllUsers
+			if (Get-AppxPackage -Name $Package -AllUsers:$AllUsers)
+			{
+				$AppxPackages += Get-AppxPackage -Name $Package -AllUsers:$AllUsers
+			}
 		}
 
 		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
-
 		foreach ($AppxPackage in $AppxPackages)
 		{
 			$PackageId = $PackagesIds | Where-Object -FilterScript {$_.Name -eq $AppxPackage.Name}
-
 			if (-not $PackageId)
 			{
 				continue
@@ -11170,15 +11105,7 @@ function RestoreUWPApps
 		# The Bundle packages contains no Microsoft Teams
 		if (Get-AppxPackage -Name MicrosoftTeams -AllUsers)
 		{
-			# Temporarily hack: due to the fact that there are actually two Microsoft Teams packages, we need to choose the first one to display
-			$AppxPackages += Get-AppxPackage -Name MicrosoftTeams -AllUsers | Where-Object -FilterScript {$_.PackageUserInformation -match "Staged"} | Select-Object -Index 0
-		}
-
-		# The Bundle packages contains no Spotify
-		if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers)
-		{
-			# Temporarily hack: due to the fact that there are actually two Spotify packages, we need to choose the first one to display
-			$AppxPackages += Get-AppxPackage -Name SpotifyAB.SpotifyMusic -AllUsers | Where-Object -FilterScript {$_.PackageUserInformation -match "Staged"} | Select-Object -Index 0
+			$AppxPackages += Get-AppxPackage -Name MicrosoftTeams -AllUsers | Where-Object -FilterScript {$_.PackageUserInformation -match "Staged"}
 		}
 
 		$PackagesIds = [Windows.Management.Deployment.PackageManager]::new().FindPackages() | Select-Object -Property DisplayName -ExpandProperty Id | Select-Object -Property Name, DisplayName
@@ -13048,6 +12975,7 @@ function CommandLineProcessAudit
 			auditpol /set /subcategory:"{0CCE922B-69AE-11D9-BED3-505054503030}" /success:enable /failure:enable
 
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit -Name ProcessCreationIncludeCmdLine_Enabled -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit -Name ProcessCreationIncludeCmdLine_Enabled -Type DWORD -Value 1
 		}
 		"Disable"
@@ -13108,6 +13036,7 @@ function EventViewerCustomView
 
 			# Include command line in process creation events
 			New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit -Name ProcessCreationIncludeCmdLine_Enabled -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit -Name ProcessCreationIncludeCmdLine_Enabled -Type DWORD -Value 1
 
 			$XML = @"
@@ -13192,6 +13121,7 @@ function PowerShellModulesLogging
 			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging -Name EnableModuleLogging -PropertyType DWord -Value 1 -Force
 			New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging\ModuleNames -Name * -PropertyType String -Value * -Force
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging -Name EnableModuleLogging -Type DWORD -Value 1
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging\ModuleNames -Name * -Type SZ -Value *
 		}
@@ -13199,6 +13129,7 @@ function PowerShellModulesLogging
 		{
 			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging -Name EnableModuleLogging -Force -ErrorAction Ignore
 			Remove-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging\ModuleNames -Name * -Force -ErrorAction Ignore
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging -Name EnableModuleLogging -Type CLEAR
 		}
 	}
@@ -13251,6 +13182,7 @@ function PowerShellScriptsLogging
 				New-Item -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging -Force
 			}
 			New-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging -Name EnableScriptBlockLogging -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope Computer -Path SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging -Name EnableScriptBlockLogging -Type DWORD -Value 1
 		}
 		"Disable"
@@ -13362,6 +13294,7 @@ function SaveZoneInformation
 				New-Item -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments -Force
 			}
 			New-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments -Name SaveZoneInformation -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope User -Path Software\Microsoft\Windows\CurrentVersion\Policies\Attachments -Name SaveZoneInformation -Type DWORD -Value 1
 		}
 		"Enable"
@@ -14423,6 +14356,7 @@ function UseStoreOpenWith
 				New-Item -Path HKCU:\Software\Policies\Microsoft\Windows\Explorer -Force
 			}
 			New-ItemProperty -Path HKCU:\Software\Policies\Microsoft\Windows\Explorer -Name NoUseStoreOpenWith -PropertyType DWord -Value 1 -Force
+
 			Set-Policy -Scope User -Path Software\Policies\Microsoft\Windows\Explorer -Name NoUseStoreOpenWith -Type DWORD -Value 1
 		}
 		"Show"
@@ -15071,24 +15005,24 @@ function Errors
 # SIG # Begin signature block
 # MIIblwYJKoZIhvcNAQcCoIIbiDCCG4QCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUejkbr74h9BGYVe8u7ahfbimi
-# trygghYPMIIDAjCCAeqgAwIBAgIQE4rL+s+UuaFBQgVmPHXqIjANBgkqhkiG9w0B
-# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMDgxNjM2NTla
-# Fw0yNTEyMDgxNjQ2NTdaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
-# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0aDyHSqBRkzMvggbfLaxSJKNpBuO
-# UtOk5oLzIdAGGFnHRr9kM+C+nSnKGvmV0hXHEshLHLpXew2IbFIeWV60KmWGfc9s
-# SgT0/uoQhMMELYfu91EJJNjY2tjZtXxT1X8HDlsJTDpAwVgUNsRHprF5ghYyQnLr
-# LuzhhznktX5w18hAXQFHNCeqYZ1y+FIAwGIgSjZPTOlI/do0XukY8Ebe9/1WmA7g
-# Q1mYAw7y24qz8sMbK4BYBCdPJcYKuqEa9FUqyoZWoMKbo486GuC2fDy0TI0DbbwR
-# lTx0Lv7QCZNN2kDoSBdGEcKLYoyLZu3T5Jz3WwQ4hqVE0SreR2pV/BsttQIDAQAB
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3C4LS20iD5JfNOv3hWC3xRZ/
+# jjagghYPMIIDAjCCAeqgAwIBAgIQfwSUTLB+BKxO/CTgrlYBrDANBgkqhkiG9w0B
+# AQsFADAZMRcwFQYDVQQDDA5Tb3BoaWEgUHJvamVjdDAeFw0yMzEyMjYyMDM5NTBa
+# Fw0yNTEyMjYyMDQ5NDlaMBkxFzAVBgNVBAMMDlNvcGhpYSBQcm9qZWN0MIIBIjAN
+# BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqXVJ2WOnbxynGFmc5wmdAQyUfqPr
+# FbRaukqbA2d709dMO3eM6Exw/TXABB7PSKMJJX+4zMjXJ7ApsSmOayWLyh66Qu40
+# eKh1ezGm3V+lGADl9D5fraUTBHCmYB91EgDoQ9xdOQpTFTFlJQcVTWOCQFU/WA02
+# zKPgFwtNK2FkIujOPn0LUsjQ8f45smYaxS/LWU/fqvdts5dC5zvBLSRNIPSLeEuO
+# WLZVBvEI9GT7VRl0FMVYZw5kI4PgC/g9kO6AqEC8a81uuVzW4wPxwOWHMaZbaKy4
+# QaW36mnE36oE/3W6RcMXPOS0cxLheN7HkTMJQuhfU85taeFwGGe6w2Cl+QIDAQAB
 # o0YwRDAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0O
-# BBYEFM7CC6dRzpM+Z8lbps97Y7ukIz+LMA0GCSqGSIb3DQEBCwUAA4IBAQCem49q
-# 3llfb+8T8x853EYwzWd7rxklFil9xcQlxNQUHEODb85Lf5O45eTtr52gCriI95Zv
-# jzx9HP10kJX8W4BMBCBdrwB2WkWAMp5crGidRvrNGpT1WlMH2pNd6pwP5QPLrxi/
-# WF0a+hu0cG42dGV35B7XtpG2cyIzXFa/i/fywxsaJZusmi9pQjND1+ZempbERa/R
-# vhf/K26phyQ/77M3jS8sX8AFYJdyi9SdKuhGOCegLb/K612Z7kJKyWYHxuL9dqaw
-# 8N6YR30udW/yOyB8++48j+PLuH8JYJku+6hVKGqBayhZUt5FOVMo7nF828fKr7e+
-# cf8WdBmi9uWUPcJ5MIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
+# BBYEFLYTl5Huv4zgjDr7cO9CL7FoVlUeMA0GCSqGSIb3DQEBCwUAA4IBAQBWTkY2
+# cRxu4zm/vpJzS6ufN3fiq/7ftc8fraUYAJyIkiGccjr0+CgYzKO5xS5ruyzArhfg
+# 2EEHeCrN6D4UzQpbo3zF5nh5rt1XJhfyfMd9gyuE71Hwu3Ng7y0lC7//VdaMu2sm
+# ndvL4igr1Ar8Ug/Wmachaw0vCZLAJ03Mh1kPLn4Qg+iB/8yfxcOUZnSt9zFFzl0F
+# vQAvAexOhBhxjpEzA8DcJ4E3f8G8KqnVBt2JbFOaVDVjjpqv0gxLd5PPmcYAG4GO
+# f/GOCmaoHpJv8kZ7oNkp7bbuWHA6fC/AHVNoFxrYL7FPyZq/4kCAo5bVJbPAVABu
+# 93IsQ+vleVuXy7zIMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkq
 # hkiG9w0BAQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB
 # c3N1cmVkIElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5
@@ -15190,31 +15124,31 @@ function Errors
 # NVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69zOuhJRrfVf8y2OMDY7Bz1tqG4
 # QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO9OzTF/tQa/8Hdx9xl0RBybhG
 # 02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2QgESvgBBBijGCBPIwggTuAgEB
-# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEBOKy/rPlLmhQUIFZjx16iIw
+# MC0wGTEXMBUGA1UEAwwOU29waGlhIFByb2plY3QCEH8ElEywfgSsTvwk4K5WAaww
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFJPxpjzYjom+gekrU7eAsyGHZYugMA0GCSqGSIb3DQEB
-# AQUABIIBADpdjnUD/v+yNL2VK6JQsCCZQ7oEj9Gijwj6d37LgijGkQ8HW80g2gZ/
-# TlPnyCx2rrOcPgdC2zliRdBjfAImuA4pUb/xiuuAbu9fY4q1oWShOZblLHnxxuxP
-# 38C3kebjh+Wl32TjXnzCEgfNTFu0CzB86iCuWBCFLGzkQHJj41/BJqLZOfsENU+t
-# UTjp1LTqPPyAni8+aBnnMeQCmL3znl2GDIziNYlpyNTqCUP7G0QpkoZTl7J+01rc
-# 2bPYsVu2xIjZyC95KIdIQ/jrdxYYyOKSllOAziVHbGFwhVBJA400KwlukW8v7CpV
-# xHN3yW68XmuPHIt1m85+y9ZUgZAlCoGhggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
+# IwYJKoZIhvcNAQkEMRYEFFRK+9OYzZ4yCIbQ4iEvYi31mULbMA0GCSqGSIb3DQEB
+# AQUABIIBAFxEx2LO8XCA3vIxfnF2H2RORM+LgBpLV+IttbmaE3srhfnTGEGEEVdQ
+# u0LClESTDRlj+552ONWbGH86BliSAuV2yuJ1Fk1rb7h88GkHtc7YO7lhQXWgz3Ze
+# JMMQ5dvvXDlD8Nkd8yYT2k3OE8srOfuDG+cf42CNL6iOOUJ6xxN0VVwlah2UlU60
+# G6uWx5d7KwrltNCMd2a+88w3I+p3DDWhxoxyzlpid0oN3bDjVAwv3ooQztXIqLo+
+# cjt/t1UcfoxrqkNsEK05Y1iI7ZWqCX44ILQCuNy/GsqpNZPwhIMgGrHUip2JyAfY
+# HwPd9CkhIwYsQvMdcrIuiRcaZ0IzUk6hggMgMIIDHAYJKoZIhvcNAQkGMYIDDTCC
 # AwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4x
 # OzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEyNTYgVGlt
 # ZVN0YW1waW5nIENBAhAFRK/zlJ0IOaa/2z9f5WEWMA0GCWCGSAFlAwQCAQUAoGkw
-# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjA4
-# MTY0NzA2WjAvBgkqhkiG9w0BCQQxIgQgDxsllt5v96KBHvhPhhAWu5SPq2CdBXxF
-# k+mX8GQOPLswDQYJKoZIhvcNAQEBBQAEggIAYcIcUzIBtENiDamjAQNVCLfb3dOI
-# 1wQUMsbVQIETEx3C6OC2Cd3MVgBIupd8PDBrUoKYgBdJnEivomGg/AH5hTwLT5Hy
-# DhjumoPWPKy++BHL8zTr0j083/SSUKk510UvRXmG8YjsAbennqsZesQSdk9V/M+h
-# GLYwQP8Fr+K+c//i+E0D4f+xVyQVgkMGcaICkgCDHTpUlvM5KkABHIR4qbIQhz6m
-# VrvJ6tpwRqj5rDK5cHbQbJqsHgBYF86NiTeFTIhLoQuh9x42XpUT6ppNKNPvncsE
-# xvHEu3gU10sEahQ67LmkJYBCnKFxIC7tKRwfLqRFioI3mG2sB944ZQq1q7SjIPGq
-# Ub6eosIn0MQxOIHDjG+sKE33I6+r4P1jftfCnHK+VUhXpk9RczOSSonc/ksJHG9J
-# BRkuKHQIHAkeNYozUlvZLVlKgaF++MUQ6Fw3bZMvr00JSQqIL+VDBANMsPsztz21
-# aTdXp+FmROh1pex39pR7tONTR6QUXzlTtDekA0qS9VvikC8kbGlrhx3HFIBgxCPW
-# griKcrSFQhOVVgKLyH9CW5BRvFtP1FIDy1hRefKNayeGt6rNt5tpzpMgBzYQAtph
-# g9cnS3GAHIaROsJKm5M90acaVcuD46s8GAb/ZudDdTNRKtFqjg3MSTABTc7Q25Uy
-# 9oZAc2j5QjGW/H0=
+# GAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMxMjI2
+# MjA0OTU4WjAvBgkqhkiG9w0BCQQxIgQgWuPUmmACq+U41xgpQIkD5ggygglkPEB0
+# veFNIP5d/CYwDQYJKoZIhvcNAQEBBQAEggIASrZJJgvhlqjQ+G5ebqKq2IXNFPx+
+# JBXJheQHYaFJvS/P7/pKdnNVa8RqSPIMr5URZuguTqYZM7KnMcQNO/qq5C2GWh66
+# Q9PuU47MhzWbDBKCPHRVK7e4Bm72To7ryQc6wDOwm3Mjx6xhxm5BtAX0lq1wxREI
+# /L0s5LGPseg9wpIh9gxfoyML5QHj8wASvKWtaVl1LIh6/MRqHyOgA5vvveZPr8KC
+# qxi7L56kdmTH1znKpGTnkbd6L7K8UJN+sBLZx48KyRYRsUnSaUH5S16WZSzsVZbq
+# MSbttbmNrlZwGOmzPMcTn5fSDoXSJAOYUBUBiMBP+q9z+OFrQzBlMhVNcvXnSSXk
+# cY8IUlmT09dwCG0RP11sj9x6aGPrj91lIF7Iq2+0J3HGG7JSKYrp58yQ6oozoW2+
+# ZNM2cBgMZdeeWwZfbZNuhEgqsDG2W+GHg5RWYZesfaUkfv78uCtW9noixAnAESyo
+# 1BW6ho5nO6bRVvp/haU1u6g9UKPYQaRg2UVI3PZTbpul5eYx0nvbIrEmcb7u7hDs
+# CQu1INtGno/1po/UQmXHebTalvwv0ENA85qu1rESI4WyO4cXDr+JnUsIJAoDHpKT
+# 4aCrbiLzCZK4xh5/AP9WuYXZGLrlv3pHbO9SouOj6ncZC7ie8S6CnAqiJlOJBVpv
+# VwgxBMefrdyUmK8=
 # SIG # End signature block
