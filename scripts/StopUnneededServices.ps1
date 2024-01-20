@@ -1,16 +1,18 @@
 <#
     .SYNOPSIS
-    個人的に不要なサービスを停止し、無効化します
+    個人的に不要なサービスを停止して無効化します
 
     .DESCRIPTION
-    サービスを停止し、無効化するメリット:
+    サービスを停止して無効化するメリット:
 
     - セキュリティの向上
     - プライバシーの保護
     - メモリ使用量の削減
 
     .NOTES
-    無効化したくないサービスには、サービス名の先頭に # を付けてください
+    無効化したくないサービスにはサービス名の先頭に # を付けてください
+
+    無効化非推奨のサービスには事前に # を付与しています。非推奨であることを理解してサービスを止める場合は # を削除してください
 
     このスクリプトの実行には管理者権限が必要です
 
@@ -19,7 +21,7 @@
     その他、各サービスの詳細は以下のページをご覧ください
 
     .LINK
-    各サービスの詳細: https://github.com/demerara151/setup-new-pc/wiki/Services
+    https://github.com/demerara151/setup-new-pc/wiki/Services
 
     .LINK
     Reference:
@@ -51,13 +53,13 @@
     "WSearch"
 
     # Microsoft Edge Elevation Service
-    "MicrosoftEdgeElevationService"
+    # "MicrosoftEdgeElevationService"
 
     # Microsoft Edge Update Service
-    "edgeupdate"
+    # "edgeupdate"
 
     # Microsoft Edge Update Service
-    "edgeupdatem"
+    # "edgeupdatem"
 
     # Connected User Experiences and Telemetry.
     "DiagTrack"
@@ -69,7 +71,7 @@
     "PcaSvc"
 
     # デバイス管理ワイヤレス アプリケーション プロトコル (WAP) プッシュ メッセージ ルーティング サービス
-	"dmwappushservice"
+    "dmwappushservice"
 
     # Remote Registry.
     "Remote Registry"
@@ -93,7 +95,7 @@
     "DusmSvc"
 
     # Windows Insider Service.
-	#"wisvc"
+	  # "wisvc"
 )
 
 $services.ForEach{ Write-Output "Trying to disable $_"; Get-Service -Name $_ | Set-Service -StartupType Disabled -Status Stopped }
